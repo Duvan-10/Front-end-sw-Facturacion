@@ -1,0 +1,111 @@
+.login-container {
+  max-width: 400px;
+  margin: auto;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.logo {
+  text-align: center;
+  font-size: 2rem;
+  color: #2c3e50;
+}
+
+.subtitle {
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.description,
+.tagline {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.login-form input[type="email"],
+.login-form input[type="password"],
+.login-form input[type="text"] {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.show-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.forgot-link {
+  font-size: 0.85rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 0.7rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.register-btn {
+  width: 100%;
+  padding: 0.7rem;
+  background-color: #1e5631;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.logo-img {
+  display: block;
+  margin: 0 auto 0.5rem auto;
+  width: 80px;
+  height: auto;
+}
+
+.logo-text {
+  text-align: center;
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 0.2rem;
+}
