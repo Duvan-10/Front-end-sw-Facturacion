@@ -1,0 +1,282 @@
+/* =========================================
+   1. VARIABLES GLOBALES (Tema Oscuro)
+   ========================================= */
+/* Aquí definimos los colores y sombras que se usarán en todo el sitio.
+   Si quieres cambiar el color principal (verde), solo lo cambias aquí. */
+:root {
+  --bg: #0f172a;           /* Fondo general (slate-900) */
+  --surface: #111827;      /* Fondo de elementos (gray-900) */
+  --card: #0b1220;         /* Fondo de la tarjeta */
+  --text: #e5e7eb;         /* Color de texto principal (blanco suave) */
+  --muted: #9ca3af;        /* Color de texto secundario (gris) */
+  --primary: #22c55e;      /* Color de acción principal (verde) */
+  --primary-700: #15803d;  /* Color del botón al pasar el mouse (hover) */
+  --danger: #ef4444;       /* Color para errores (rojo) */
+  --border: #1f2937;       /* Color de los bordes de inputs */
+  --focus: #a7f3d0;        /* Color del borde al escribir (emerald-200) */
+  --shadow: 0 10px 30px rgba(0,0,0,.35); /* Sombra suave para la tarjeta */
+}
+
+/* =========================================
+   2. RESET Y CONFIGURACIÓN BASE
+   ========================================= */
+/* Asegura que el padding no aumente el tamaño total de los elementos */
+* { box-sizing: border-box; }
+
+/* Configuración de la página completa: altura, fondo gradiente y tipografía */
+html, body {
+  height: 100%;
+  background: linear-gradient(160deg, var(--bg), #0a0f1d 60%);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  margin: 0; /* Importante resetear margen del body */
+}
+
+/* =========================================
+   3. LAYOUT PRINCIPAL (CONTENEDOR)
+   ========================================= */
+/* Este es el contenedor padre que centra todo el contenido en la pantalla */
+.auth {
+  min-height: 100vh;           /* Ocupa el 100% de la altura de la ventana */
+  display: flex;               /* Activa Flexbox */
+  justify-content: center;     /* Centra horizontalmente */
+  align-items: center;         /* Centra verticalmente */
+  background: linear-gradient(160deg, var(--bg), #0a0f1d 60%);
+  overflow-y: hidden;          /* Evita barras de desplazamiento innecesarias */
+}
+
+/* =========================================
+   4. TARJETA DEL FORMULARIO
+   ========================================= */
+/* La "caja" que contiene el login */
+.auth-card {
+  width: 100%;
+  max-width: 420px;            /* Ancho máximo para que no se vea gigante en PC */
+  margin: auto;
+  padding: 24px;
+  box-sizing: border-box;
+  /* Podrías agregar aquí: background: var(--card); y border-radius: 12px; si quisieras un fondo sólido */
+}
+
+/* Encabezado dentro de la tarjeta (Logo y Títulos) */
+.auth-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.brand-logo {
+  width: 100px;       
+  height: auto;       
+  object-fit: contain;
+  margin-bottom: 16px; 
+}
+
+h1 {
+  font-size: 1.2rem;   
+  margin: 0 0 4px 0;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* =========================================
+   5. CAMPOS DEL FORMULARIO (INPUTS)
+   ========================================= */
+/* Contenedor de cada input (Email, Password) */
+.field {
+  margin-bottom: 18px;
+}
+
+/* Fila para poner label y botón "mostrar" en la misma línea */
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Estilo visual de las cajas de texto */
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #0b1220;         /* Fondo oscuro para el input */
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s; /* Animación suave al hacer clic */
+}
+
+input::placeholder { color: #6b7280; }
+
+/* Estado cuando el usuario hace clic dentro del input */
+input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25); /* Resplandor verde */
+}
+
+/* =========================================
+   6. MENSAJES DE AYUDA Y ERROR
+   ========================================= */
+.help {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.error {
+  margin: 6px 0 0 0;
+  color: var(--danger);
+  font-size: 0.9rem;
+  min-height: 1.1em; /* Reserva espacio aunque no haya error para evitar saltos */
+}
+
+/* =========================================
+   7. ELEMENTOS DE CONTROL (CHECKBOX Y LINKS)
+   ========================================= */
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 6px 0 18px;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  cursor: pointer;
+}
+
+.forgot-password {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+/* Estilos compartidos para enlaces de texto */
+.link,
+.link-button {
+  color: #a7f3d0;            /* Verde claro */
+  font-weight: 600;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.link:hover,
+.link-button:hover { text-decoration: underline; }
+
+/* =========================================
+   8. BOTONES DE ACCIÓN (SUBMIT)
+   ========================================= */
+.btn {
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: var(--primary);
+  color: #062d14;            /* Texto oscuro para contraste sobre verde */
+}
+
+.btn.primary:hover { 
+  background: var(--primary-700); 
+  color: #e7f7ee; 
+}
+
+/* Mensaje de estado (loading, éxito, etc.) */
+.status {
+  margin-top: 14px;
+  font-size: 0.95rem;
+  color: var(--muted);
+  min-height: 1.2em;
+  text-align: center;
+}
+
+/* =========================================
+   9. SECCIÓN DE REGISTRO
+   ========================================= */
+.auth-footer {
+  margin-top: 16px; 
+  text-align: center;
+}
+
+.register-wrapper {
+  margin-top: 12px;
+  text-align: center;
+}
+
+/* Botón/Enlace visualmente destacado para registrarse */
+.register-link {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #a7f3d0;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background-color: rgba(34, 197, 94, 0.15); /* Fondo verde muy transparente */
+  transition: background-color 0.3s ease;
+  display: inline-block;
+}
+
+.register-link:hover {
+  background-color: rgba(34, 197, 94, 0.3);
+  text-decoration: underline;
+}
+
+/* =========================================
+   10. PANEL LATERAL (DECORATIVO / DESKTOP)
+   ========================================= */
+/* Fondo con degradados complejos para estética moderna */
+.auth-aside {
+  background: radial-gradient(1200px 600px at 70% 40%, rgba(34,197,94,.18), transparent 60%),
+              radial-gradient(800px 500px at 20% 60%, rgba(56,189,248,.15), transparent 70%),
+              linear-gradient(120deg, #0b1220, #0c1322 50%, #0a1120 100%);
+  display: grid;
+  place-items: center;
+  padding: 40px;
+}
+
+.aside-content {
+  max-width: 520px;
+}
+
+.aside-content h2 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.bullets {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.bullets li {
+  margin-bottom: 8px;
+}
+
+/* =========================================
+   11. RESPONSIVE DESIGN (MÓVILES)
+   ========================================= */
+/* Cuando la pantalla sea menor a 900px (Tablets y Móviles) */
+@media (max-width: 900px) {
+  .auth { grid-template-columns: 1fr; } /* Columna única */
+  .auth-aside { display: none; }        /* Oculta el panel lateral decorativo */
+}
