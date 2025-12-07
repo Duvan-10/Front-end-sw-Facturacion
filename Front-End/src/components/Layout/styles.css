@@ -1,0 +1,11 @@
+/* src/componentes/MiEstilo.css */
+.contenedor-principal {
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.texto-destacado {
+  color: #007bff;
+  font-weight: bold;
+}

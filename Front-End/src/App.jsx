@@ -1,18 +1,32 @@
 // Front-end/src/App.jsx
 
-// 1. Importa el componente Login desde su nueva ubicación modular
-import Login from './modules/Auth/Login'; 
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+// 1. Importaciones de componentes
+import Login from './modules/Auth/Login.jsx'; 
+import Layout from './components/Layout/Layout.jsx'; 
+import Home from './view/Home.jsx';                
+
 
 function App() {
-  // Nota: Más adelante aquí iría la lógica del enrutador (React Router)
-  // y la verificación de si el usuario está autenticado.
+return (
+<BrowserRouter>
+<Routes>
 
-  return (
-    <>
-      {/* Por ahora, solo renderizamos el componente Login */}
-      <Login />
-    </>
-  );
+ <Route path="/" element={<Login />} />
+
+<Route path="/home" element={<Layout />}> 
+ 
+<Route index element={<Home />} /> 
+
+</Route>
+
+<Route path="*" element={<h1>404 | Página no encontrada</h1>} />
+
+</Routes>
+</BrowserRouter>
+);
 }
 
 export default App;
