@@ -1,11 +1,70 @@
-/* src/componentes/MiEstilo.css */
-.contenedor-principal {
-  background-color: #f0f0f0;
-  padding: 20px;
-  border-radius: 8px;
+/* Layout.css */
+
+/* HEADER */
+.app-header {
+    text-align: center;
+    padding: 10px;
+    background-color: #34495e; /* Color oscuro */
+    color: white;
 }
 
-.texto-destacado {
-  color: #007bff;
-  font-weight: bold;
+/* NAVBAR (Menú de navegación) */
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Distribuye el espacio entre los links y el botón */
+    align-items: center;
+    background-color: #2c3e50;
+    padding: 0 20px;
+}
+
+/* Contenedor para centrar la lista de links */
+.navbar-center-container {
+    display: flex;
+    flex-grow: 1; /* Permite que este div ocupe todo el espacio disponible */
+    justify-content: center; /* Centra el contenido (la lista ul) dentro de este div */
+}
+
+/* Lista de links */
+.navbar-links {
+    list-style: none; /* Quita los puntos de la lista */
+    display: flex;
+    gap: 20px; /* Espacio entre links */
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilo para los links (etiqueta <a> de react-router-dom) */
+.nav-link {
+    color: white;
+    text-decoration: none; /* Quita el subrayado */
+    padding: 10px 0; /* Un poco de padding vertical si es necesario */
+    display: block;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+/* Botón de Logout */
+.btn-logout {
+    padding: 8px 12px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    flex-shrink: 0; /* Asegura que el botón no se encoja */
+}
+
+.btn-logout:hover {
+    background: #c0392b;
+}
+
+/* MAIN (Contenido de los módulos) */
+.main-content {
+    /* ✨ CLAVES PARA CENTRAR EL CONTENIDO ✨ */
+    max-width: 1200px; /* Define un ancho máximo */
+    margin: 20px auto; /* Centra el bloque horizontalmente */
+    padding: 0 20px; /* Espacio interno para que el contenido no pegue a los bordes */
 }
