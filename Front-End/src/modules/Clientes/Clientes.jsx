@@ -1,64 +1,146 @@
-// Front-end/src/modules/Clients/Clients.jsx
-
 import React, { useState } from 'react';
+import './Clientes.css'; 
 
-// Datos de prueba (MOCK DATA)
-const MOCK_CLIENTS = [
-    { id: 1, identification: '101234567', name: 'Almacenes El Éxito S.A.', phone: '3001234567', email: 'exito@example.com' },
-    { id: 2, identification: '900987654', name: 'Inversiones XYZ SAS', phone: '3109876543', email: 'xyz@example.com' },
-    { id: 3, identification: '500112233', name: 'Duvan Melo Aranda', phone: '3205551122', email: 'duvan@example.com' },
-];
+function ClientManagement() {
+  // 1. Estado para almacenar los datos del nuevo cliente del formulario
+  const [formData, setFormData] = useState({
+    nitCc: '',
+    razonSocial: '',
+    telefono: '',
+    direccion: '',
+    correo: '',
+  });
 
-function Clients() {
-    const [clients, setClients] = useState(MOCK_CLIENTS);
+  // 2. Estado para almacenar la lista de clientes registrados
+  const [clients, setClients] = useState([
+    // Datos de ejemplo para inicializar la tabla
+    { id: 1, nitCc: '123456789', razonSocial: 'Cliente Ejemplo S.A.', telefono: '555-1234', direccion: 'Calle Ficticia 123', correo: 'ejemplo@correo.com' },
+  ]);
 
-    return (
-        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-            <h2>Gestión de Clientes</h2>
-            <p>Lista de clientes registrados en el sistema. (Datos de prueba)</p>
+  // Maneja el cambio en los inputs del formulario
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    // Adaptamos los IDs del HTML original a las claves del estado
+    let keyName = id;
+    if (id === 'nombre') keyName = 'nitCc'; // Corregir IDs del HTML original
+    if (id === 'nit-cc') keyName = 'razonSocial'; // Corregir IDs del HTML original
+    if (id === 'Direccion') keyName = 'direccion'; // Corregir mayúsculas
 
-            {/* Botón para añadir nuevo cliente (funcionalidad pendiente) */}
-            <button 
-                className="btn primary" 
-                style={{ marginBottom: '20px', padding: '10px 20px', backgroundColor: '#00c853', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-            >
-                ➕ Nuevo Cliente
-            </button>
+    setFormData({ ...formData, [keyName]: value });
+  };
 
-            {/* Tabla de Clientes */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', backgroundColor: '#2c2c2c', borderRadius: '8px', overflow: 'hidden', color: 'white' }}>
-                <thead>
-                    <tr style={{ backgroundColor: '#1e1e1e' }}>
-                        <th style={{ padding: '12px 15px' }}>ID</th>
-                        <th style={{ padding: '12px 15px' }}>Identificación</th>
-                        <th style={{ padding: '12px 15px' }}>Nombre/Razón Social</th>
-                        <th style={{ padding: '12px 15px' }}>Teléfono</th>
-                        <th style={{ padding: '12px 15px' }}>Email</th>
-                        <th style={{ padding: '12px 15px' }}>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {clients.map((client) => (
-                        <tr key={client.id} style={{ borderBottom: '1px solid #3c3c3c' }}>
-                            <td style={{ padding: '12px 15px' }}>{client.id}</td>
-                            <td style={{ padding: '12px 15px' }}>{client.identification}</td>
-                            <td style={{ padding: '12px 15px', fontWeight: 'bold' }}>{client.name}</td>
-                            <td style={{ padding: '12px 15px' }}>{client.phone}</td>
-                            <td style={{ padding: '12px 15px' }}>{client.email}</td>
-                            <td style={{ padding: '12px 15px' }}>
-                                <button style={{ marginRight: '10px', backgroundColor: '#3498db', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer' }}>
-                                    ✏️ Editar
-                                </button>
-                                <button style={{ backgroundColor: '#e74c3c', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer' }}>
-                                    🗑️ Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
+  // Maneja el envío del formulario
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Crear nuevo cliente
+    const newClient = {
+      id: clients.length + 1,
+      nitCc: formData.nitCc,
+      razonSocial: formData.razonSocial,
+      telefono: formData.telefono,
+      direccion: formData.direccion,
+      correo: formData.correo,
+    };
+
+    // Agregar el nuevo cliente a la lista y limpiar el formulario
+    setClients([...clients, newClient]);
+    setFormData({ nitCc: '', razonSocial: '', telefono: '', direccion: '', correo: '' });
+
+    alert(`Cliente ${newClient.razonSocial} registrado con éxito.`);
+  };
+
+  return (
+    <>
+      <header>Gestión de Clientes</header>
+
+      {/* --- Formulario de registro --- */}
+      <section className="form-section">
+        <h2>Registrar nuevo cliente</h2>
+        <form onSubmit={handleSubmit}>
+          
+          <label htmlFor="nombre">NIT/CC:</label>
+          <input 
+            type="text" 
+            id="nombre" 
+            value={formData.nitCc} 
+            onChange={handleChange} 
+            required 
+          />
+
+          <label htmlFor="nit-cc">Razón Social/Nombre:</label>
+          <input 
+            type="text" 
+            id="nit-cc" 
+            value={formData.razonSocial} 
+            onChange={handleChange} 
+            required 
+          />
+
+          <label htmlFor="telefono">Teléfono:</label>
+          <input 
+            type="text" 
+            id="telefono" 
+            value={formData.telefono} 
+            onChange={handleChange} 
+          />
+
+          <label htmlFor="Direccion">Dirección</label>
+          <input 
+            type="text" 
+            id="Direccion" 
+            value={formData.direccion} 
+            onChange={handleChange} 
+            required 
+          />
+
+          <label htmlFor="correo">Correo electrónico:</label>
+          <input 
+            type="email" 
+            id="correo" 
+            value={formData.correo} 
+            onChange={handleChange} 
+            required 
+          />
+
+          <button type="submit" className="btn">Registrar Cliente</button>
+        </form>
+      </section>
+
+      {/* --- Listado de clientes --- */}
+      <section className="list-section">
+        <h2>Clientes registrados</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>NIT/CC</th>
+              <th>Razón Social/Nombre</th>
+              <th>Teléfono</th>
+              <th>Correo</th>
+              <th>Dirección</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* Iteración de clientes usando map() */}
+            {clients.map((client) => (
+              <tr key={client.id}>
+                <td>{client.id}</td>
+                <td>{client.nitCc}</td>
+                <td>{client.razonSocial}</td>
+                <td>{client.telefono}</td>
+                <td>{client.correo}</td>
+                <td>{client.direccion}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      {/* La etiqueta <script src="clientes.js"></script> ha sido reemplazada 
+         por la lógica de React (useState y handleSubmit) */}
+    </>
+  );
 }
 
-export default Clients;
+export default ClientManagement;

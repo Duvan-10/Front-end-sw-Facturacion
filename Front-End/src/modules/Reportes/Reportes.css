@@ -1,0 +1,86 @@
+/* NOTA: Estos estilos deberían estar en un archivo CSS global (ej: index.css) */
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+header {
+    padding: 20px;
+    background-color: #2c2c2c;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.filter-section, .list-section {
+    padding: 20px;
+}
+
+form {
+    display: grid;
+    gap: 10px;
+    max-width: 400px;
+    margin: auto;
+}
+
+/* Estilos de los inputs */
+input {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    /* Importante para que el input de fecha y texto se vea bien en tema oscuro */
+    background-color: #3e3e3e; 
+    color: #ffffff;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); /* Hace que el icono del calendario sea blanco */
+}
+
+
+/* Estilos del botón */
+.btn {
+    background-color: #00c853;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px; /* Separación del input de fecha */
+}
+
+.btn:hover {
+    background-color: #00b44a;
+}
+
+/* Estilos de la tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #2c2c2c; 
+    border-radius: 8px;
+    overflow: hidden; 
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #444;
+}
+
+th {
+    background-color: #1e1e1e; 
+    font-weight: bold;
+    color: #00c853; 
+}
+
+/* Ajuste adicional para el botón de exportar que está fuera de la tabla */
+.list-section .export-btn {
+    margin-top: 20px;
+    display: block; /* Para que ocupe su propia línea si es necesario */
+    margin-left: auto;
+    margin-right: auto;
+}
