@@ -22,6 +22,8 @@ function ClientManagement() {
     const [error, setError] = useState(null); 
     
     // 🚨 NUEVOS ESTADOS PARA DISEÑO Y FILTRO
+    const [editingClientId, setEditingClientId] = useState(null); // ID del cliente que se está editando
+    const [editingData, setEditingData] = useState({});
     const [showForm, setShowForm] = useState(false); // Controla la visibilidad del formulario
     const [searchTerm, setSearchTerm] = useState(''); // Controla el texto de búsqueda
     const [currentPage, setCurrentPage] = useState(1); // Controla la página actual
@@ -118,6 +120,73 @@ function ClientManagement() {
             alert(`Error al registrar cliente: ${message}`);
         }
     };
+
+// =======================================================
+// III. FUNCIONES DE EDICIÓN
+// =======================================================
+
+const handleEdit = (client) => {
+    // Al presionar 'Editar', establece el ID del cliente en edición
+    setEditingClientId(client.id);
+    // Carga los datos actuales del cliente a un estado temporal para ser modificados
+    setEditingData({ 
+        id: client.id,
+        tipo_identificacion: client.tipo_identificacion,
+        identificacion: client.identificacion,
+        nombre_razon_social: client.nombre_razon_social,
+        telefono: client.telefono,
+        direccion: client.direccion,
+        email: client.email
+    });
+};
+
+const handleEditChange = (e) => {
+    // Actualiza el estado temporal (editingData) mientras el usuario escribe
+    const { name, value } = e.target;
+    setEditingData(prev => ({ ...prev, [name]: value }));
+};
+
+const handleCancelEdit = () => {
+    // Cancela la edición y limpia el estado
+    setEditingClientId(null);
+    setEditingData({});
+};
+
+const handleUpdate = async () => {
+    // El ID se obtiene del estado temporal editingData
+    const clientId = editingData.id;
+    
+    // Validar datos básicos antes de enviar
+    if (!editingData.identificacion || !editingData.nombre_razon_social) {
+        alert("La Identificación y la Razón Social no pueden estar vacías.");
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('token');
+        
+        // 🚨 LLAMADA AXIOS (PUT) al nuevo endpoint /api/clientes/:id
+        await axios.put(`${API_URL}/${clientId}`, editingData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        alert('Cliente actualizado con éxito.');
+        
+        // Limpia el estado de edición y recarga la lista para mostrar los cambios
+        setEditingClientId(null); 
+        setEditingData({});
+        fetchClients();
+
+    } catch (error) {
+        console.error('Error al actualizar cliente:', error);
+        
+        const message = error.response?.data?.message || 'Error desconocido al actualizar.';
+        alert(`Fallo en la actualización: ${message}`);
+    }
+};
 
 
     // =======================================================
@@ -224,35 +293,92 @@ function ClientManagement() {
                 ) : (
                     <>
                         <table>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Tipo Doc.</th>
-                                    <th>Identificación</th>
-                                    <th>Razón Social/Nombre</th>
-                                    <th>Teléfono</th>
-                                    <th>Correo</th>
-                                    <th>Dirección</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {paginatedClients.currentClients.length === 0 ? (
-                                    <tr><td colSpan="7" style={{textAlign: 'center'}}>{searchTerm ? "No hay clientes que coincidan con la búsqueda." : "No hay clientes registrados en la base de datos."}</td></tr>
-                                ) : (
-                                    paginatedClients.currentClients.map((client, index) => (
-                                        <tr key={client.id || index}> 
-                                            <td>{client.id}</td>
-                                            <td>{client.tipo_identificacion}</td>
-                                            <td>{client.identificacion}</td>
-                                            <td>{client.nombre_razon_social}</td>
-                                            <td>{client.telefono}</td>
-                                            <td>{client.email}</td>
-                                            <td>{client.direccion}</td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Tipo Doc.</th>
+            <th>Identificación</th>
+            <th>Razón Social/Nombre</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Dirección</th>
+            <th>Acciones</th> {/* 🚨 NUEVA COLUMNA */}
+        </tr>
+    </thead>
+    <tbody>
+        {paginatedClients.currentClients.length === 0 ? (
+            <tr><td colSpan="8" style={{textAlign: 'center'}}>...</td></tr> // Ajustar el colspan a 8
+        ) : (
+            paginatedClients.currentClients.map((client) => {
+                const isEditing = client.id === editingClientId;
+                
+                return (
+                    <tr key={client.id}> 
+                        <td>{client.id}</td>
+                        {/* Renderizado condicional: INPUT o TEXTO */}
+                        <td>
+                            {isEditing ? (
+                                <select name="tipo_identificacion" value={editingData.tipo_identificacion} onChange={handleEditChange}>
+                                    <option value="NIT">NIT</option>
+                                    <option value="CC">CC</option>
+                                </select>
+                            ) : (
+                                client.tipo_identificacion
+                            )}
+                        </td>
+                        <td>
+                            {isEditing ? (
+                                <input type="text" name="identificacion" value={editingData.identificacion} onChange={handleEditChange} required />
+                            ) : (
+                                client.identificacion
+                            )}
+                        </td>
+                        <td>
+                            {isEditing ? (
+                                <input type="text" name="nombre_razon_social" value={editingData.nombre_razon_social} onChange={handleEditChange} required />
+                            ) : (
+                                client.nombre_razon_social
+                            )}
+                        </td>
+                        <td>
+                            {isEditing ? (
+                                <input type="text" name="telefono" value={editingData.telefono} onChange={handleEditChange} />
+                            ) : (
+                                client.telefono
+                            )}
+                        </td>
+                        <td>
+                            {isEditing ? (
+                                <input type="email" name="email" value={editingData.email} onChange={handleEditChange} required />
+                            ) : (
+                                client.email
+                            )}
+                        </td>
+                        <td>
+                            {isEditing ? (
+                                <input type="text" name="direccion" value={editingData.direccion} onChange={handleEditChange} required />
+                            ) : (
+                                client.direccion
+                            )}
+                        </td>
+
+                        {/* Columna de ACCIONES */}
+                        <td>
+                            {isEditing ? (
+                                <>
+                                    <button onClick={handleUpdate} style={{ backgroundColor: '#28a745', color: 'white', border: 'none', padding: '5px 10px', marginRight: '5px' }}>Guardar</button>
+                                    <button onClick={handleCancelEdit} style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '5px 10px' }}>Cancelar</button>
+                                </>
+                            ) : (
+                                <button onClick={() => handleEdit(client)} style={{ backgroundColor: '#007bff', color: 'white', border: 'none', padding: '5px 10px' }}>Editar</button>
+                            )}
+                        </td>
+                    </tr>
+                );
+            })
+        )}
+    </tbody>
+</table>
                         
                         {/* Controles de Paginación */}
                         {paginatedClients.totalPages > 1 && (
