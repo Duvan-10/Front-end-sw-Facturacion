@@ -1,10 +1,13 @@
+// Front-end/src/modules/Clientes/Clientes.jsx (VERSIÓN ACTUALIZADA CON TIPO DE DOCUMENTO)
+
 import React, { useState } from 'react';
 import './Clientes.css'; 
 
 function ClientManagement() {
   // 1. Estado para almacenar los datos del nuevo cliente del formulario
   const [formData, setFormData] = useState({
-    nitCc: '',
+    tipoDocumento: '', // 🚨 NUEVO CAMPO AGREGADO
+    identificacion: '', // Usaremos 'identificacion' para el NIT/CC
     razonSocial: '',
     telefono: '',
     direccion: '',
@@ -13,30 +16,32 @@ function ClientManagement() {
 
   // 2. Estado para almacenar la lista de clientes registrados
   const [clients, setClients] = useState([
-    // Datos de ejemplo para inicializar la tabla
-    { id: 1, nitCc: '123456789', razonSocial: 'Cliente Ejemplo S.A.', telefono: '555-1234', direccion: 'Calle Ficticia 123', correo: 'ejemplo@correo.com' },
+    { id: 1, tipoDocumento: 'NIT', identificacion: '900123456-7', razonSocial: 'Cliente Ejemplo S.A.', telefono: '555-1234', direccion: 'Calle Ficticia 123', correo: 'ejemplo@correo.com' },
   ]);
 
   // Maneja el cambio en los inputs del formulario
   const handleChange = (e) => {
     const { id, value } = e.target;
-    // Adaptamos los IDs del HTML original a las claves del estado
-    let keyName = id;
-    if (id === 'nombre') keyName = 'nitCc'; // Corregir IDs del HTML original
-    if (id === 'nit-cc') keyName = 'razonSocial'; // Corregir IDs del HTML original
-    if (id === 'Direccion') keyName = 'direccion'; // Corregir mayúsculas
-
-    setFormData({ ...formData, [keyName]: value });
+    
+    // 🚨 CORRECCIÓN y Mapeo: Los IDs del HTML deben coincidir con las claves del estado (formData)
+    setFormData({ ...formData, [id]: value });
   };
 
   // Maneja el envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // 🚨 Validar que el tipo de documento haya sido seleccionado
+    if (!formData.tipoDocumento) {
+        alert("Por favor, selecciona un Tipo de Documento (NIT/CC).");
+        return;
+    }
+    
     // Crear nuevo cliente
     const newClient = {
       id: clients.length + 1,
-      nitCc: formData.nitCc,
+      tipoDocumento: formData.tipoDocumento, // Incluir tipo de documento
+      identificacion: formData.identificacion,
       razonSocial: formData.razonSocial,
       telefono: formData.telefono,
       direccion: formData.direccion,
@@ -45,7 +50,14 @@ function ClientManagement() {
 
     // Agregar el nuevo cliente a la lista y limpiar el formulario
     setClients([...clients, newClient]);
-    setFormData({ nitCc: '', razonSocial: '', telefono: '', direccion: '', correo: '' });
+    setFormData({ 
+        tipoDocumento: '', 
+        identificacion: '', 
+        razonSocial: '', 
+        telefono: '', 
+        direccion: '', 
+        correo: '' 
+    });
 
     alert(`Cliente ${newClient.razonSocial} registrado con éxito.`);
   };
@@ -59,19 +71,33 @@ function ClientManagement() {
         <h2>Registrar nuevo cliente</h2>
         <form onSubmit={handleSubmit}>
           
-          <label htmlFor="nombre">NIT/CC:</label>
+          {/* 🚨 NUEVO CAMPO: Tipo de Documento */}
+          <label htmlFor="tipoDocumento">Tipo de Documento:</label>
+          <select 
+            id="tipoDocumento" 
+            value={formData.tipoDocumento} 
+            onChange={handleChange} 
+            required
+          >
+            <option value="">Seleccione...</option>
+            <option value="NIT">NIT</option>
+            <option value="CC">Cédula de Ciudadanía (CC)</option>
+            {/* Puedes añadir otros tipos aquí (CE, PASAPORTE, etc.) */}
+          </select>
+
+          <label htmlFor="identificacion">NIT/CC (Número):</label>
           <input 
             type="text" 
-            id="nombre" 
-            value={formData.nitCc} 
+            id="identificacion" 
+            value={formData.identificacion} 
             onChange={handleChange} 
             required 
           />
 
-          <label htmlFor="nit-cc">Razón Social/Nombre:</label>
+          <label htmlFor="razonSocial">Razón Social/Nombre:</label>
           <input 
             type="text" 
-            id="nit-cc" 
+            id="razonSocial" 
             value={formData.razonSocial} 
             onChange={handleChange} 
             required 
@@ -85,10 +111,10 @@ function ClientManagement() {
             onChange={handleChange} 
           />
 
-          <label htmlFor="Direccion">Dirección</label>
+          <label htmlFor="direccion">Dirección:</label>
           <input 
             type="text" 
-            id="Direccion" 
+            id="direccion" 
             value={formData.direccion} 
             onChange={handleChange} 
             required 
@@ -114,7 +140,8 @@ function ClientManagement() {
           <thead>
             <tr>
               <th>#</th>
-              <th>NIT/CC</th>
+              <th>Tipo Doc.</th> {/* 🚨 NUEVA COLUMNA */}
+              <th>Identificación</th>
               <th>Razón Social/Nombre</th>
               <th>Teléfono</th>
               <th>Correo</th>
@@ -122,11 +149,11 @@ function ClientManagement() {
             </tr>
           </thead>
           <tbody>
-            {/* Iteración de clientes usando map() */}
             {clients.map((client) => (
               <tr key={client.id}>
                 <td>{client.id}</td>
-                <td>{client.nitCc}</td>
+                <td>{client.tipoDocumento}</td> {/* 🚨 NUEVO DATO */}
+                <td>{client.identificacion}</td>
                 <td>{client.razonSocial}</td>
                 <td>{client.telefono}</td>
                 <td>{client.correo}</td>
@@ -136,9 +163,6 @@ function ClientManagement() {
           </tbody>
         </table>
       </section>
-
-      {/* La etiqueta <script src="clientes.js"></script> ha sido reemplazada 
-         por la lógica de React (useState y handleSubmit) */}
     </>
   );
 }
