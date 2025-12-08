@@ -2,9 +2,9 @@
 
 import express from 'express';
 // Importamos las funciones del controlador
-import { getAllClientes, createCliente } from '../controllers/clienteController.js'; 
+import { getAllClientes, createCliente, updateCliente } from '../controllers/clienteController.js';
 // Importamos el middleware (aunque lo quitemos temporalmente de las rutas)
-import { verifyToken } from '../middleware/auth.middleware.js'; 
+import { verifyToken } from '../middleware/auth.middleware.js';
 
 // 🚨 CRÍTICO: Definición del router
 const router = express.Router(); 
@@ -14,5 +14,6 @@ router.get('/', getAllClientes); // <-- Ruta GET para cargar clientes
 router.post('/', createCliente); // <-- Ruta POST para registrar clientes
 router.get('/', verifyToken, getAllClientes);
 router.post('/', verifyToken, createCliente); 
+router.put('/:id', verifyToken, updateCliente);
 
 export default router;
