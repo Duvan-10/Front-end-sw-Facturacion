@@ -12,5 +12,7 @@ const router = express.Router();
 // Rutas (Temporalmente sin verifyToken, para la prueba)
 router.get('/', getAllClientes); // <-- Ruta GET para cargar clientes
 router.post('/', createCliente); // <-- Ruta POST para registrar clientes
+router.get('/', verifyToken, getAllClientes);
+router.post('/', verifyToken, createCliente); 
 
 export default router;

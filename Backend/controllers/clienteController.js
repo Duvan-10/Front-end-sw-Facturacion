@@ -1,13 +1,32 @@
 // Backend/controllers/clienteController.js
 
 import db from '../models/db.js'; 
-// Importa las funciones ya existentes
+
+// =======================================================
+// 1. FUNCIÓN PARA OBTENER TODOS LOS CLIENTES (GET)
+// =======================================================
 export const getAllClientes = async (req, res) => {
-    // ... tu código existente para GET /api/clientes ...
+    try {
+        // La consulta SQL
+        const query = 'SELECT * FROM clientes ORDER BY nombre_razon_social ASC';
+        
+        // Ejecutar la consulta usando el Pool (db.query)
+        const [rows] = await db.query(query); 
+        
+        // Devolver los datos al Front-end
+        return res.status(200).json(rows);
+
+    } catch (error) {
+        console.error('Error al obtener clientes desde MySQL:', error);
+        return res.status(500).json({ 
+            message: 'Error interno del servidor al consultar la base de datos.', 
+            error: error.message 
+        });
+    }
 };
 
 // =======================================================
-// 🚨 NUEVA FUNCIÓN: createCliente (POST)
+// 2. FUNCIÓN PARA CREAR UN CLIENTE (POST) - Ya funciona
 // =======================================================
 export const createCliente = async (req, res) => {
     const { 
@@ -21,7 +40,8 @@ export const createCliente = async (req, res) => {
 
     // 1. Validación básica de datos CRÍTICOS
     if (!identificacion || !nombre_razon_social) {
-        return res.status(200).json({ 
+        // 🚨 CORRECCIÓN: Usar 400 Bad Request
+        return res.status(400).json({ 
             message: 'Identificación y Razón Social son campos obligatorios.' 
         });
     }
@@ -39,8 +59,7 @@ export const createCliente = async (req, res) => {
             ) VALUES (?, ?, ?, ?, ?, ?)
         `;
 
-        // 3. Ejecutar la inserción
-        // Usamos pool.execute (que es la forma segura contra inyección SQL de mysql2/promise)
+        // 3. Ejecutar la inserción (db.execute libera la conexión automáticamente)
         const [result] = await db.execute(query, [
             tipo_identificacion, 
             identificacion, 
@@ -57,7 +76,7 @@ export const createCliente = async (req, res) => {
         });
 
     } catch (error) {
-        // Manejar errores de DB (ej: identificación DUPLICADA)
+        // ... (Tu manejo de errores existente) ...
         console.error('Error al registrar cliente:', error);
         
         let errorMessage = 'Error interno del servidor al registrar cliente.';
