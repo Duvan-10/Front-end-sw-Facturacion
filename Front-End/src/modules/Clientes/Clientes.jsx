@@ -1,170 +1,204 @@
-// Front-end/src/modules/Clientes/Clientes.jsx (VERSIÓN ACTUALIZADA CON TIPO DE DOCUMENTO)
+// Front-end/src/modules/Clientes/Clientes.jsx (Versión Final Corregida)
 
-import React, { useState } from 'react';
-import './Clientes.css'; 
+import React, { useState, useEffect } from 'react'; 
+import axios from 'axios'; 
+
+
+const API_URL = 'http://localhost:3000/api/clientes'; 
 
 function ClientManagement() {
-  // 1. Estado para almacenar los datos del nuevo cliente del formulario
-  const [formData, setFormData] = useState({
-    tipoDocumento: '', // 🚨 NUEVO CAMPO AGREGADO
-    identificacion: '', // Usaremos 'identificacion' para el NIT/CC
-    razonSocial: '',
-    telefono: '',
-    direccion: '',
-    correo: '',
-  });
-
-  // 2. Estado para almacenar la lista de clientes registrados
-  const [clients, setClients] = useState([
-    { id: 1, tipoDocumento: 'NIT', identificacion: '900123456-7', razonSocial: 'Cliente Ejemplo S.A.', telefono: '555-1234', direccion: 'Calle Ficticia 123', correo: 'ejemplo@correo.com' },
-  ]);
-
-  // Maneja el cambio en los inputs del formulario
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    
-    // 🚨 CORRECCIÓN y Mapeo: Los IDs del HTML deben coincidir con las claves del estado (formData)
-    setFormData({ ...formData, [id]: value });
-  };
-
-  // Maneja el envío del formulario
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // 🚨 Validar que el tipo de documento haya sido seleccionado
-    if (!formData.tipoDocumento) {
-        alert("Por favor, selecciona un Tipo de Documento (NIT/CC).");
-        return;
-    }
-    
-    // Crear nuevo cliente
-    const newClient = {
-      id: clients.length + 1,
-      tipoDocumento: formData.tipoDocumento, // Incluir tipo de documento
-      identificacion: formData.identificacion,
-      razonSocial: formData.razonSocial,
-      telefono: formData.telefono,
-      direccion: formData.direccion,
-      correo: formData.correo,
-    };
-
-    // Agregar el nuevo cliente a la lista y limpiar el formulario
-    setClients([...clients, newClient]);
-    setFormData({ 
+    // 1. Estados (Tu código es correcto aquí)
+    const [formData, setFormData] = useState({
         tipoDocumento: '', 
         identificacion: '', 
-        razonSocial: '', 
-        telefono: '', 
-        direccion: '', 
-        correo: '' 
+        razonSocial: '',
+        telefono: '',
+        direccion: '',
+        correo: '',
     });
+    const [clients, setClients] = useState([]);
+    const [loading, setLoading] = useState(true); 
+    const [error, setError] = useState(null); 
 
-    alert(`Cliente ${newClient.razonSocial} registrado con éxito.`);
-  };
+    // ... (fetchClients es correcto, no necesita cambios) ...
 
-  return (
-    <>
-      <header>Gestión de Clientes</header>
+    const fetchClients = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(API_URL, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            
+            setClients(response.data);
+            setError(null);
 
-      {/* --- Formulario de registro --- */}
-      <section className="form-section">
-        <h2>Registrar nuevo cliente</h2>
-        <form onSubmit={handleSubmit}>
-          
-          {/* 🚨 NUEVO CAMPO: Tipo de Documento */}
-          <label htmlFor="tipoDocumento">Tipo de Documento:</label>
-          <select 
-            id="tipoDocumento" 
-            value={formData.tipoDocumento} 
-            onChange={handleChange} 
-            required
-          >
-            <option value="">Seleccione...</option>
-            <option value="NIT">NIT</option>
-            <option value="CC">Cédula de Ciudadanía (CC)</option>
-            {/* Puedes añadir otros tipos aquí (CE, PASAPORTE, etc.) */}
-          </select>
+        } catch (error) {
+            console.error("Error al obtener clientes:", error);
+            setError('Error al cargar clientes desde el servidor. Token inválido o expirado.');
+        } finally {
+            setLoading(false); 
+        }
+    };
 
-          <label htmlFor="identificacion">NIT/CC (Número):</label>
-          <input 
-            type="text" 
-            id="identificacion" 
-            value={formData.identificacion} 
-            onChange={handleChange} 
-            required 
-          />
+    // 🚨 EFECTO: Cargar clientes al montar el componente
+    useEffect(() => {
+        fetchClients();
+    }, []); 
 
-          <label htmlFor="razonSocial">Razón Social/Nombre:</label>
-          <input 
-            type="text" 
-            id="razonSocial" 
-            value={formData.razonSocial} 
-            onChange={handleChange} 
-            required 
-          />
+    // Maneja el cambio en los inputs del formulario (Correcto)
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setFormData({ ...formData, [id]: value });
+    };
 
-          <label htmlFor="telefono">Teléfono:</label>
-          <input 
-            type="text" 
-            id="telefono" 
-            value={formData.telefono} 
-            onChange={handleChange} 
-          />
+    // =======================================================
+    // II. FUNCIÓN CORREGIDA PARA REGISTRAR (POST)
+    // =======================================================
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // 1. Validación de campos obligatorios (DEBE IR AQUÍ)
+    if (!formData.tipoDocumento || !formData.identificacion || !formData.razonSocial) {
+        alert("Los campos Tipo de Documento, Identificación y Razón Social son obligatorios.");
+        return;
+    }
 
-          <label htmlFor="direccion">Dirección:</label>
-          <input 
-            type="text" 
-            id="direccion" 
-            value={formData.direccion} 
-            onChange={handleChange} 
-            required 
-          />
+    // 2. Mapeo de datos para el Backend (DEBE IR AQUÍ)
+    const clientData = {
+        tipo_identificacion: formData.tipoDocumento, 
+        identificacion: formData.identificacion,
+        nombre_razon_social: formData.razonSocial, 
+        telefono: formData.telefono,
+        direccion: formData.direccion,
+        email: formData.correo, 
+    };
 
-          <label htmlFor="correo">Correo electrónico:</label>
-          <input 
-            type="email" 
-            id="correo" 
-            value={formData.correo} 
-            onChange={handleChange} 
-            required 
-          />
+    try {
+        const token = localStorage.getItem('token'); 
+        
+        // 3. Petición POST al servidor con el Token
+        await axios.post(API_URL, clientData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
 
-          <button type="submit" className="btn">Registrar Cliente</button>
-        </form>
-      </section>
+        alert(`Cliente ${clientData.nombre_razon_social} registrado en DB con éxito.`);
+        
+        // 4. RECARGAR DATOS y limpiar formulario
+        fetchClients(); 
+        
+        setFormData({ 
+            tipoDocumento: '', 
+            identificacion: '', 
+            razonSocial: '', 
+            telefono: '', 
+            direccion: '', 
+            correo: '' 
+        });
 
-      {/* --- Listado de clientes --- */}
-      <section className="list-section">
-        <h2>Clientes registrados</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Tipo Doc.</th> {/* 🚨 NUEVA COLUMNA */}
-              <th>Identificación</th>
-              <th>Razón Social/Nombre</th>
-              <th>Teléfono</th>
-              <th>Correo</th>
-              <th>Dirección</th>
-            </tr>
-          </thead>
-          <tbody>
-            {clients.map((client) => (
-              <tr key={client.id}>
-                <td>{client.id}</td>
-                <td>{client.tipoDocumento}</td> {/* 🚨 NUEVO DATO */}
-                <td>{client.identificacion}</td>
-                <td>{client.razonSocial}</td>
-                <td>{client.telefono}</td>
-                <td>{client.correo}</td>
-                <td>{client.direccion}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+    } catch (error) {
+        console.error("Error al registrar cliente:", error.response ? error.response.data : error.message);
+        
+        let message = error.response?.data?.message || error.message;
+
+        // Si el token es inválido (401/403)
+        if (error.response?.status === 401 || error.response?.status === 403) {
+             message = "Sesión expirada o token inválido. Por favor, vuelva a iniciar sesión.";
+        }
+
+        alert(`Error al registrar cliente: ${message}`);
+    }
+};
+
+    // =======================================================
+    // III. RENDERIZADO (Tu código es correcto aquí)
+    // =======================================================
+    return (
+       <>
+        <header>Gestión de Clientes</header>
+
+        {/* --- Formulario de registro --- */}
+        <section className="form-section">
+            <h2>Registrar nuevo cliente</h2>
+            <form onSubmit={handleSubmit}>
+                
+                <label htmlFor="tipoDocumento">Tipo de Documento:</label>
+                <select id="tipoDocumento" value={formData.tipoDocumento} onChange={handleChange} required>
+                    <option value="">Seleccione...</option>
+                    <option value="NIT">NIT</option>
+                    <option value="CC">Cédula de Ciudadanía (CC)</option>
+                </select>
+
+                <label htmlFor="identificacion">NIT/CC (Número):</label>
+                <input type="text" id="identificacion" value={formData.identificacion} onChange={handleChange} required />
+
+                <label htmlFor="razonSocial">Razón Social/Nombre:</label>
+                <input type="text" id="razonSocial" value={formData.razonSocial} onChange={handleChange} required />
+
+                <label htmlFor="telefono">Teléfono:</label>
+                <input type="text" id="telefono" value={formData.telefono} onChange={handleChange} />
+
+                <label htmlFor="direccion">Dirección:</label>
+                <input type="text" id="direccion" value={formData.direccion} onChange={handleChange} required />
+
+                <label htmlFor="correo">Correo electrónico:</label>
+                <input type="email" id="correo" value={formData.correo} onChange={handleChange} required />
+
+                <button type="submit" className="btn">Registrar Cliente</button>
+            </form>
+        </section>
+
+        {/* --- Listado de clientes --- */}
+        <section className="list-section">
+            <h2>Clientes registrados</h2>
+            
+            {loading ? (
+                <div style={{ padding: '20px', textAlign: 'center' }}>Cargando lista desde la base de datos...</div>
+            ) : error ? (
+                <div style={{ color: 'red', padding: '20px', border: '1px solid red' }}>{error}</div>
+            ) : (
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Tipo Doc.</th>
+                            <th>Identificación</th>
+                            <th>Razón Social/Nombre</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                            <th>Dirección</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {clients.length === 0 ? (
+                            <tr><td colSpan="7" style={{textAlign: 'center'}}>No hay clientes registrados en la base de datos.</td></tr>
+                        ) : (
+                            clients.map((client, index) => (
+                                <tr key={client.id || index}> 
+                                    <td>{client.id}</td>
+                                    <td>{client.tipo_identificacion}</td>
+                                    <td>{client.identificacion}</td>
+                                    <td>{client.nombre_razon_social}</td>
+                                    <td>{client.telefono}</td>
+                                    <td>{client.email}</td>
+                                    <td>{client.direccion}</td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            )}
+        </section>
     </>
-  );
-}
+);
+} // 🚨 Cierre de la función ClientManagement
 
 export default ClientManagement;
+
+
