@@ -30,12 +30,12 @@ function Layout() {
                 <div className="navbar-center-container"> 
                     <ul className="navbar-links">
                         
-                        <li><Link to="/home/inicio" className="nav-link">Inicio</Link></li>
-                        <li><Link to="/home/dashboard" className="nav-link">Dashboard</Link></li>
+                        <li><Link to="/home" className="nav-link">Inicio</Link></li>
                         <li><Link to="/home/facturas" className="nav-link">Facturas</Link></li>
                         <li><Link to="/home/clientes" className="nav-link">Clientes</Link></li>
                         <li><Link to="/home/productos" className="nav-link">Productos</Link></li>
                         <li><Link to="/home/reportes" className="nav-link">Reportes</Link></li>
+                        <li><Link to="/home/perfil" className="nav-link">Perfil</Link></li>
                     </ul>
                 </div>
 

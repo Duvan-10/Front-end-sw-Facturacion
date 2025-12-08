@@ -10,8 +10,7 @@ import Home from './view/Home.jsx';
 
 
 // 🚨 NECESITAS IMPORTAR TODOS TUS MÓDULOS
-import Menu from './view/Menu.jsx';
-import Dashboard from './modules/Dashboard/Dashboard.jsx';
+import Perfil from './modules/Perfil/Perfil.jsx';
 import Clientes from './modules/Clientes/Clientes.jsx'; 
 import Facturas from './modules/Facturas/Facturas.jsx'; 
 import Productos from './modules/Productos/Productos.jsx';
@@ -30,12 +29,11 @@ return (
 
 
 {/* 🚨 NECESITAS DEFINIR LAS RUTAS HIJAS DENTRO DEL LAYOUT */}
-<Route path="inicio" element={<Menu/>} />
-<Route path="dashboard" element={<Dashboard />} />
 <Route path="clientes" element={<Clientes />} />
 <Route path="facturas" element={<Facturas />} />
 <Route path="productos" element={<Productos />} />
 <Route path="reportes" element={<Reportes />} />
+<Route path="perfil" element={<Perfil />} />
 
 </Route>
 

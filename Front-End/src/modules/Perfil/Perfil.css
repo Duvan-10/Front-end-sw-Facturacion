@@ -1,0 +1,47 @@
+/* Contenedor principal */
+.perfil-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 20px auto;
+  color: white;
+}
+
+/* Sección de tarjeta (foto/datos y contraseña) */
+.perfil-card {
+  border: 1px solid #444;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* Foto de perfil */
+.perfil-foto {
+  width: 100px;
+  height: 100px;
+  background-color: #555;
+  border-radius: 50%;
+  margin: 0 auto 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Botón azul */
+.btn-actualizar {
+  background: #3498db;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Botón naranja */
+.btn-cambiar {
+  background: #e67e22;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
