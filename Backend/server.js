@@ -9,9 +9,11 @@ import express from 'express';
 import cors from 'cors';
 import { testConnection } from './models/db.js';
 import authRoutes from './routes/auth.routes.js'; 
-
-// 🚨 1. IMPORTAR LA NUEVA RUTA DE CLIENTES
 import clienteRoutes from './routes/cliente.routes.js'; 
+import productoRoutes from './routes/producto.routes.js';
+
+
+
 
 
 const app = express();
@@ -20,6 +22,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/api/productos', productoRoutes);
 
 // Conexión de prueba a la base de datos
 testConnection(); 
