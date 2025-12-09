@@ -284,7 +284,7 @@ const handleUpdate = async () => {
 
             {/* --- Listado de clientes --- */}
             <section className="list-section">
-                <h2>Clientes registrados ({paginatedClients.totalClients} en total)</h2>
+                <h2>Clientes ({paginatedClients.totalClients} en total)</h2>
                 
                 {loading ? (
                     <div style={{ padding: '20px', textAlign: 'center' }}>Cargando lista desde la base de datos...</div>
