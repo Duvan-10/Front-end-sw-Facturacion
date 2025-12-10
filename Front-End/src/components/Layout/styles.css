@@ -1,80 +1,65 @@
-/* ==================================== */
-/* ESTILOS GLOBALES Y DE COLOR */
-/* ==================================== */
+/* ================================================= */
+/* 🛠️ Ajuste de Layout: Barra de Navegación */
+/* ================================================= */
 
-/* HEADER */
 .app-header {
+    /* (Asegúrate de que el header tenga sus estilos de apariencia aquí o en global.css) */
+    padding: 20px;
     text-align: center;
-    padding: 10px;
-    background-color: #34495e; /* Fondo del Header (Gris oscuro/Azul) */
-    color: white;
-    font-weight: bold;
 }
 
-/* NAVBAR (Menú de navegación) */
 .navbar {
-    /* Estilo de diseño (Flexbox y Padding) */
+    /* 🚨 CLAVE: Usamos Flexbox para alinear los ítems */
     display: flex;
-    justify-content: space-between; 
-    align-items: center;
-    padding: 10px 20px;
-    
-    /* Estilo visual (Color) */
-    background-color: #2c3e50; /* Fondo del Nav (Azul oscuro) */
+    justify-content: space-between; /* Distribuye espacio entre los elementos */
+    align-items: center; /* Centra verticalmente */
+    padding: 10px 20px; /* Padding a los lados para separar del borde */
+    /* Apariencia (si no está en global.css): */
+    background-color: #2c2c2c; 
+    border-bottom: 2px solid #00c853; 
+    /* Si quieres que la barra de navegación quede fija al hacer scroll, añade: */
+    /* position: sticky; 
+    top: 0;
+    z-index: 999; */
 }
 
-/* Links de navegación */
-.nav-link {
-    color: white; /* Color del texto (Blanco) */
-    text-decoration: none; 
-    padding: 10px 0; 
-    display: block; /* Para que el padding funcione mejor si se aplica */
-    font-weight: 500;
-}
-
-.nav-link:hover {
-    text-decoration: underline;
-}
-
-/* ==================================== */
-/* CENTRADO Y POSICIONAMIENTO */
-/* ==================================== */
-
-/* Contenedor para centrar la lista de links */
 .navbar-center-container {
-    display: flex;
-    flex-grow: 1; /* Ocupa el espacio disponible */
-    justify-content: center; /* Centra la lista <ul> dentro de este espacio */
+    /* Permite que el centro ocupe todo el espacio sobrante en el medio */
+    flex-grow: 1; 
+    text-align: center; /* Centra la lista <ul> dentro de este contenedor */
 }
 
-/* Lista de links */
 .navbar-links {
+    /* Eliminar el estilo por defecto de la lista */
     list-style: none;
-    display: flex;
-    gap: 20px; 
-    margin: 0;
     padding: 0;
+    margin: 0;
+    
+    /* Alinear los links horizontalmente */
+    display: inline-flex; /* Permite que se centre como un bloque y los links estén en línea */
+    gap: 15px; /* Espacio entre los links */
 }
 
-/* Botón de Logout */
+/* 🚨 Estilo del botón de Logout */
 .btn-logout {
-    padding: 8px 12px;
-    background: #e74c3c; /* Fondo del botón (Rojo) */
-    color: white; /* Texto del botón (Blanco) */
+    /* Hereda las propiedades de apariencia (.btn) desde global.css */
+    /* Aseguramos que no se encoja si hay mucho contenido */
+    flex-shrink: 0;
+    width: 150px; /* Mantenemos el ancho original */
+    /* Apariencia específica si no la tienes en global.css */
+    padding: 10px 15px;
+    background-color: #dc3545; /* Rojo para cerrar sesión */
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-weight: bold;
-    flex-shrink: 0; 
 }
-
 .btn-logout:hover {
-    background: #c0392b; /* Rojo más oscuro al pasar el mouse */
+    background-color: #c82333;
 }
 
-/* MAIN (Contenido de los módulos) - Centrado Horizontal */
+/* Estilos para que el contenido no quede debajo del header */
 .main-content {
-    max-width: 1200px; /* Ancho máximo para el contenido */
-    margin: 20px auto; /* CLAVE: Centrado Horizontal */
-    padding: 0 20px; 
+    padding-top: 20px; /* Asegura un espacio debajo del navbar */
+    /* (Ajusta este valor si tu navbar es muy alto) */
 }

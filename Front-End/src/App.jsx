@@ -8,6 +8,7 @@ import Login from './modules/Auth/Login.jsx';
 import Layout from './components/Layout/Layout.jsx'; 
 import Home from './view/Home.jsx';   
 
+import "./styles/global.css";
 
 // 🚨 NECESITAS IMPORTAR TODOS TUS MÓDULOS
 import Perfil from './modules/Perfil/Perfil.jsx';
