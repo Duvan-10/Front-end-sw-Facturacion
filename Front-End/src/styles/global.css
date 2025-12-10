@@ -6,117 +6,348 @@
 body {
     margin: 0;
     font-family: 'Inter', sans-serif;
-    /* Fondo principal de la aplicación */
     background-color: #1e1e1e; 
-    /* Color de texto principal */
     color: #ffffff; 
+    line-height: 1.6;
 }
 
-/* --- 2. CABECERAS Y SECCIONES GENÉRICAS --- */
-header {
+h1, h2, h3 {
+    color: #00c853; 
+    margin-top: 0;
+}
+
+/* --- 2. CABECERAS Y NAVEGACIÓN (Layout.jsx) --- */
+.app-header {
     padding: 20px;
-    /* Fondo secundario (para navbar o cabeceras) */
     background-color: #2c2c2c; 
     text-align: center;
     font-size: 1.5em;
     font-weight: bold;
 }
 
-/* Mantiene el padding uniforme en las secciones */
-.form-section, .list-section {
+.navbar {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 10px 20px; 
+    background-color: #383838; 
+    border-bottom: 3px solid #00c853; 
+}
+
+.navbar-center-container {
+    flex-grow: 1; 
+    text-align: center; 
+}
+
+.navbar-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inline-flex; 
+    gap: 15px; 
+}
+
+.nav-link {
+    color: #fff;
+    text-decoration: none;
+    padding: 5px 10px;
+    transition: color 0.2s, border-bottom 0.2s;
+}
+
+.nav-link:hover {
+    color: #00c853;
+    border-bottom: 2px solid #00c853;
+}
+
+/* --- 3. SECCIONES GENÉRICAS Y CONTENIDO --- */
+.main-content {
     padding: 20px;
 }
 
-/* --- 3. ESTILOS DE FORMULARIO GENÉRICO --- */
-form {
-    /* Mantenemos el layout Grid para formularios generales */
-    display: grid;
-    gap: 10px;
+.form-section, .list-section {
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background-color: #2c2c2c; 
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+}
+
+
+/* --- 4. ESTILOS DE FORMULARIO GENÉRICO --- */
+form:not(.invoice-form) { 
     max-width: 400px;
-    margin: auto;
+    margin: 20px auto;
 }
 
-/* Estilos de los inputs */
-input, textarea {
-    padding: 10px;
+input, textarea, select {
+    padding: 7px 10px; 
     border-radius: 5px;
-    border: none;
-    /* Fondo de inputs */
-    background-color: lab(93.5% 2.02 0.71); 
-    color: hsl(0, 2%, 9%);
+    border: 1px solid #555;
+    background-color: #383838; 
+    color: #ffffff;
+    box-sizing: border-box; 
+}
 
-    input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1); /* Hace que el icono del calendario sea blanco */
+input::placeholder, textarea::placeholder {
+    color: #999; 
+    opacity: 1; 
 }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); 
 }
-/* Estilo de foco (Accent Green) */
-input:focus, textarea:focus {
+
+input:focus, textarea:focus, select:focus {
     outline: 2px solid #00c853; 
+    border-color: #00c853;
 }
 
-/* ======================================= */
-/* OCULTAR BOTONES DE INCREMENTO/DECREMENTO */
-/* (Solución del error visual) */
-/* ======================================= */
-
-/* 1. Para Chrome, Edge, Safari (Webkit) */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-/* ======================================= */
 
-
-/* --- 4. ESTILOS DE BOTONES (Clase .btn) --- */
+/* --- 5. ESTILOS DE BOTONES --- */
 .btn {
-    /* Color de Acento/Éxito */
     background-color: #00c853; 
     color: #fff;
     border: none;
-    padding: 12px;
+    padding: 10px 15px; 
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, opacity 0.2s;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
     background-color: #00b44a;
 }
-
-/* Clases específicas de acción (puedes añadir más si las necesitas) */
-.btn-edit {
-    background-color: #007bff; /* Azul para edición */
-}
-.btn-danger {
-    background-color: #dc3545; /* Rojo para eliminar/cerrar sesión */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-/* --- 5. ESTILOS DE TABLA --- */
-table {
+.btn-primary { background-color: #007bff; }
+.btn-edit { background-color: #007bff; }
+.btn-success { background-color: #28a745; }
+.btn-danger, .btn-logout { background-color: #dc3545; }
+.btn-secondary { background-color: #6c757d; }
+
+
+/* --- 6. LAYOUT MODULAR DE CONTROLES --- */
+.controls-section {
+    display: flex;
+    gap: 20px; 
+    align-items: flex-end; 
+    padding: 20px 0; 
+}
+.search-bar {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column; 
+}
+.search-bar input {
+    width: 100%;
+}
+
+
+/* --- 7. ESTILOS DE TABLA Y EDICIÓN EN LÍNEA --- */
+.data-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    background-color: #2c2c2c; /* Fondo de tabla */
+    background-color: #2c2c2c; 
     border-radius: 8px;
     overflow: hidden; 
 }
-
 th, td {
     padding: 10px;
     text-align: center;
-    border-bottom: 1px solid hsl(0, 33%, 96%);
+    border-bottom: 1px solid #444;
 }
-
 th {
-    background-color: #1e1e1e; /* Fondo de cabecera más oscuro */
-    color: #00c853; /* Color de acento para títulos de columna */
+    background-color: #1e1e1e; 
+    color: #00c853; 
     font-weight: bold;
 }
+.actions-cell {
+    white-space: nowrap; 
+    display: flex;
+    gap: 5px; 
+    justify-content: center;
+    align-items: center; 
+}
+.inline-edit-input {
+    width: 100%; 
+    padding: 5px 8px; 
+    box-sizing: border-box;
+    background-color: #444; 
+    color: #fff;
+    font-size: 0.9em;
+}
+.editing-row {
+    background-color: #333;
+}
 
-/* Remover el borde inferior de la última fila */
-tbody tr:last-child td {
-    border-bottom: none;
+
+/* --- 8. PAGINACIÓN Y MENSAJES --- */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+    gap: 15px;
+}
+.error-message {
+    color: #dc3545;
+    background-color: #3b2527;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin: 10px 0;
+}
+.loading-message {
+    text-align: center;
+    padding: 15px;
+    color: #00c853;
+}
+
+
+/* ======================================================= */
+/* --- 9. LAYOUTS ESPECÍFICOS DE MÓDULOS (Facturación) --- */
+/* ======================================================= */
+
+.invoice-form {
+    background-color: #383838; 
+    padding: 25px; 
+    max-width: none; 
+    width: 100%; 
+}
+
+.invoice-form .module-title {
+    background-color: #1e1e1e; 
+    color: #ffffff; 
+    padding: 15px 0;
+    margin: -25px -25px 15px -25px; 
+    border-bottom: 3px solid #00c853; 
+}
+
+.invoice-form .section-title {
+    color: #00c853; 
+    font-size: 1.3em; 
+    margin-top: 15px; 
+    margin-bottom: 8px; 
+    padding-bottom: 5px;
+    border-bottom: none; 
+    font-weight: 600;
+}
+
+.invoice-form label {
+    display: block;
+    margin-bottom: 3px; 
+    color: #ccc; 
+    font-size: 0.9em;
+    text-align: left; 
+}
+
+/* FIX CLAVE: Fuerza la alineación vertical y compacidad */
+.invoice-form .field-col {
+    padding: 3px 0; 
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+}
+
+.invoice-form .section-group input, 
+.invoice-form .section-group select {
+    padding: 5px 8px; 
+    /* El ancho 100% se aplica solo a los campos que lo necesitan (client-data) */
+}
+
+/* NUEVA REGLA: Hace inputs específicos más cortos (e.g., para Fecha y Número) */
+.invoice-form .input-short {
+    max-width: 200px; 
+}
+
+/* --- REGLAS GRID COMPACTAS Y MEJOR ALINEACIÓN --- */
+.invoice-form .section-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 10px 20px; 
+    margin-bottom: 10px;
+}
+
+/* Ajuste para 3 columnas en la sección de datos del cliente */
+.invoice-form .client-data {
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px; 
+}
+
+/* El resto de inputs del cliente (sin input-short) deben mantener 100% de ancho */
+.invoice-form .client-data input, 
+.invoice-form .client-data select {
+    width: 100%;
+}
+
+/* Productos (Grid de 5 Columnas) */
+.invoice-form .product-grid {
+    display: grid;
+    grid-template-columns: 1fr 0.8fr 3fr 1.5fr 1.5fr;
+    gap: 8px; 
+    align-items: center;
+}
+.invoice-form .product-header {
+    background-color: #1e1e1e; 
+    color: #00c853;
+    padding: 8px 0;
+    border-bottom: 2px solid #00c853;
+    text-align: center;
+    font-size: 0.95em;
+}
+
+/* Alineación de Totales (Valor) */
+.totals-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; 
+    margin-top: 20px; 
+    padding-top: 10px;
+    border-top: 1px solid #444;
+}
+
+.total-line {
+    display: flex;
+    justify-content: space-between;
+    width: 250px; 
+    margin-top: 5px;
+    font-size: 1.1em; 
+}
+
+.total-line:last-child {
+    font-weight: bold;
+    border-top: 2px solid #555;
+    padding-top: 8px;
+}
+
+/* Estilos para Radio Buttons (Contado/Crédito) */
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    color: #ccc;
+}
+
+.radio-label input[type="radio"] {
+    filter: invert(1) hue-rotate(90deg); 
+    width: auto; 
+    height: 15px;
+    width: 15px;
 }

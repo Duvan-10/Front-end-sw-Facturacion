@@ -274,13 +274,8 @@ const handleUpdate = async () => {
             )}
 
             {/* --- Listado de clientes --- */}
-<<<<<<< HEAD
-            <section className="list-section">
-                <h2>Clientes ({paginatedClients.totalClients} en total)</h2>
-=======
             <section className="list-section"> {/* Hereda padding de global.css */}
                 <h2>Clientes registrados ({paginatedClients.totalClients} en total)</h2>
->>>>>>> b2f37acd031623ddc39e7dad4a1e9bd00ab6a110
                 
                 {loading ? (
                     <div className="loading-message">Cargando lista desde la base de datos...</div>
