@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react'; 
 import axios from 'axios'; 
-<<<<<<< HEAD
-import './Productos.css'; 
-=======
-
->>>>>>> b2f37acd031623ddc39e7dad4a1e9bd00ab6a110
 
 const API_URL = 'http://localhost:3000/api/productos'; 
 const ITEMS_PER_PAGE = 30; // Límite solicitado: 30 registros por página
@@ -42,13 +37,10 @@ function ProductCatalog() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-<<<<<<< HEAD
-=======
 
 if (!token) {
         throw new Error("Acceso denegado. Token no encontrado en la sesión.");
 }
->>>>>>> b2f37acd031623ddc39e7dad4a1e9bd00ab6a110
       
       const params = {
         page: page,
@@ -63,14 +55,9 @@ if (!token) {
       
       setProducts(response.data.data);
       setTotalItems(response.data.totalItems); 
-<<<<<<< HEAD
-      setCurrentPage(page);
-      setError(null);
-=======
       setError(null);
       setCurrentPage(page);
     
->>>>>>> b2f37acd031623ddc39e7dad4a1e9bd00ab6a110
     } catch (err) {
       console.error("Error al cargar productos:", err);
       const message = err.response?.data?.message || "Error al cargar productos desde el servidor. ¿Token inválido o expirado?";
