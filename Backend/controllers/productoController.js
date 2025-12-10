@@ -23,7 +23,7 @@ export const getAllProductos = async (req, res) => {
 
         // Obtener el total de productos para la paginación
         let countQuery = `SELECT COUNT(*) as total FROM productos ${whereClause}`;
-        let [countResult] = await db.execute(countQuery, searchParams);
+        let [countResult] = await db.execute(countQuery, searchParams.length > 0 ? searchParams : []); 
         const totalItems = countResult[0].total;
 
         // Consulta de datos. Ordenamos por ID DESC (más reciente)
@@ -32,11 +32,11 @@ export const getAllProductos = async (req, res) => {
             FROM productos 
             ${whereClause}
             ORDER BY id DESC    
-            LIMIT ? OFFSET ?
+            LIMIT ${Number(limit)} OFFSET ${Number(offset)}
         `;
         
-        const queryParams = [...searchParams, limit, offset];
-
+        const queryParams = searchParams.length > 0 ? searchParams : [];
+        
         const [rows] = await db.execute(dataQuery, queryParams);
         
         res.status(200).json({

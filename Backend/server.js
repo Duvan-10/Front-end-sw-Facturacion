@@ -33,6 +33,9 @@ app.use('/api/auth', authRoutes);
 // 🚨 2. INTEGRAR LA RUTA DE CLIENTES
 app.use('/api/clientes', clienteRoutes);
 
+// 🚨 2. INTEGRAR LA RUTA DE PRODUCTOS
+app.use('/api/auth', authRoutes);
+
 
 app.get('/', (req, res) => {
 res.send('API de PFEPS funcionando!');

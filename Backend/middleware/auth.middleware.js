@@ -24,6 +24,8 @@ export const authenticate = (req, res, next) => {
         next(); 
 
     } catch (err) {
+    console.log("--- FALLO DE AUTENTICACIÓN PRODUCTOS ---"); // 🚨 NUEVA LÍNEA
+        console.error("Error al verificar token:", err.message); // 🚨 NUEVA LÍNEA
         return res.status(403).json({ message: 'Token inválido o expirado.' });
     }
 };

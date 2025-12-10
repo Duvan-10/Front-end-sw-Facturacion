@@ -1,8 +1,10 @@
 // Front-end/src/components/Layout/Layout.jsx
 
+// Front-end/src/components/Layout/Layout.jsx (o donde esté tu Layout)
+
 import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import './styles.css'; // Importa tus estilos
+import './styles.css'; // O la ruta a tu CSS
 
 function Layout() {
     const navigate = useNavigate();
@@ -10,26 +12,23 @@ function Layout() {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        navigate('/', { replace: true }); 
+        navigate('/', { replace: true }); 
     };
 
     return (
         <>
             <header className="app-header">
-        PFEps - Software de Facturación Electrónica
+                PFEps - Software de Facturación Electrónica
             </header>
 
             {/* Menú de navegación PERSISTENTE */}
             <nav className="navbar">
-
-             <div style={{ width: '150px' }}>
-                    {/* (Este div ocupa el mismo ancho que el botón para forzar el centro) */}
-                </div>
-
-                {/* Contenedor para centrar los links */}
+                
+                {/* 🚨 ELIMINAMOS EL DIV DE RELLENO DE 150PX */}
+                
+                {/* Contenedor para centrar los links (Flex-grow: 1 lo centrará) */}
                 <div className="navbar-center-container"> 
                     <ul className="navbar-links">
-                        
                         <li><Link to="/home" className="nav-link">Inicio</Link></li>
                         <li><Link to="/home/facturas" className="nav-link">Facturas</Link></li>
                         <li><Link to="/home/clientes" className="nav-link">Clientes</Link></li>
@@ -39,18 +38,18 @@ function Layout() {
                     </ul>
                 </div>
 
-                {/* BOTÓN DE LOGOUT */}
+                {/* BOTÓN DE LOGOUT (Se alinea automáticamente a la derecha por space-between) */}
                 <button
                     onClick={handleLogout}
                     className="btn-logout"
-                    style={{ width: '150px' }}
+                    // 🚨 ELIMINAMOS EL ESTILO EN LÍNEA DE ANCHO
+                    // style={{ width: '150px' }} 
                 >
                     Cerrar Sesión
                 </button>
             </nav>
 
             <main className="main-content">
-                {/* El contenido del módulo (Outlet) se carga aquí */}
                 <Outlet />
             </main>
         </>

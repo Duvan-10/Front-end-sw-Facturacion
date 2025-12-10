@@ -1,11 +1,13 @@
-// Front-end/src/modules/Clientes/Clientes.jsx (Versión con Búsqueda y Paginación)
+// Front-end/src/modules/Clientes/Clientes.jsx
 
 import React, { useState, useEffect, useMemo } from 'react'; 
 import axios from 'axios'; 
-import './Clientes.css'; // Asegúrate de que el CSS esté importado
+// 🚨 Importamos el archivo de layout local
+import './Clientes.css'; 
+
 
 const API_URL = 'http://localhost:3000/api/clientes'; 
-const ITEMS_PER_PAGE = 30; // Definimos el límite de paginación
+const ITEMS_PER_PAGE = 30; 
 
 function ClientManagement() {
     // 1. Estados
@@ -17,21 +19,20 @@ function ClientManagement() {
         direccion: '',
         correo: '',
     });
-    const [clients, setClients] = useState([]); // Almacena TODOS los clientes
+    const [clients, setClients] = useState([]); 
     const [loading, setLoading] = useState(true); 
     const [error, setError] = useState(null); 
     
     // 🚨 NUEVOS ESTADOS PARA DISEÑO Y FILTRO
-    const [editingClientId, setEditingClientId] = useState(null); // ID del cliente que se está editando
+    const [editingClientId, setEditingClientId] = useState(null); 
     const [editingData, setEditingData] = useState({});
-    const [showForm, setShowForm] = useState(false); // Controla la visibilidad del formulario
-    const [searchTerm, setSearchTerm] = useState(''); // Controla el texto de búsqueda
-    const [currentPage, setCurrentPage] = useState(1); // Controla la página actual
+    const [showForm, setShowForm] = useState(false); 
+    const [searchTerm, setSearchTerm] = useState(''); 
+    const [currentPage, setCurrentPage] = useState(1); 
 
     // =======================================================
     // I. FUNCIÓN PARA CARGAR DATOS (GET)
     // =======================================================
-
     const fetchClients = async () => {
         setLoading(true);
         setError(null);
@@ -42,10 +43,8 @@ function ClientManagement() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            
             setClients(response.data);
             setError(null);
-
         } catch (error) {
             console.error("Error al obtener clientes:", error);
             setError('Error al cargar clientes desde el servidor. Token inválido o expirado.');
@@ -59,7 +58,6 @@ function ClientManagement() {
         fetchClients();
     }, []); 
 
-    // Maneja el cambio en los inputs del formulario (Correcto)
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
@@ -97,10 +95,10 @@ function ClientManagement() {
 
             alert(`Cliente ${clientData.nombre_razon_social} registrado en DB con éxito.`);
             
-            fetchClients(); // Recarga los datos y se muestra el más reciente.
-            setShowForm(false); // Oculta el formulario después del registro
+            fetchClients(); 
+            setShowForm(false); 
             
-            setFormData({ // Limpia el formulario
+            setFormData({ 
                 tipoDocumento: '', 
                 identificacion: '', 
                 razonSocial: '', 
@@ -126,9 +124,7 @@ function ClientManagement() {
 // =======================================================
 
 const handleEdit = (client) => {
-    // Al presionar 'Editar', establece el ID del cliente en edición
     setEditingClientId(client.id);
-    // Carga los datos actuales del cliente a un estado temporal para ser modificados
     setEditingData({ 
         id: client.id,
         tipo_identificacion: client.tipo_identificacion,
@@ -141,22 +137,18 @@ const handleEdit = (client) => {
 };
 
 const handleEditChange = (e) => {
-    // Actualiza el estado temporal (editingData) mientras el usuario escribe
     const { name, value } = e.target;
     setEditingData(prev => ({ ...prev, [name]: value }));
 };
 
 const handleCancelEdit = () => {
-    // Cancela la edición y limpia el estado
     setEditingClientId(null);
     setEditingData({});
 };
 
 const handleUpdate = async () => {
-    // El ID se obtiene del estado temporal editingData
     const clientId = editingData.id;
     
-    // Validar datos básicos antes de enviar
     if (!editingData.identificacion || !editingData.nombre_razon_social) {
         alert("La Identificación y la Razón Social no pueden estar vacías.");
         return;
@@ -165,7 +157,6 @@ const handleUpdate = async () => {
     try {
         const token = localStorage.getItem('token');
         
-        // 🚨 LLAMADA AXIOS (PUT) al nuevo endpoint /api/clientes/:id
         await axios.put(`${API_URL}/${clientId}`, editingData, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -175,7 +166,6 @@ const handleUpdate = async () => {
 
         alert('Cliente actualizado con éxito.');
         
-        // Limpia el estado de edición y recarga la lista para mostrar los cambios
         setEditingClientId(null); 
         setEditingData({});
         fetchClients();
@@ -190,7 +180,7 @@ const handleUpdate = async () => {
 
 
     // =======================================================
-    // III. LÓGICA DE FILTRADO Y PAGINACIÓN (useMemo)
+    // IV. LÓGICA DE FILTRADO Y PAGINACIÓN (useMemo)
     // =======================================================
     const paginatedClients = useMemo(() => {
         // 1. FILTRADO (Por identificación o nombre/razón social)
@@ -217,15 +207,16 @@ const handleUpdate = async () => {
 
 
     // =======================================================
-    // IV. RENDERIZADO
+    // V. RENDERIZADO
     // =======================================================
     return (
-        <>
+        <div className="client-management-container"> {/* Contenedor principal para el layout */}
             <header>Gestión de Clientes</header>
 
             {/* --- CONTROLES Y BOTÓN DE REGISTRO --- */}
-            <section className="controls-section" style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 0' }}>
-                <div className="search-bar">
+            {/* Usamos la clase controls-section para el layout FLEX, definido en Clientes.css */}
+            <section className="controls-section"> 
+                <div className="search-bar search-container"> {/* Usamos ambas clases para compatibilidad con layout */}
                     <label htmlFor="search">Buscar Cliente (ID o Nombre): </label>
                     <input 
                         type="text" 
@@ -234,16 +225,16 @@ const handleUpdate = async () => {
                         value={searchTerm} 
                         onChange={(e) => {
                             setSearchTerm(e.target.value);
-                            setCurrentPage(1); // Resetear a la página 1 al buscar
+                            setCurrentPage(1); 
                         }}
                     />
                 </div>
                 
                 {/* Botón para mostrar/ocultar el formulario */}
                 <button 
-                    className="btn" 
+                    // Usamos las clases de global.css (.btn) y modificamos el color con una clase de estado
+                    className={`btn ${showForm ? 'btn-danger' : 'btn-success'}`} 
                     onClick={() => setShowForm(!showForm)}
-                    style={{ backgroundColor: showForm ? '#dc3545' : '#28a745' }} // Rojo si está visible, Verde si está oculto
                 >
                     {showForm ? 'Cancelar Registro' : 'Registrar Nuevo Cliente'}
                 </button>
@@ -251,10 +242,10 @@ const handleUpdate = async () => {
 
             {/* --- Formulario de registro (CONDICIONAL) --- */}
             {showForm && (
-                <section className="form-section">
+                <section className="form-section"> {/* Hereda padding de global.css */}
                     <h2>Registrar nuevo cliente</h2>
-                    <form onSubmit={handleSubmit}>
-                        {/* El resto de tus inputs de formulario */}
+                    <form onSubmit={handleSubmit}> {/* Hereda layout GRID de global.css */}
+                        
                         <label htmlFor="tipoDocumento">Tipo de Documento:</label>
                         <select id="tipoDocumento" value={formData.tipoDocumento} onChange={handleChange} required>
                             <option value="">Seleccione...</option>
@@ -283,118 +274,125 @@ const handleUpdate = async () => {
             )}
 
             {/* --- Listado de clientes --- */}
+<<<<<<< HEAD
             <section className="list-section">
                 <h2>Clientes ({paginatedClients.totalClients} en total)</h2>
+=======
+            <section className="list-section"> {/* Hereda padding de global.css */}
+                <h2>Clientes registrados ({paginatedClients.totalClients} en total)</h2>
+>>>>>>> b2f37acd031623ddc39e7dad4a1e9bd00ab6a110
                 
                 {loading ? (
-                    <div style={{ padding: '20px', textAlign: 'center' }}>Cargando lista desde la base de datos...</div>
+                    <div className="loading-message">Cargando lista desde la base de datos...</div>
                 ) : error ? (
-                    <div style={{ color: 'red', padding: '20px', border: '1px solid red' }}>{error}</div>
+                    <div className="error-message">{error}</div>
                 ) : (
                     <>
                         <table>
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Tipo Doc.</th>
-            <th>Identificación</th>
-            <th>Razón Social/Nombre</th>
-            <th>Teléfono</th>
-            <th>Correo</th>
-            <th>Dirección</th>
-            <th>Acciones</th> {/* 🚨 NUEVA COLUMNA */}
-        </tr>
-    </thead>
-    <tbody>
-        {paginatedClients.currentClients.length === 0 ? (
-            <tr><td colSpan="8" style={{textAlign: 'center'}}>...</td></tr> // Ajustar el colspan a 8
-        ) : (
-            paginatedClients.currentClients.map((client) => {
-                const isEditing = client.id === editingClientId;
-                
-                return (
-                    <tr key={client.id}> 
-                        <td>{client.id}</td>
-                        {/* Renderizado condicional: INPUT o TEXTO */}
-                        <td>
-                            {isEditing ? (
-                                <select name="tipo_identificacion" value={editingData.tipo_identificacion} onChange={handleEditChange}>
-                                    <option value="NIT">NIT</option>
-                                    <option value="CC">CC</option>
-                                </select>
-                            ) : (
-                                client.tipo_identificacion
-                            )}
-                        </td>
-                        <td>
-                            {isEditing ? (
-                                <input type="text" name="identificacion" value={editingData.identificacion} onChange={handleEditChange} required />
-                            ) : (
-                                client.identificacion
-                            )}
-                        </td>
-                        <td>
-                            {isEditing ? (
-                                <input type="text" name="nombre_razon_social" value={editingData.nombre_razon_social} onChange={handleEditChange} required />
-                            ) : (
-                                client.nombre_razon_social
-                            )}
-                        </td>
-                        <td>
-                            {isEditing ? (
-                                <input type="text" name="telefono" value={editingData.telefono} onChange={handleEditChange} />
-                            ) : (
-                                client.telefono
-                            )}
-                        </td>
-                        <td>
-                            {isEditing ? (
-                                <input type="email" name="email" value={editingData.email} onChange={handleEditChange} required />
-                            ) : (
-                                client.email
-                            )}
-                        </td>
-                        <td>
-                            {isEditing ? (
-                                <input type="text" name="direccion" value={editingData.direccion} onChange={handleEditChange} required />
-                            ) : (
-                                client.direccion
-                            )}
-                        </td>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tipo Doc.</th>
+                                    <th>Identificación</th>
+                                    <th>Razón Social/Nombre</th>
+                                    <th>Teléfono</th>
+                                    <th>Correo</th>
+                                    <th>Dirección</th>
+                                    <th>Acciones</th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {paginatedClients.currentClients.length === 0 ? (
+                                    <tr><td colSpan="8" className="no-data-message">No se encontraron clientes.</td></tr>
+                                ) : (
+                                    paginatedClients.currentClients.map((client, index) => {
+                                        const isEditing = client.id === editingClientId;
+                                        
+                                        return (
+                                            <tr key={client.id}> 
+                                                <td>{index + 1 + (currentPage - 1) * ITEMS_PER_PAGE}</td> {/* Index real de la lista paginada */}
+                                                
+                                                {/* Renderizado condicional: INPUT o TEXTO */}
+                                                <td>
+                                                    {isEditing ? (
+                                                        // Opciones de Select en línea para no complicar el CSS
+                                                        <select name="tipo_identificacion" value={editingData.tipo_identificacion} onChange={handleEditChange} className="inline-edit-select">
+                                                            <option value="NIT">NIT</option>
+                                                            <option value="CC">CC</option>
+                                                        </select>
+                                                    ) : (
+                                                        client.tipo_identificacion
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    {isEditing ? (
+                                                        <input type="text" name="identificacion" value={editingData.identificacion} onChange={handleEditChange} required className="inline-edit-input" />
+                                                    ) : (
+                                                        client.identificacion
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    {isEditing ? (
+                                                        <input type="text" name="nombre_razon_social" value={editingData.nombre_razon_social} onChange={handleEditChange} required className="inline-edit-input" />
+                                                    ) : (
+                                                        client.nombre_razon_social
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    {isEditing ? (
+                                                        <input type="text" name="telefono" value={editingData.telefono} onChange={handleEditChange} className="inline-edit-input" />
+                                                    ) : (
+                                                        client.telefono
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    {isEditing ? (
+                                                        <input type="email" name="email" value={editingData.email} onChange={handleEditChange} required className="inline-edit-input" />
+                                                    ) : (
+                                                        client.email
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    {isEditing ? (
+                                                        <input type="text" name="direccion" value={editingData.direccion} onChange={handleEditChange} required className="inline-edit-input" />
+                                                    ) : (
+                                                        client.direccion
+                                                    )}
+                                                </td>
 
-                        {/* Columna de ACCIONES */}
-                        <td>
-                            {isEditing ? (
-                                <>
-                                    <button onClick={handleUpdate} style={{ backgroundColor: '#28a745', color: 'white', border: 'none', padding: '5px 10px', marginRight: '5px' }}>Guardar</button>
-                                    <button onClick={handleCancelEdit} style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '5px 10px' }}>Cancelar</button>
-                                </>
-                            ) : (
-                                <button onClick={() => handleEdit(client)} style={{ backgroundColor: '#007bff', color: 'white', border: 'none', padding: '5px 10px' }}>Editar</button>
-                            )}
-                        </td>
-                    </tr>
-                );
-            })
-        )}
-    </tbody>
-</table>
+                                                {/* Columna de ACCIONES */}
+                                                <td className="actions-cell">
+                                                    {isEditing ? (
+                                                        <>
+                                                            <button onClick={handleUpdate} className="btn btn-edit btn-save-inline">Guardar</button>
+                                                            <button onClick={handleCancelEdit} className="btn btn-danger btn-cancel-inline">Cancelar</button>
+                                                        </>
+                                                    ) : (
+                                                        <button onClick={() => handleEdit(client)} className="btn btn-edit">Editar</button>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                )}
+                            </tbody>
+                        </table>
                         
                         {/* Controles de Paginación */}
                         {paginatedClients.totalPages > 1 && (
-                            <div className="pagination-controls" style={{ padding: '10px 0', textAlign: 'center' }}>
+                            <div className="pagination-controls">
                                 <button 
                                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                     disabled={currentPage === 1}
-                                    style={{ marginRight: '10px' }}
+                                    className="btn btn-pagination"
                                 >
                                     Página Anterior
                                 </button>
-                                <span>Página {currentPage} de {paginatedClients.totalPages}</span>
+                                <span className="pagination-info">Página {currentPage} de {paginatedClients.totalPages}</span>
                                 <button 
                                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, paginatedClients.totalPages))}
                                     disabled={currentPage === paginatedClients.totalPages}
-                                    style={{ marginLeft: '10px' }}
+                                    className="btn btn-pagination"
                                 >
                                     Página Siguiente
                                 </button>
@@ -403,9 +401,8 @@ const handleUpdate = async () => {
                     </>
                 )}
             </section>
-        </>
+        </div>
     );
 }
 
 export default ClientManagement;
-

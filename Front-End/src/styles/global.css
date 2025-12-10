@@ -1,0 +1,122 @@
+/* ================================================= */
+/* 🧩 ESTILOS GLOBALES DE LA APLICACIÓN (global.css) */
+/* ================================================= */
+
+/* --- 1. ESTILOS BASE Y TIPOGRAFÍA --- */
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    /* Fondo principal de la aplicación */
+    background-color: #1e1e1e; 
+    /* Color de texto principal */
+    color: #ffffff; 
+}
+
+/* --- 2. CABECERAS Y SECCIONES GENÉRICAS --- */
+header {
+    padding: 20px;
+    /* Fondo secundario (para navbar o cabeceras) */
+    background-color: #2c2c2c; 
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* Mantiene el padding uniforme en las secciones */
+.form-section, .list-section {
+    padding: 20px;
+}
+
+/* --- 3. ESTILOS DE FORMULARIO GENÉRICO --- */
+form {
+    /* Mantenemos el layout Grid para formularios generales */
+    display: grid;
+    gap: 10px;
+    max-width: 400px;
+    margin: auto;
+}
+
+/* Estilos de los inputs */
+input, textarea {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    /* Fondo de inputs */
+    background-color: lab(93.5% 2.02 0.71); 
+    color: hsl(0, 2%, 9%);
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); /* Hace que el icono del calendario sea blanco */
+}
+}
+/* Estilo de foco (Accent Green) */
+input:focus, textarea:focus {
+    outline: 2px solid #00c853; 
+}
+
+/* ======================================= */
+/* OCULTAR BOTONES DE INCREMENTO/DECREMENTO */
+/* (Solución del error visual) */
+/* ======================================= */
+
+/* 1. Para Chrome, Edge, Safari (Webkit) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* ======================================= */
+
+
+/* --- 4. ESTILOS DE BOTONES (Clase .btn) --- */
+.btn {
+    /* Color de Acento/Éxito */
+    background-color: #00c853; 
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: #00b44a;
+}
+
+/* Clases específicas de acción (puedes añadir más si las necesitas) */
+.btn-edit {
+    background-color: #007bff; /* Azul para edición */
+}
+.btn-danger {
+    background-color: #dc3545; /* Rojo para eliminar/cerrar sesión */
+}
+
+/* --- 5. ESTILOS DE TABLA --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #2c2c2c; /* Fondo de tabla */
+    border-radius: 8px;
+    overflow: hidden; 
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid hsl(0, 33%, 96%);
+}
+
+th {
+    background-color: #1e1e1e; /* Fondo de cabecera más oscuro */
+    color: #00c853; /* Color de acento para títulos de columna */
+    font-weight: bold;
+}
+
+/* Remover el borde inferior de la última fila */
+tbody tr:last-child td {
+    border-bottom: none;
+}
