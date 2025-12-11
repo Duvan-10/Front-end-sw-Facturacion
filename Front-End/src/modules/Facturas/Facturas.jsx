@@ -1,16 +1,27 @@
 import React, { useState, useEffect } from 'react'; 
+// Asegúrate de que Facturas.css está importado en algún lugar
+// import './Facturas.css'; 
 
-// API y Constantes (Simulación)
-const API_URL = 'http://localhost:3000/api/facturas'; 
-const ITEMS_PER_PAGE = 30; 
+// Ya no necesitamos importar InvoiceForm en este archivo,
+// ya que será renderizado por el router en la nueva pestaña.
+// import InvoiceForm from '../../components/InvoiceForm/InvoiceForm';
 
-// Datos simulados iniciales para desarrollo
+// =======================================================
+// DATOS Y CONSTANTES (Simulación)
+// =======================================================
+
 const initialInvoices = [
     { id: 'FAC-001', client: 'Tech Solutions Corp', date: '2025-11-20', total: 1500.00, status: 'Pagada', clientEmail: 'tech@corp.com', tipoFactura: 'Contado' },
     { id: 'FAC-002', client: 'Innova Retail S.A.', date: '2025-11-25', total: 350.50, status: 'Pendiente', clientEmail: 'innova@retail.com', tipoFactura: 'Crédito' },
     { id: 'FAC-003', client: 'Logistics Pro', date: '2025-12-01', total: 890.75, status: 'Pendiente', clientEmail: 'logis@pro.co', tipoFactura: 'Crédito' },
     { id: 'FAC-004', client: 'Home Supplies Ltda', date: '2025-12-05', total: 120.00, status: 'Pagada', clientEmail: 'home@supplies.net', tipoFactura: 'Contado' },
 ];
+
+const ITEMS_PER_PAGE = 30; 
+
+// =======================================================
+// COMPONENTE PRINCIPAL: FACTURAS
+// =======================================================
 
 function Facturas() {
     // 1. Estados principales
@@ -24,16 +35,15 @@ function Facturas() {
     const [currentPage, setCurrentPage] = useState(1); 
     const [totalItems, setTotalItems] = useState(initialInvoices.length); 
 
-    // 3. Control de UI y Edición
-    const [isFormVisible, setIsFormVisible] = useState(false);
-    const [editingInvoiceData, setEditingInvoiceData] = useState(null); 
+    // **ESTADOS ELIMINADOS: isFormVisible y editingInvoiceData ya no se usan**
     
     // =======================================================
-    // I. LÓGICA DE CARGA Y FILTRADO (Simulación)
+    // I. LÓGICA DE CARGA Y FILTRADO (Se mantiene)
     // =======================================================
     
     const getFilteredInvoices = () => {
         let filtered = initialInvoices; 
+        
         if (filterState) {
             filtered = filtered.filter(inv => inv.status === filterState);
         }
@@ -61,52 +71,42 @@ function Facturas() {
 
 
     // =======================================================
-    // II. HANDLERS DE UI
+    // II. HANDLERS DE NAVEGACIÓN Y CRUD
     // =======================================================
     
-    const handleToggleForm = (invoiceToEdit = null) => {
-        if (invoiceToEdit) {
-            setEditingInvoiceData(invoiceToEdit);
-            setIsFormVisible(true);
-        } else {
-            setIsFormVisible(!isFormVisible);
-            setEditingInvoiceData(null);
-        }
-    };
-
+    // Handler para cambios en la búsqueda (se mantiene)
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
         setCurrentPage(1); 
     };
-    
-    // ... (handlePageChange y otros handlers se mantienen) ...
 
-
-    // =======================================================
-    // III. FUNCIONALIDAD DE ACCIONES (Placeholders)
-    // =======================================================
-    
-    const handleView = (invoice) => {
-        alert(`Simulando: Generar PDF de la Factura ${invoice.id} y abrir en una nueva pestaña.`);
+    // --- NUEVO HANDLER: Crear Factura (Abre Pestaña Nueva) ---
+    const handleCreateNew = () => {
+        // Abre la ruta de creación en una nueva pestaña
+        window.open('/facturas/crear', '_blank'); 
     };
-
+    
+    // --- NUEVO HANDLER: Editar Factura (Abre Pestaña Nueva) ---
     const handleEdit = (invoice) => {
-        handleToggleForm(invoice); 
-        alert(`Cargando datos de Factura ${invoice.id} para edición en el formulario.`);
+        // Abre la ruta de edición en una nueva pestaña, pasando el ID
+        window.open(`/facturas/editar/${invoice.id}`, '_blank');
     };
-
+    
+    // Handler de visualización (se mantiene)
+    const handleView = (invoice) => {
+        alert(`Simulando: Generar PDF de la Factura ${invoice.id}.`);
+    };
+    
+    // Handler de emisión (se mantiene)
     const handleEmit = (invoice) => {
-        alert(`Simulando: Emitir Factura ${invoice.id}. PDF enviado al correo: ${invoice.clientEmail} y descarga iniciada.`);
+        alert(`Simulando: Emitir Factura ${invoice.id}.`);
     };
 
-    const handleSubmitInvoice = (data) => {
-        console.log("Datos de la factura a guardar/crear:", data);
-        alert(`Factura ${data.id ? 'editada' : 'creada'} con éxito.`);
-        handleToggleForm(null); // Cerrar formulario al guardar
-    };
-
+    // El handleSubmitInvoice ya no es necesario aquí si la persistencia ocurre en InvoiceForm
+    // Si necesitas manejar el resultado de una llamada API del formulario, tendrías que usar otro mecanismo (ej. Redux, Context, o un Event Bus).
+    
     // =======================================================
-    // IV. RENDERIZADO
+    // III. RENDERIZADO
     // =======================================================
 
     return (
@@ -139,26 +139,17 @@ function Facturas() {
                 </select>
                 
                 <button 
-                    className={`btn ${isFormVisible ? 'btn-danger' : 'btn-primary'} btn-register-invoice`} 
-                    onClick={() => handleToggleForm(null)}
+                    className="btn btn-primary btn-register-invoice" 
+                    onClick={handleCreateNew} // <--- Llama a la nueva función de pestaña
                 >
-                    {isFormVisible ? 'Cancelar Creación' : 'Crear Nueva Factura'}
+                    Crear Nueva Factura
                 </button>
             </section>
             
             <hr/>
 
-            {/* --- 2. Formulario de Creación/Edición (Oculto) --- */}
-            {isFormVisible && (
-                 <section className="form-section card">
-                    <h2>{editingInvoiceData ? `Editar Factura #${editingInvoiceData.id}` : 'Registrar Nueva Factura'}</h2>
-                    <InvoiceForm 
-                        initialData={editingInvoiceData} 
-                        onCancel={() => handleToggleForm(null)}
-                        onSubmit={handleSubmitInvoice} 
-                    />
-                 </section>
-            )}
+            {/* **SECCIÓN DE FORMULARIO ELIMINADA** */}
+            {/* Si antes tenías: {isFormVisible && (<section>...</section>)} ya NO debe estar aquí */}
             
             
             {/* --- 3. Listado de Facturas (Tabla) --- */}
@@ -190,7 +181,7 @@ function Facturas() {
                                         <td>${parseFloat(invoice.total).toFixed(2)}</td>
                                         <td className="actions-cell">
                                             <button className="btn btn-sm btn-primary" onClick={() => handleView(invoice)}>Ver</button>
-                                            <button className="btn btn-sm btn-edit" onClick={() => handleEdit(invoice)}>Editar</button>
+                                            <button className="btn btn-sm btn-edit" onClick={() => handleEdit(invoice)}>Editar</button> {/* <--- Llama a la nueva función de pestaña */}
                                             <button className="btn btn-sm btn-success" onClick={() => handleEmit(invoice)}>Emitir</button>
                                         </td>
                                         <td>
@@ -205,7 +196,7 @@ function Facturas() {
                         {/* Paginación */}
                         {totalPages > 1 && (
                             <div className="pagination-controls">
-                                {/* Botones de paginación */}
+                                {/* Componente de paginación iría aquí */}
                             </div>
                         )}
                     </>
@@ -216,164 +207,3 @@ function Facturas() {
 }
 
 export default Facturas;
-
-// -------------------------------------------------------------
-// Componente Formulario de Factura (FINAL Y CORREGIDO)
-// -------------------------------------------------------------
-const InvoiceForm = ({ initialData, onCancel, onSubmit }) => {
-    
-    const [formData, setFormData] = useState(initialData || {});
-    const [tipoFactura, setTipoFactura] = useState(initialData?.tipoFactura || 'Contado');
-
-    const handlePaymentType = (type) => {
-        setTipoFactura(type);
-    };
-    
-    const handleFormSubmit = (e) => {
-        e.preventDefault();
-        const finalData = { 
-            ...formData, 
-            tipoFactura, 
-            id: initialData?.id || `FAC-${Math.floor(Math.random() * 1000)}` 
-        };
-        onSubmit(finalData);
-    }
-
-    return (
-        <form className="invoice-form card" onSubmit={handleFormSubmit}> 
-            
-            <h2 className="module-title" style={{ textAlign: 'center' }}>Factura Venta</h2> 
-            
-            {/* ======================================================= */}
-            /* 1. TIPO DE FACTURA Y ENCABEZADO (2 Columnas) - CORREGIDO */
-            {/* ======================================================= */}
-            <h2 className="section-title">1. Encabezado</h2> 
-
-            {/* Grupo GRID de 2 columnas para Tipo/Número vs. Fecha */}
-            <div className="section-group header-fields">
-                <div className="field-col">
-                    {/* Lado Izquierdo: Tipo Factura y Número de Factura */}
-                    <div style={{ marginBottom: '15px' }}> 
-                        <label style={{ marginBottom: '0' }}>Tipo Factura:</label>
-                        <div className="radio-group" style={{ display: 'flex', gap: '20px', marginTop: '5px' }}>
-                            <label className="radio-label">
-                                <input type="radio" name="tipoFactura" value="Contado" checked={tipoFactura === 'Contado'} onChange={() => handlePaymentType('Contado')} />
-                                Contado
-                            </label>
-                            <label className="radio-label">
-                                <input type="radio" name="tipoFactura" value="Crédito" checked={tipoFactura === 'Crédito'} onChange={() => handlePaymentType('Crédito')} />
-                                Crédito
-                            </label>
-                        </div>
-                    </div>
-
-                    {/* Número de Factura integrado y corto */}
-                    <div>
-                        <label htmlFor="num-factura">Número de Factura:</label>
-                        <input type="text" id="num-factura" className="input-short" placeholder="FAC-XXXX" defaultValue={initialData?.id || ''} />
-                    </div>
-                </div>
-                
-                <div className="field-col">
-                    {/* Lado Derecho: Fecha (alineado verticalmente con el Número de Factura) */}
-                    <label htmlFor="fecha-emision">Fecha:</label>
-                    <input type="date" id="fecha-emision" className="input-short" defaultValue={initialData?.date || new Date().toISOString().substring(0, 10)} />
-                </div>
-            </div>
-            
-            {/* ======================================================= */}
-            /* 2. DATOS DEL CLIENTE (3 Columnas) */
-            {/* ======================================================= */}
-            <h2 className="section-title">2. Datos del Cliente</h2> 
-            <div className="section-group client-data"> 
-                <div className="field-col">
-                    <label htmlFor="nit-cc">NIT/CC:</label>
-                    <input type="text" id="nit-cc" placeholder="Identificación cliente" />
-                </div>
-                <div className="field-col">
-                    <label htmlFor="razon-social">Razón Social/Nombre:</label>
-                    <input type="text" id="razon-social" placeholder="Nombre o Razón social" />
-                </div>
-                <div className="field-col">
-                    <label htmlFor="telefono">Teléfono:</label>
-                    <input type="text" id="telefono" placeholder="Número de contacto" />
-                </div>
-                <div className="field-col">
-                    <label htmlFor="correo">Correo:</label>
-                    <input type="email" id="correo" placeholder="Dirección electrónica" />
-                </div>
-                <div className="field-col">
-                    <label htmlFor="direccion">Dirección Residencia:</label>
-                    <input type="text" id="direccion" placeholder="Dirección física del cliente" />
-                </div>
-                <div className="field-col"></div> 
-            </div>
-            
-            {/* ======================================================= */
-            /* 3. DETALLE DE PRODUCTOS (5 Columnas) */
-            /* ======================================================= */}
-            <h2 className="section-title">3. Detalle de Productos</h2> 
-            
-            {/* Encabezado del Grid de Productos */}
-            <div className="product-grid product-header">
-                <span>Code</span>
-                <span>Unidades</span> 
-                <span>Detalles Producto</span> 
-                <span>V.Unitario</span>
-                <span>V.Total</span>
-            </div>
-
-            {/* Fila de Ejemplo */}
-            <div className="product-grid product-row">
-                <input type="text" placeholder="Cód." />
-                <input type="number" placeholder="Cant." />
-                <input type="text" placeholder="Descripción detallada" />
-                <input type="number" step="0.01" defaultValue="0.00" />
-                <input type="text" defaultValue="0.00" disabled /> 
-            </div>
-            
-            <button type="button" className="btn btn-primary btn-sm" style={{ width: '200px', margin: '15px 0' }}>
-                + Añadir Producto
-            </button>
-
-
-            {/* ======================================================= */}
-            /* 4. TOTALES DE LA FACTURA (Alineación Derecha - Estilo Recibo) */
-            {/* ======================================================= */}
-            <h2 className="section-title" style={{ borderBottom: 'none', marginBottom: '10px' }}>4. Totales de la Factura</h2> 
-            <div className="totals-section">
-                <div className="total-line">
-                    <label>Subtotal: $</label>
-                    <span id="subtotal">{parseFloat(0).toFixed(2)}</span>
-                </div>
-                <div className="total-line">
-                    <label>IVA (19%): $</label>
-                    <span id="iva">{parseFloat(0).toFixed(2)}</span>
-                </div>
-                <div className="total-line">
-                    <label>Total: $</label>
-                    <span id="total">{parseFloat(0).toFixed(2)}</span>
-                </div>
-            </div>
-            
-            {/* Botones Finales: Crear Factura y Cerrar */}
-            <div className="final-buttons-group" style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginTop: '30px' }}>
-                <button 
-                    type="submit" 
-                    className="btn btn-success" 
-                    style={{ width: '200px' }}
-                >
-                    Crear Factura
-                </button>
-                <button 
-                    type="button" 
-                    className="btn btn-danger" 
-                    onClick={onCancel} 
-                    style={{ width: '200px' }}
-                >
-                    Cerrar
-                </button>
-            </div>
-        </form>
-    );
-};
