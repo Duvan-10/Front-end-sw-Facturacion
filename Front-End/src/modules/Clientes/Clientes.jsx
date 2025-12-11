@@ -1,60 +1,97 @@
 import React, { useState, useEffect } from 'react'; 
-// Importa tus estilos CSS aquí:
-// import './Clientes.css'; 
-
-import ClientForm from '../../components/ClientForm/ClientForm'; 
+// NOTA: Se elimina la importación de ClientForm ya que se renderizará en otra ruta
+// import ClientForm from '../../components/ClientForm/ClientForm'; 
 
 // =======================================================
-// DATOS Y CONSTANTES (Simulación)
+// DATOS Y CONSTANTES
 // =======================================================
-
-const initialClients = [
-    { id: 'CLI-001', name: 'Tech Solutions Corp', nit: '900123456-1', phone: '3101234567', email: 'tech@corp.com' },
-    { id: 'CLI-002', name: 'Innova Retail S.A.', nit: '800987654-2', phone: '3207654321', email: 'innova@retail.com' },
-    // ... más datos de clientes
-];
-
+// Eliminamos initialClients ya que ahora se cargan de la API
+const apiBaseUrl = 'http://localhost:8080/api/clientes'; // 🚨 AJUSTA ESTA URL REAL
 const ITEMS_PER_PAGE = 30; 
 
 // =======================================================
-// COMPONENTE PRINCIPAL: CLIENTES (Más limpio)
+// COMPONENTE PRINCIPAL: CLIENTES (Con API Integration)
 // =======================================================
 
 function Clientes() {
     // 1. Estados principales
-    const [clients, setClients] = useState(initialClients); 
+    const [clients, setClients] = useState([]); // Inicializamos con lista vacía
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
-    // 2. Control de UI y Edición
-    const [isFormVisible, setIsFormVisible] = useState(false);
-    const [editingClientData, setEditingClientData] = useState(null); 
     
     // ... (Lógica de filtrado/búsqueda/paginación) ...
 
-    const handleToggleForm = (clientToEdit = null) => {
-        if (clientToEdit) {
-            setEditingClientData(clientToEdit);
-            setIsFormVisible(true);
-        } else {
-            setIsFormVisible(!isFormVisible);
-            setEditingClientData(null);
+    // =======================================================
+    // I. LÓGICA DE CARGA DE DATOS DESDE LA API
+    // =======================================================
+    
+    const fetchClients = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            console.log(`Cargando clientes desde: ${apiBaseUrl}`);
+            const response = await fetch(apiBaseUrl);
+            
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: No se pudo obtener el listado de clientes.`);
+            }
+            
+            const data = await response.json();
+            setClients(data); // 🚨 Actualiza el estado con los datos de la API
+            
+        } catch (err) {
+            console.error("Error fetching clients:", err);
+            setError("No se pudo cargar el listado de clientes. Verifique el backend.");
+            setClients([]);
+        } finally {
+            setLoading(false);
         }
     };
-
-    const handleSubmitClient = (data) => {
-        console.log("Datos de Cliente a guardar/crear:", data);
-        alert(`Cliente ${data.id} guardado con éxito.`);
-        
-        // Simular guardar/actualizar en el estado local
-        // Nota: Deberías implementar la lógica real aquí
-        
-        handleToggleForm(null); // Cerrar formulario al guardar
-    };
-
+    
+    // 1. Efecto: Cargar datos al montar el componente
+    useEffect(() => {
+        fetchClients();
+    }, []); // El array vacío asegura que se ejecuta solo una vez al montar
 
     // =======================================================
-    // III. RENDERIZADO
+    // II. LISTENER PARA RECIBIR LA SEÑAL DE ACTUALIZACIÓN
+    // =======================================================
+    useEffect(() => {
+        
+        const handleListUpdate = (event) => {
+            // Se puede refinar la verificación del origen si es necesario, 
+            // pero para pestañas separadas, event.data es clave.
+            if (event.data === 'listUpdated') {
+                console.log("📢 Señal de 'listUpdated' recibida. Recargando listado de clientes...");
+                // Dispara la función de carga de datos para reflejar los cambios en la DB
+                fetchClients(); 
+            }
+        };
+
+        // Suscribirse al evento de mensaje global
+        window.addEventListener('message', handleListUpdate);
+
+        // Limpiar la suscripción al desmontar
+        return () => {
+            window.removeEventListener('message', handleListUpdate);
+        };
+        
+    }, []); // No depende de 'clients' porque fetchClients maneja el estado internamente.
+
+    // =======================================================
+    // III. HANDLERS DE NAVEGACIÓN (Se mantienen igual)
+    // =======================================================
+    
+    const handleCreateNew = () => {
+        window.open('/clientes/crear', '_blank'); 
+    };
+
+    const handleEdit = (client) => {
+        window.open(`/clientes/editar/${client.id}`, '_blank');
+    };
+    
+    // =======================================================
+    // IV. RENDERIZADO
     // =======================================================
 
     return (
@@ -63,62 +100,67 @@ function Clientes() {
 
             {/* --- 1. Controles y Botón de Registro --- */}
             <section className="controls-section card">
-                {/* ... Controles de búsqueda aquí ... */}
-                
                 <button 
-                    className={`btn ${isFormVisible ? 'btn-danger' : 'btn-primary'} btn-register-client`} 
-                    onClick={() => handleToggleForm(null)}
+                    className="btn btn-primary btn-register-client" 
+                    onClick={handleCreateNew} 
                 >
-                    {isFormVisible ? 'Cancelar Registro' : 'Registrar Nuevo Cliente'}
+                    Registrar Nuevo Cliente
                 </button>
             </section>
             
             <hr/>
-
-            {/* --- 2. Formulario de Creación/Edición (Usando el componente importado) --- */}
-            {isFormVisible && (
-                 <section className="form-section card">
-                    <ClientForm 
-                        initialData={editingClientData} 
-                        onCancel={() => handleToggleForm(null)}
-                        onSubmit={handleSubmitClient} 
-                    />
-                 </section>
-            )}
-            
             
             {/* --- 3. Listado de Clientes (Tabla) --- */}
             <section className="list-section">
                 <h2>Listado de Clientes</h2>
                 
-                {/* ... (Contenido de la tabla de clientes) ... */}
-                <table className="data-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Razón Social / Nombre</th>
-                            <th>NIT/CC</th>
-                            <th>Teléfono</th>
-                            <th>Correo</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {clients.map((client) => (
-                            <tr key={client.id}>
-                                <td>{client.id}</td>
-                                <td>{client.name}</td>
-                                <td>{client.nit}</td>
-                                <td>{client.phone}</td>
-                                <td>{client.email}</td>
-                                <td className="actions-cell">
-                                    <button className="btn btn-sm btn-edit" onClick={() => handleToggleForm(client)}>Editar</button>
-                                    <button className="btn btn-sm btn-danger" onClick={() => alert(`Eliminar ${client.id}`)}>Eliminar</button>
-                                </td>
+                {loading && <p>Cargando clientes...</p>}
+                {error && <p className="error-message">Error: {error}</p>}
+                
+                {!loading && clients.length > 0 && (
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Razón Social / Nombre</th>
+                                <th>NIT/CC</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Acciones</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {clients.map((client) => (
+                                <tr key={client.id}>
+                                    <td>{client.id}</td>
+                                    <td>{client.name}</td>
+                                    <td>{client.nit}</td>
+                                    <td>{client.phone}</td>
+                                    <td>{client.email}</td>
+                                    <td className="actions-cell">
+                                        <button 
+                                            className="btn btn-sm btn-edit" 
+                                            onClick={() => handleEdit(client)} 
+                                        >
+                                            Editar
+                                        </button>
+                                        <button 
+                                            className="btn btn-sm btn-danger" 
+                                            // En un entorno real, esta acción también debería notificar la recarga
+                                            onClick={() => alert(`Simulando: Eliminar ${client.id}`)}
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+                
+                {!loading && !error && clients.length === 0 && (
+                    <p>No hay clientes registrados.</p>
+                )}
             </section>
         </div>
     );

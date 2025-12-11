@@ -1,20 +1,38 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom'; // <-- NECESARIO para leer el ID de la URL
 
-// Se usará la clase CSS 'product-form card' definida en tu ProductForm.css o Productos.css
+// =======================================================
+// COMPONENTE: ProductForm (Ahora auto-contenido)
+// =======================================================
 
-const ProductForm = ({ initialData, onCancel, onSubmit }) => {
+// Eliminamos initialData, onCancel, onSubmit de los props
+const ProductForm = () => {
     
+    // --- I. LÓGICA DE CARGA POR URL ---
+    const { id } = useParams(); // Obtiene 'PROD-00X' si estamos en /productos/editar/PROD-00X
+    const isEditing = !!id;
+
+    // Simulación: Cargar datos si estamos editando
+    // En un proyecto real, harías un useEffect y un fetch con el 'id'
+    const loadedData = isEditing ? {
+        id: id,
+        code: `SKU-${id.split('-')[1]}`,
+        name: `Producto Editado ${id}`,
+        description: 'Descripción cargada para edición.',
+        price: 999.99,
+        stock: 42,
+    } : null;
+
     // Estado para manejar los datos del producto
-    const [productData, setProductData] = useState(initialData || {
+    const [productData, setProductData] = useState(loadedData || {
         code: '',
         name: '',
         description: '',
         price: 0.00,
         stock: 0,
-        // Puede incluir campos adicionales como 'unidad de medida', 'categoría', etc.
     });
 
-    // Handler genérico para actualizar el estado del formulario
+    // Handler genérico para actualizar el estado del formulario (Se mantiene)
     const handleChange = (e) => {
         const { id, value, type } = e.target;
         // Convertir números para campos numéricos
@@ -25,21 +43,39 @@ const ProductForm = ({ initialData, onCancel, onSubmit }) => {
             [id]: newValue
         }));
     };
+    
+    // --- II. HANDLERS DE ACCIÓN ---
+    
+    // Función para cerrar la pestaña/ventana (Reemplaza a onCancel)
+    const handleCloseTab = () => {
+        window.close();
+    };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Generar un ID si es nuevo (simulación)
+        
+        // Determinar ID para el mensaje
+        const submissionId = id || `PROD-${Math.floor(Math.random() * 1000)}`;
         const finalData = { 
             ...productData,
-            id: initialData?.id || `PROD-${Math.floor(Math.random() * 1000)}` 
+            id: submissionId 
         };
-        onSubmit(finalData); 
+        
+        // Simulación: Envío de datos a la API (o a la consola)
+        console.log("Datos de Producto a guardar/crear:", finalData);
+
+        // Mostrar mensaje de confirmación
+        const action = isEditing ? 'editó' : 'registró';
+        alert(`✅ Producto "${finalData.name}" ${action} con éxito. La pestaña se mantendrá abierta hasta que la cierre.`);
+        
+        // ¡IMPORTANTE! No se llama a onSubmit/onCancel y el formulario se queda abierto.
     };
 
     return (
         <form className="product-form card" onSubmit={handleSubmit}>
             <h2 className="module-title" style={{ textAlign: 'center' }}>
-                {initialData ? 'Editar Producto' : 'Registrar Nuevo Producto'}
+                {isEditing ? `Editar Producto #${id}` : 'Registrar Nuevo Producto'}
             </h2>
             
             <div className="section-group product-fields">
@@ -47,7 +83,15 @@ const ProductForm = ({ initialData, onCancel, onSubmit }) => {
                 {/* Código de Producto (SKU) */}
                 <div className="field-col">
                     <label htmlFor="code">Código</label>
-                    <input type="text" id="code" placeholder="PROD-XXX" value={productData.code} onChange={handleChange} required />
+                    <input 
+                        type="text" 
+                        id="code" 
+                        placeholder="PROD-XXX" 
+                        value={productData.code} 
+                        onChange={handleChange} 
+                        required 
+                        // disabled={isEditing} // Opcional: Deshabilitar la edición del código
+                    />
                 </div>
                 
                 {/* Nombre */}
@@ -88,15 +132,17 @@ const ProductForm = ({ initialData, onCancel, onSubmit }) => {
                     className="btn btn-success" 
                     style={{ width: '200px' }}
                 >
-                    {initialData ? 'Guardar Cambios' : 'Registrar Producto'}
+                    {isEditing ? 'Guardar Cambios' : 'Registrar Producto'}
                 </button>
+                
+                {/* --- BOTÓN DE CIERRE MANUAL (Reemplaza Cancelar) --- */}
                 <button 
                     type="button" 
                     className="btn btn-danger" 
-                    onClick={onCancel} 
+                    onClick={handleCloseTab} // <-- NUEVA ACCIÓN
                     style={{ width: '200px' }}
                 >
-                    Cancelar
+                    Cerrar Pestaña
                 </button>
             </div>
         </form>

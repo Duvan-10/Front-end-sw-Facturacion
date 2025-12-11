@@ -1,5 +1,6 @@
 import React, { useState } from 'react'; 
-import ProductForm from '../../components/ProductForm/ProductForm'; 
+// NOTA: Se elimina la importación de ProductForm ya que se renderizará en otra ruta
+// import ProductForm from '../../components/ProductForm/ProductForm'; 
 
 // =======================================================
 // DATOS Y CONSTANTES (Simulación)
@@ -12,7 +13,7 @@ const initialProducts = [
 ];
 
 // =======================================================
-// COMPONENTE PRINCIPAL: PRODUCTOS (Más limpio)
+// COMPONENTE PRINCIPAL: PRODUCTOS (Ajustado a Navegación Externa)
 // =======================================================
 
 function Productos() {
@@ -21,37 +22,24 @@ function Productos() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // 2. Control de UI y Edición
-    const [isFormVisible, setIsFormVisible] = useState(false);
-    const [editingProductData, setEditingProductData] = useState(null); 
+    // **ESTADOS ELIMINADOS: isFormVisible y editingProductData ya no se usan**
     
-    // ... (Lógica de filtrado/búsqueda/paginación) ...
+    // **FUNCIONES ELIMINADAS: handleToggleForm, handleSubmitProduct y handleEdit ya no son necesarias aquí**
 
-    const handleToggleForm = (productToEdit = null) => {
-        if (productToEdit) {
-            setEditingProductData(productToEdit);
-            setIsFormVisible(true);
-        } else {
-            setIsFormVisible(!isFormVisible);
-            setEditingProductData(null);
-        }
+    // =======================================================
+    // II. HANDLERS DE NAVEGACIÓN (NUEVA LÓGICA)
+    // =======================================================
+    
+    const handleCreateNew = () => {
+        // Abre la ruta de creación en una nueva pestaña (Ruta: /productos/crear)
+        window.open('/productos/crear', '_blank'); 
     };
 
-    const handleSubmitProduct = (data) => {
-        console.log("Datos de Producto a guardar/crear:", data);
-        alert(`Producto ${data.id} guardado con éxito.`);
-        
-        // Simular guardar/actualizar en el estado local
-        // Nota: Implementa la lógica real aquí
-        
-        handleToggleForm(null); // Cerrar formulario al guardar
-    };
-
-    // Handler para simular la edición (abre el formulario)
     const handleEdit = (product) => {
-        handleToggleForm(product);
+        // Abre la ruta de edición en una nueva pestaña, usando el ID del producto
+        window.open(`/productos/editar/${product.id}`, '_blank');
     };
-
+    
 
     // =======================================================
     // III. RENDERIZADO
@@ -66,25 +54,18 @@ function Productos() {
                 {/* ... Controles de búsqueda aquí ... */}
                 
                 <button 
-                    className={`btn ${isFormVisible ? 'btn-danger' : 'btn-primary'} btn-register-product`} 
-                    onClick={() => handleToggleForm(null)}
+                    // Cambiado el onClick para usar la nueva función
+                    className={`btn btn-primary btn-register-product`} 
+                    onClick={handleCreateNew} // <-- NUEVA FUNCIÓN
                 >
-                    {isFormVisible ? 'Cancelar Registro' : 'Registrar Nuevo Producto'}
+                    Registrar Nuevo Producto
                 </button>
             </section>
             
             <hr/>
 
-            {/* --- 2. Formulario de Creación/Edición (Usando el componente importado) --- */}
-            {isFormVisible && (
-                 <section className="form-section card">
-                    <ProductForm 
-                        initialData={editingProductData} 
-                        onCancel={() => handleToggleForm(null)}
-                        onSubmit={handleSubmitProduct} 
-                    />
-                 </section>
-            )}
+            {/* --- 2. EL FORMULARIO YA NO SE RENDERIZA AQUÍ --- */}
+            {/* Eliminada la sección condicional: {isFormVisible && (<section> <ProductForm ... /> </section>)} */}
             
             
             {/* --- 3. Listado de Productos (Tabla) --- */}
@@ -113,8 +94,19 @@ function Productos() {
                                     </span>
                                 </td>
                                 <td className="actions-cell">
-                                    <button className="btn btn-sm btn-edit" onClick={() => handleEdit(product)}>Editar</button>
-                                    <button className="btn btn-sm btn-danger" onClick={() => alert(`Eliminar ${product.id}`)}>Eliminar</button>
+                                    <button 
+                                        className="btn btn-sm btn-edit" 
+                                        // Cambiado el onClick para usar la nueva función
+                                        onClick={() => handleEdit(product)} 
+                                    >
+                                        Editar
+                                    </button>
+                                    <button 
+                                        className="btn btn-sm btn-danger" 
+                                        onClick={() => alert(`Simulando: Eliminar ${product.id}`)}
+                                    >
+                                        Eliminar
+                                    </button>
                                 </td>
                             </tr>
                         ))}

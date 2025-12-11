@@ -1,17 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
-// Se usará la clase CSS 'client-form card' definida en tu ClientForm.css o Clientes.css
+// =======================================================
+// COMPONENTE: ClientForm (Con Guardado Real y Notificación)
+// =======================================================
 
-const ClientForm = ({ initialData, onCancel, onSubmit }) => {
+const ClientForm = () => {
     
-    // Estado para manejar los datos del cliente
-    const [clientData, setClientData] = useState(initialData || {
+    const { id } = useParams();
+    const isEditing = !!id;
+
+    // Simulación de URL base de la API (AJUSTA ESTO A TU BACKEND REAL)
+    const apiBaseUrl = 'http://localhost:8080/api/clientes'; 
+
+    // Estado inicial
+    const [clientData, setClientData] = useState({
         nit: '',
         name: '',
         phone: '',
         address: '',
         email: '',
     });
+
+    // --- I. LÓGICA DE CARGA POR URL (fetch de datos para edición) ---
+    useEffect(() => {
+        if (isEditing) {
+            const fetchClientData = async () => {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/${id}`);
+                    if (!response.ok) {
+                        throw new Error('No se pudo cargar el cliente para edición.');
+                    }
+                    const data = await response.json();
+                    setClientData(data);
+                } catch (error) {
+                    console.error("Error al cargar datos:", error);
+                    alert(`Error al cargar los datos del cliente ${id}: ${error.message}`);
+                }
+            };
+            fetchClientData();
+        }
+    }, [isEditing, id, apiBaseUrl]); // Se ejecuta al cambiar isEditing o id
 
     // Handler genérico para actualizar el estado del formulario
     const handleChange = (e) => {
@@ -21,25 +50,69 @@ const ClientForm = ({ initialData, onCancel, onSubmit }) => {
             [id]: value
         }));
     };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Generar un ID si es nuevo (simulación)
-        const finalData = { 
-            ...clientData,
-            id: initialData?.id || `CLI-${Math.floor(Math.random() * 1000)}` 
-
-};
-
-const action = initialData ? 'editó' : 'registró';
-        alert(`✅ Cliente "${finalData.name}" ${action} con éxito. (Datos enviados a la consola)`);
-        onSubmit(finalData); 
+    
+    // --- II. HANDLERS DE ACCIÓN ---
+    
+    const handleCloseTab = () => {
+        window.close();
     };
 
-    return (
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        let url = apiBaseUrl;
+        let method = 'POST';
+        
+        const finalData = { ...clientData };
+        
+        if (isEditing) {
+            url = `${apiBaseUrl}/${id}`;
+            method = 'PUT';
+            finalData.id = id; 
+        } else {
+            // Asegura que el ID no se envíe si es un registro nuevo (para que la DB lo genere)
+            delete finalData.id; 
+        }
+
+        try {
+            console.log(`Enviando ${method} a: ${url}`, finalData);
+            
+            // LLAMADA REAL A LA API
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Incluye headers de autenticación si son necesarios
+                },
+                body: JSON.stringify(finalData),
+            });
+
+            if (!response.ok) {
+                // Intenta leer el cuerpo del error si es posible
+                const errorText = await response.text(); 
+                throw new Error(`Error ${response.status}: ${errorText}`);
+            }
+
+            const savedClient = await response.json(); 
+            
+            const action = isEditing ? 'editó' : 'registró';
+            alert(`✅ Cliente "${savedClient.name || finalData.name}" ${action} con éxito.`);
+            
+            // PASO CLAVE: Notificar a la ventana padre para que recargue
+            if (window.opener) {
+                window.opener.postMessage('listUpdated', '*'); 
+            }
+
+        } catch (error) {
+            console.error("Error al guardar cliente:", error);
+            alert(`❌ Error al guardar el cliente: ${error.message}. Por favor, verifica la URL de la API y el servidor.`);
+        }
+    };
+
+    return ( 
         <form className="client-form card" onSubmit={handleSubmit}>
             <h2 className="module-title" style={{ textAlign: 'center' }}>
-                {initialData ? 'Editar Cliente' : 'Registrar Nuevo Cliente'}
+                {isEditing ? `Editar Cliente #${id}` : 'Registrar Nuevo Cliente'}
             </h2>
             
             <div className="section-group client-data">
@@ -47,31 +120,38 @@ const action = initialData ? 'editó' : 'registró';
                 {/* NIT/CC */}
                 <div className="field-col">
                     <label htmlFor="nit">NIT/CC</label>
-                    <input type="text" id="nit" placeholder="Identificación" value={clientData.nit} onChange={handleChange} required />
+                    <input 
+                        type="text" 
+                        id="nit" 
+                        placeholder="Identificación" 
+                        value={clientData.nit || ''} // Usar || '' para evitar advertencias de React con valores null/undefined
+                        onChange={handleChange} 
+                        required 
+                    />
                 </div>
                 
                 {/* Razón Social / Nombre */}
                 <div className="field-col">
                     <label htmlFor="name">Razón Social / Nombre</label>
-                    <input type="text" id="name" placeholder="Nombre completo" value={clientData.name} onChange={handleChange} required />
+                    <input type="text" id="name" placeholder="Nombre completo" value={clientData.name || ''} onChange={handleChange} required />
                 </div>
 
                 {/* Teléfono */}
                 <div className="field-col">
                     <label htmlFor="phone">Teléfono</label>
-                    <input type="text" id="phone" placeholder="Número contacto" value={clientData.phone} onChange={handleChange} />
+                    <input type="text" id="phone" placeholder="Número contacto" value={clientData.phone || ''} onChange={handleChange} />
                 </div>
                 
                 {/* Dirección */}
                 <div className="field-col">
                     <label htmlFor="address">Dirección</label>
-                    <input type="text" id="address" placeholder="Dirección" value={clientData.address} onChange={handleChange} />
+                    <input type="text" id="address" placeholder="Dirección" value={clientData.address || ''} onChange={handleChange} />
                 </div>
                 
                 {/* Correo */}
                 <div className="field-col">
                     <label htmlFor="email">Correo</label>
-                    <input type="email" id="email" placeholder="Correo electrónico" value={clientData.email} onChange={handleChange} />
+                    <input type="email" id="email" placeholder="Correo electrónico" value={clientData.email || ''} onChange={handleChange} />
                 </div>
             </div>
 
@@ -82,19 +162,20 @@ const action = initialData ? 'editó' : 'registró';
                     className="btn btn-success" 
                     style={{ width: '200px' }}
                 >
-                    {initialData ? 'Guardar Cambios' : 'Registrar Cliente'}
+                    {isEditing ? 'Guardar Cambios' : 'Registrar Cliente'}
                 </button>
+                
                 <button 
                     type="button" 
                     className="btn btn-danger" 
-                    onClick={onCancel} 
+                    onClick={handleCloseTab} 
                     style={{ width: '200px' }}
                 >
-                    Cancelar
+                    Cerrar Pestaña
                 </button>
             </div>
         </form>
-    );
+    ); // 🚨 FIN DEL RETURN CORRECTO
 };
 
 export default ClientForm;
