@@ -1,6 +1,5 @@
 import React, { useState } from 'react'; 
 // NOTA: Se elimina la importación de ProductForm ya que se renderizará en otra ruta
-// import ProductForm from '../../components/ProductForm/ProductForm'; 
 
 // =======================================================
 // DATOS Y CONSTANTES (Simulación)
@@ -63,9 +62,6 @@ function Productos() {
             </section>
             
             <hr/>
-
-            {/* --- 2. EL FORMULARIO YA NO SE RENDERIZA AQUÍ --- */}
-            {/* Eliminada la sección condicional: {isFormVisible && (<section> <ProductForm ... /> </section>)} */}
             
             
             {/* --- 3. Listado de Productos (Tabla) --- */}

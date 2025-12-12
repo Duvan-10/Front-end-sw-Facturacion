@@ -2,10 +2,12 @@
 /* 🛠️ Ajuste de Layout: Barra de Navegación */
 /* ================================================= */
 
+
+
 .app-header {
     /* (Asegúrate de que el header tenga sus estilos de apariencia aquí o en global.css) */
     padding: 20px;
-    text-align: center;
+    text-align: lef;
 }
 
 .navbar {
@@ -15,8 +17,8 @@
     align-items: center; /* Centra verticalmente */
     padding: 10px 20px; /* Padding a los lados para separar del borde */
     /* Apariencia (si no está en global.css): */
-    background-color: #2c2c2c; 
-    border-bottom: 2px solid #00c853; 
+    background-color: lab(46.09% -45.75 43.46); 
+    border-bottom: 2px solid hsl(150, 3%, 12%); 
     /* Si quieres que la barra de navegación quede fija al hacer scroll, añade: */
     /* position: sticky; 
     top: 0;
@@ -46,20 +48,13 @@
     /* Aseguramos que no se encoja si hay mucho contenido */
     flex-shrink: 0;
     width: 150px; /* Mantenemos el ancho original */
+    
     /* Apariencia específica si no la tienes en global.css */
     padding: 10px 15px;
-    background-color: #dc3545; /* Rojo para cerrar sesión */
+    background-color: #15cc52; /* Rojo para cerrar sesión */
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
-.btn-logout:hover {
-    background-color: #c82333;
-}
 
-/* Estilos para que el contenido no quede debajo del header */
-.main-content {
-    padding-top: 20px; /* Asegura un espacio debajo del navbar */
-    /* (Ajusta este valor si tu navbar es muy alto) */
-}

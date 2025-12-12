@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import './styles.css'; // O la ruta a tu CSS
+import './styles.css';
 
 function Layout() {
     const navigate = useNavigate();

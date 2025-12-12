@@ -1,353 +1,229 @@
 /* ================================================= */
 /* 🧩 ESTILOS GLOBALES DE LA APLICACIÓN (global.css) */
+/* PROPÓSITO: Establecer la apariencia base, tipografía, y estilos de componentes de layout/lista. */
 /* ================================================= */
 
 /* --- 1. ESTILOS BASE Y TIPOGRAFÍA --- */
 body {
+    /* Elimina el margen por defecto del navegador. */
     margin: 0;
+    /* Define la fuente principal de la aplicación. */
     font-family: 'Inter', sans-serif;
-    background-color: #1e1e1e; 
-    color: #ffffff; 
+    /* Color de fondo principal (oscuro). */
+    background-color: #22c722; 
+    /* Color de texto principal (blanco). */
+    color: lab(93.12% 0.34 0.11); 
+    /* Espaciado entre líneas de texto. */
     line-height: 1.6;
 }
-
 h1, h2, h3 {
-    color: #00c853; 
+    /* Color de acento para todos los títulos (Verde). */
+    color: lch(68.76% 93.57 135.86); 
+    /* Elimina el margen superior por defecto de los encabezados. */
     margin-top: 0;
 }
 
-/* --- 2. CABECERAS Y NAVEGACIÓN (Layout.jsx) --- */
+/* --- 2. -----CABECERAS Y NAVEGACIÓN (Layout.jsx) --- */
+
 .app-header {
+    /* Espaciado interno del encabezado superior. (PFEps - Software de Facturación Electrónica)*/
     padding: 20px;
-    background-color: #2c2c2c; 
+    /* Color de fondo del encabezado. (PFEps - Software de Facturación Electrónica)*/ 
+    background-color: oklab(34.852% 0.01489 0.00478); 
+    /* Centra el texto del encabezado. (PFEps - Software de Facturación Electrónica)*/
     text-align: center;
-    font-size: 1.5em;
+    /* Tamaño de fuente grande para el título. */
+    font-size: em;
+    /* Texto en negrita. */
     font-weight: bold;
 }
-
 .navbar {
+    /* Habilita el layout flexible. */
     display: flex;
+    /* Distribuye el espacio entre los elementos. */
     justify-content: space-between; 
-    align-items: center; 
+    /* Alinea verticalmente los elementos al centro. */
+    align-items: rieth; 
+    /* Espaciado interno superior/inferior y lateral. */
     padding: 10px 20px; 
-    background-color: #383838; 
-    border-bottom: 3px solid #00c853; 
+    /* Color de fondo de la barra de navegación (Inicio,Facturas,Clientes...... */
+    background-color: hsl(0, 6%, 10%); 
+    /* Línea verde de acento en la parte inferior. */
+    border-bottom: 3px solid lab(70.1% -71.21 69.05); 
 }
-
 .navbar-center-container {
-    flex-grow: 1; 
-    text-align: center; 
+    /* Permite que este contenedor tome el espacio restante para centrar los links. */
+    flex-grow: 0; 
+    /* Centra el texto (los links) horizontalmente. */
+    text-align: center ; 
 }
-
 .navbar-links {
+    /* Elimina los puntos de la lista. */
     list-style: none;
+    /* Elimina padding y margen por defecto de la lista. */
     padding: 0;
     margin: 0;
+    /* Muestra los elementos en línea. */
     display: inline-flex; 
-    gap: 15px; 
+    /* Espacio entre cada link. */
+    gap: 1px; 
 }
-
 .nav-link {
-    color: #fff;
+    /* Color de texto blanco. */
+    color: lab(45.47% 64.54 45.38);
+    /* Elimina la decoración de texto (subrayado). */
     text-decoration: none;
+    /* Padding interno. */
     padding: 5px 10px;
+    /* Suaviza la transición de color y borde al pasar el mouse. */
     transition: color 0.2s, border-bottom 0.2s;
 }
-
 .nav-link:hover {
+    /* Cambia el color al verde de acento en hover. */
     color: #00c853;
+    /* Muestra una línea verde en la parte inferior en hover. */
     border-bottom: 2px solid #00c853;
 }
 
 /* --- 3. SECCIONES GENÉRICAS Y CONTENIDO --- */
-.main-content {
-    padding: 20px;
-}
-
+.main-content { padding: 20px; }
 .form-section, .list-section {
+    /* Padding interno de la sección. */
     padding: 20px;
+    /* Margen inferior para separar secciones. */
     margin-bottom: 20px;
 }
-
 .card {
+    /* Fondo gris oscuro para las tarjetas o contenedores principales. */
     background-color: #2c2c2c; 
+    /* Esquinas redondeadas. */
     border-radius: 8px;
+    /* Sombra sutil para dar profundidad. */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* Padding interno. */
     padding: 20px;
 }
-
-
-/* --- 4. ESTILOS DE FORMULARIO GENÉRICO --- */
-form:not(.invoice-form) { 
-    max-width: 400px;
-    margin: 20px auto;
-}
-
-input, textarea, select {
-    padding: 7px 10px; 
-    border-radius: 5px;
-    border: 1px solid #555;
-    background-color: #383838; 
-    color: #ffffff;
-    box-sizing: border-box; 
-}
-
-input::placeholder, textarea::placeholder {
-    color: #999; 
-    opacity: 1; 
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1); 
-}
-
-input:focus, textarea:focus, select:focus {
-    outline: 2px solid #00c853; 
-    border-color: #00c853;
-}
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
 
 /* --- 5. ESTILOS DE BOTONES --- */
 .btn {
+    /* Color de fondo por defecto (Verde de acento). */
     background-color: #00c853; 
+    /* Color de texto blanco. */
     color: #fff;
+    /* Elimina el borde. */
     border: none;
+    /* Padding interno para tamaño. */
     padding: 10px 15px; 
+    /* Esquinas redondeadas. */
     border-radius: 5px;
+    /* Cambia el cursor para indicar que es clickeable. */
     cursor: pointer;
+    /* Texto en negrita. */
     font-weight: bold;
+    /* Suaviza el cambio de color y opacidad. */
     transition: background-color 0.2s, opacity 0.2s;
 }
-
-.btn:hover:not(:disabled) {
-    background-color: #00b44a;
-}
+.btn:hover:not(:disabled) { background-color: #00b44a; }
 .btn:disabled {
+    /* Reduce la opacidad para indicar deshabilitado. */
     opacity: 0.6;
+    /* Muestra cursor de no permitido. */
     cursor: not-allowed;
 }
-
+/* Sobrescribe el color base para botones de uso específico. */
 .btn-primary { background-color: #007bff; }
 .btn-edit { background-color: #007bff; }
 .btn-success { background-color: #28a745; }
-.btn-danger, .btn-logout { background-color: #dc3545; }
-.btn-secondary { background-color: #6c757d; }
+.btn-danger, .btn-logout { background-color: lab(3.46% 0.62 0.22); } /* Rojo */
+.btn-secondary { background-color: #6c757d; } /* Gris secundario */
 
-
-/* --- 6. LAYOUT MODULAR DE CONTROLES --- */
+/* --- 6. LAYOUT MODULAR DE CONTROLES (Para Listas) --- */
 .controls-section {
+    /* Habilita layout flexible para alinear botones y búsquedas. */
     display: flex;
+    /* Espacio entre los elementos de control. */
     gap: 20px; 
+    /* Alinea verticalmente los elementos al final (útil para inputs con labels). */
     align-items: flex-end; 
+    /* Padding superior e inferior. */
     padding: 20px 0; 
 }
 .search-bar {
+    /* Permite que la barra de búsqueda ocupe el espacio restante. */
     flex-grow: 1;
+    /* Organiza label e input verticalmente. */
     display: flex;
     flex-direction: column; 
 }
-.search-bar input {
-    width: 100%;
-}
-
+.search-bar input { width: 100%; }
 
 /* --- 7. ESTILOS DE TABLA Y EDICIÓN EN LÍNEA --- */
 .data-table {
+    /* Ancho completo. */
     width: 100%;
+    /* Colapsa los bordes de la tabla. */
     border-collapse: collapse;
+    /* Margen superior. */
     margin-top: 20px;
+    /* Fondo oscuro de la tabla. */
     background-color: #2c2c2c; 
+    /* Esquinas redondeadas. */
     border-radius: 8px;
+    /* Oculta contenido que se desborda (bordes redondeados). */
     overflow: hidden; 
 }
 th, td {
+    /* Espaciado interno de las celdas. */
     padding: 10px;
+    /* Alineación de texto central. */
     text-align: center;
+    /* Divisor inferior de celdas. */
     border-bottom: 1px solid #444;
 }
 th {
+    /* Fondo más oscuro para el encabezado. */
     background-color: #1e1e1e; 
+    /* Color verde de acento para el texto del encabezado. */
     color: #00c853; 
+    /* Texto en negrita. */
     font-weight: bold;
 }
 .actions-cell {
+    /* Evita que los botones se envuelvan en varias líneas. */
     white-space: nowrap; 
+    /* Usa flexbox para alinear botones. */
     display: flex;
+    /* Espacio entre los botones. */
     gap: 5px; 
+    /* Centra los botones horizontal y verticalmente. */
     justify-content: center;
     align-items: center; 
 }
 .inline-edit-input {
+    /* Ancho completo del contenedor de la celda. */
     width: 100%; 
+    /* Padding interno. */
     padding: 5px 8px; 
+    /* Incluye padding y borde en el ancho total. */
     box-sizing: border-box;
+    /* Fondo oscuro del input. */
     background-color: #444; 
+    /* Color de texto blanco. */
     color: #fff;
+    /* Tamaño de fuente ligeramente más pequeño. */
     font-size: 0.9em;
 }
 .editing-row {
+    /* Fondo más claro para la fila que se está editando. */
     background-color: #333;
 }
 
-
 /* --- 8. PAGINACIÓN Y MENSAJES --- */
 .pagination-controls {
+    /* Usa flexbox para alinear elementos de paginación. */
     display: flex;
+    /* Centra el grupo de controles. */
     justify-content: center;
     align-items: center;
-    padding: 20px 0;
-    gap: 15px;
-}
-.error-message {
-    color: #dc3545;
-    background-color: #3b2527;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-    margin: 10px 0;
-}
-.loading-message {
-    text-align: center;
-    padding: 15px;
-    color: #00c853;
-}
 
-
-/* ======================================================= */
-/* --- 9. LAYOUTS ESPECÍFICOS DE MÓDULOS (Facturación) --- */
-/* ======================================================= */
-
-.invoice-form {
-    background-color: #383838; 
-    padding: 25px; 
-    max-width: none; 
-    width: 100%; 
-}
-
-.invoice-form .module-title {
-    background-color: #1e1e1e; 
-    color: #ffffff; 
-    padding: 15px 0;
-    margin: -25px -25px 15px -25px; 
-    border-bottom: 3px solid #00c853; 
-}
-
-.invoice-form .section-title {
-    color: #00c853; 
-    font-size: 1.3em; 
-    margin-top: 15px; 
-    margin-bottom: 8px; 
-    padding-bottom: 5px;
-    border-bottom: none; 
-    font-weight: 600;
-}
-
-.invoice-form label {
-    display: block;
-    margin-bottom: 3px; 
-    color: #ccc; 
-    font-size: 0.9em;
-    text-align: left; 
-}
-
-/* FIX CLAVE: Fuerza la alineación vertical y compacidad */
-.invoice-form .field-col {
-    padding: 3px 0; 
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; 
-}
-
-.invoice-form .section-group input, 
-.invoice-form .section-group select {
-    padding: 5px 8px; 
-    /* El ancho 100% se aplica solo a los campos que lo necesitan (client-data) */
-}
-
-/* NUEVA REGLA: Hace inputs específicos más cortos (e.g., para Fecha y Número) */
-.invoice-form .input-short {
-    max-width: 200px; 
-}
-
-/* --- REGLAS GRID COMPACTAS Y MEJOR ALINEACIÓN --- */
-.invoice-form .section-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    gap: 10px 20px; 
-    margin-bottom: 10px;
-}
-
-/* Ajuste para 3 columnas en la sección de datos del cliente */
-.invoice-form .client-data {
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 20px; 
-}
-
-/* El resto de inputs del cliente (sin input-short) deben mantener 100% de ancho */
-.invoice-form .client-data input, 
-.invoice-form .client-data select {
-    width: 100%;
-}
-
-/* Productos (Grid de 5 Columnas) */
-.invoice-form .product-grid {
-    display: grid;
-    grid-template-columns: 1fr 0.8fr 3fr 1.5fr 1.5fr;
-    gap: 8px; 
-    align-items: center;
-}
-.invoice-form .product-header {
-    background-color: #1e1e1e; 
-    color: #00c853;
-    padding: 8px 0;
-    border-bottom: 2px solid #00c853;
-    text-align: center;
-    font-size: 0.95em;
-}
-
-/* Alineación de Totales (Valor) */
-.totals-section {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end; 
-    margin-top: 20px; 
-    padding-top: 10px;
-    border-top: 1px solid #444;
-}
-
-.total-line {
-    display: flex;
-    justify-content: space-between;
-    width: 250px; 
-    margin-top: 5px;
-    font-size: 1.1em; 
-}
-
-.total-line:last-child {
-    font-weight: bold;
-    border-top: 2px solid #555;
-    padding-top: 8px;
-}
-
-/* Estilos para Radio Buttons (Contado/Crédito) */
-.radio-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 1em;
-    color: #ccc;
-}
-
-.radio-label input[type="radio"] {
-    filter: invert(1) hue-rotate(90deg); 
-    width: auto; 
-    height: 15px;
-    width: 15px;
 }

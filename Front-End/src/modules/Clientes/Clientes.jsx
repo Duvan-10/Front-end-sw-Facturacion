@@ -1,98 +1,61 @@
-import React, { useState, useEffect } from 'react'; 
-// NOTA: Se elimina la importación de ClientForm ya que se renderizará en otra ruta
-// import ClientForm from '../../components/ClientForm/ClientForm'; 
+import React, { useState } from 'react'; 
+// NOTA: Se eliminan 'useEffect' y 'fetch' ya que la carga de datos no es local.
+// NOTA: No hay estilos locales importados.
 
 // =======================================================
-// DATOS Y CONSTANTES
+// DATOS Y CONSTANTES (Redefinidos para simulación)
 // =======================================================
-// Eliminamos initialClients ya que ahora se cargan de la API
-const apiBaseUrl = 'http://localhost:8080/api/clientes'; // 🚨 AJUSTA ESTA URL REAL
-const ITEMS_PER_PAGE = 30; 
+// Se elimina apiBaseUrl y ITEMS_PER_PAGE. Usamos datos de simulación.
+const initialClientsData = [
+    { id: 101, name: 'Técnicas Avanzadas S.A.', nit: '900.123.456-7', phone: '3105550001', email: 'contacto@tecnicas.com' },
+    { id: 102, name: 'Distribuidora Global Ltda.', nit: '800.987.654-3', phone: '3115550002', email: 'info@global.com' },
+    { id: 103, name: 'Innovación Digital E.U.', nit: '100.222.333-4', phone: '3125550003', email: 'soporte@digital.net' },
+];
 
 // =======================================================
-// COMPONENTE PRINCIPAL: CLIENTES (Con API Integration)
+// COMPONENTE PRINCIPAL: CLIENTES (Estructural/Mock Data)
 // =======================================================
 
 function Clientes() {
-    // 1. Estados principales
-    const [clients, setClients] = useState([]); // Inicializamos con lista vacía
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     
-    // ... (Lógica de filtrado/búsqueda/paginación) ...
+    // 1. Estado principal (Usando datos simulados, ya no hay 'loading' ni 'error')
+    const [clients, setClients] = useState(initialClientsData); 
 
     // =======================================================
-    // I. LÓGICA DE CARGA DE DATOS DESDE LA API
+    // I. LÓGICA DE CARGA DE DATOS DESDE LA API (ELIMINADA)
     // =======================================================
+    // Se elimina fetchClients, useEffect de carga y useEffect de listener.
     
-    const fetchClients = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            console.log(`Cargando clientes desde: ${apiBaseUrl}`);
-            const response = await fetch(apiBaseUrl);
-            
-            if (!response.ok) {
-                throw new Error(`Error ${response.status}: No se pudo obtener el listado de clientes.`);
-            }
-            
-            const data = await response.json();
-            setClients(data); // 🚨 Actualiza el estado con los datos de la API
-            
-        } catch (err) {
-            console.error("Error fetching clients:", err);
-            setError("No se pudo cargar el listado de clientes. Verifique el backend.");
-            setClients([]);
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    // 1. Efecto: Cargar datos al montar el componente
-    useEffect(() => {
-        fetchClients();
-    }, []); // El array vacío asegura que se ejecuta solo una vez al montar
-
     // =======================================================
-    // II. LISTENER PARA RECIBIR LA SEÑAL DE ACTUALIZACIÓN
-    // =======================================================
-    useEffect(() => {
-        
-        const handleListUpdate = (event) => {
-            // Se puede refinar la verificación del origen si es necesario, 
-            // pero para pestañas separadas, event.data es clave.
-            if (event.data === 'listUpdated') {
-                console.log("📢 Señal de 'listUpdated' recibida. Recargando listado de clientes...");
-                // Dispara la función de carga de datos para reflejar los cambios en la DB
-                fetchClients(); 
-            }
-        };
-
-        // Suscribirse al evento de mensaje global
-        window.addEventListener('message', handleListUpdate);
-
-        // Limpiar la suscripción al desmontar
-        return () => {
-            window.removeEventListener('message', handleListUpdate);
-        };
-        
-    }, []); // No depende de 'clients' porque fetchClients maneja el estado internamente.
-
-    // =======================================================
-    // III. HANDLERS DE NAVEGACIÓN (Se mantienen igual)
+    // II. HANDLERS DE NAVEGACIÓN (Se mantienen)
     // =======================================================
     
     const handleCreateNew = () => {
-        window.open('/clientes/crear', '_blank'); 
+        // Asume que la aplicación maneja el routing (React Router)
+        console.log("Navegando a: /clientes/crear");
+        // window.open('/clientes/crear', '_blank'); // Se mantiene si se usa nueva pestaña
     };
 
     const handleEdit = (client) => {
-        window.open(`/clientes/editar/${client.id}`, '_blank');
+        console.log(`Navegando a: /clientes/editar/${client.id}`);
+        // window.open(`/clientes/editar/${client.id}`, '_blank'); // Se mantiene si se usa nueva pestaña
     };
     
+    // Función de ejemplo para Eliminar (ya no hace llamada API)
+    const handleDelete = (clientId) => {
+        // Simulamos la eliminación de la lista local
+        setClients(clients.filter(client => client.id !== clientId));
+        console.log(`Simulando: Cliente ${clientId} eliminado localmente.`);
+    };
+
     // =======================================================
-    // IV. RENDERIZADO
+    // III. RENDERIZADO
     // =======================================================
+
+    // Nota: 'loading' y 'error' se han eliminado del JSX.
+    // Usamos variables de simulación si clients está vacío
+    const displayClients = clients.length > 0 ? clients : initialClientsData;
+
 
     return (
         <div className="main-content">
@@ -110,14 +73,13 @@ function Clientes() {
             
             <hr/>
             
-            {/* --- 3. Listado de Clientes (Tabla) --- */}
+            {/* --- 2. Listado de Clientes (Tabla) --- */}
             <section className="list-section">
                 <h2>Listado de Clientes</h2>
                 
-                {loading && <p>Cargando clientes...</p>}
-                {error && <p className="error-message">Error: {error}</p>}
-                
-                {!loading && clients.length > 0 && (
+                {clients.length === 0 ? (
+                    <p>No hay clientes registrados.</p>
+                ) : (
                     <table className="data-table">
                         <thead>
                             <tr>
@@ -146,8 +108,7 @@ function Clientes() {
                                         </button>
                                         <button 
                                             className="btn btn-sm btn-danger" 
-                                            // En un entorno real, esta acción también debería notificar la recarga
-                                            onClick={() => alert(`Simulando: Eliminar ${client.id}`)}
+                                            onClick={() => handleDelete(client.id)}
                                         >
                                             Eliminar
                                         </button>
@@ -156,10 +117,6 @@ function Clientes() {
                             ))}
                         </tbody>
                     </table>
-                )}
-                
-                {!loading && !error && clients.length === 0 && (
-                    <p>No hay clientes registrados.</p>
                 )}
             </section>
         </div>
