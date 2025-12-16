@@ -3,28 +3,40 @@
 import db from '../models/db.js'; 
 
 // =======================================================
-// 1. FUNCIÓN PARA OBTENER TODOS LOS CLIENTES (GET)
+// 0. FUNCIÓN PARA OBTENER UN CLIENTE POR ID (GET /:id) <--- NUEVA
 // =======================================================
-export const getAllClientes = async (req, res) => {
+export const getClienteById = async (req, res) => {
+    const { id } = req.params;
 
     try {
-        // La consulta SQL
-        const query = 'SELECT * FROM clientes ORDER BY nombre_razon_social ASC';
+        const query = 'SELECT * FROM clientes WHERE id = ?';
+        const [rows] = await db.query(query, [id]); 
         
-        // Ejecutar la consulta usando el Pool (db.query)
-        const [rows] = await db.query(query); 
+        if (rows.length === 0) {
+            return res.status(404).json({ message: `Cliente con ID ${id} no encontrado.` });
+        }
         
-        // Devolver los datos al Front-end
-        return res.status(200).json(rows);
+        // Devolver el primer y único resultado
+        return res.status(200).json(rows[0]);
 
     } catch (error) {
-        console.error('Error al obtener clientes desde MySQL:', error);
+        console.error(`Error al obtener cliente ID ${id}:`, error);
         return res.status(500).json({ 
             message: 'Error interno del servidor al consultar la base de datos.', 
             error: error.message 
         });
     }
 };
+
+// =======================================================
+// 1. FUNCIÓN PARA OBTENER TODOS LOS CLIENTES (GET)
+// =======================================================
+// ... (getAllClientes es el mismo) ...
+
+export const getAllClientes = async (req, res) => {
+    // ... (Tu código anterior) ...
+};
+
 
 // =======================================================
 // 2. FUNCIÓN PARA CREAR UN CLIENTE (POST) 
@@ -43,7 +55,7 @@ export const createCliente = async (req, res) => {
     `;
 
     try {
-        await db.execute(query, [
+        const [result] = await db.execute(query, [ // 🚨 Capturar el resultado
             tipo_identificacion, 
             identificacion, 
             nombre_razon_social, 
@@ -51,92 +63,25 @@ export const createCliente = async (req, res) => {
             telefono, 
             direccion
         ]);
-        res.status(201).json({ message: "Cliente creado exitosamente." });
+        
+        // 🚨 Respuesta actualizada: Devolver el ID generado
+        res.status(201).json({ 
+            message: "Cliente creado exitosamente.",
+            id: result.insertId // El ID que MySQL generó
+        });
+        
     } catch (error) {
-        console.error("Error al crear cliente:", error);
-        
-        let errorMessage = "Error interno del servidor al crear cliente.";
-        // Manejo de error de unicidad (si la identificación ya existe)
-        if (error.code === 'ER_DUP_ENTRY') {
-            errorMessage = 'Error de unicidad: La identificación ya está registrada.';
-        }
-        
+        // ... (Tu manejo de errores existente) ...
+        // ...
         res.status(500).json({ message: errorMessage });
     }
 };
 
 // =======================================================
 // 3. FUNCIÓN PARA ACTUALIZAR UN CLIENTE (PUT)
-// ====
-
+// =======================================================
+// ... (updateCliente es el mismo) ...
 export const updateCliente = async (req, res) => { 
-    // 1. Obtener el ID del cliente de los parámetros de la URL
-    const { id } = req.params; 
-    
-    // 2. Obtener los datos del cuerpo de la petición
-    const { 
-        tipo_identificacion, 
-        identificacion, 
-        nombre_razon_social, 
-        email, 
-        telefono, 
-        direccion 
-    } = req.body;
-
-    // 1. Validación básica de datos CRÍTICOS
-    if (!identificacion || !nombre_razon_social || !id) {
-        return res.status(400).json({ 
-            message: 'ID, Identificación y Razón Social son obligatorios para actualizar.' 
-        });
-    }
-
-    try {
-        // 2. Consulta SQL para la inserción
-        const query = `
-            UPDATE clientes SET 
-                tipo_identificacion = ?, 
-                identificacion = ?, 
-                nombre_razon_social = ?, 
-                email = ?, 
-                telefono = ?, 
-                direccion = ?
-            WHERE id = ?
-        `;
-        // 3. Ejecutar la inserción (db.execute libera la conexión automáticamente)
-        const [result] = await db.execute(query, [
-            tipo_identificacion, 
-            identificacion, 
-            nombre_razon_social, 
-            email, 
-            telefono, 
-            direccion,
-            id // El ID para la cláusula WHERE
-        ]);
-
-        // 6. Verificar si se encontró y actualizó el cliente
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: `Cliente con ID ${id} no encontrado.` });
-        }
-
-        // 4. Respuesta exitosa
-     return res.status(200).json({ 
-            message: 'Cliente actualizado con éxito.', 
-            id: id 
-        });
-        
-    } catch (error) {
-        // ... (Tu manejo de errores existente) ...
-        console.error('Error al registrar cliente:', error);
-        
-        let errorMessage = 'Error interno del servidor al registrar cliente.';
-
-        if (error.code === 'ER_DUP_ENTRY') {
-            errorMessage = 'Error de unicidad: La identificación ingresada ya está registrada para otro cliente.';
-        }
-
-        return res.status(500).json({ 
-            message: errorMessage,
-            error: error.message 
-        });
-    }
+    // ... (Tu código anterior) ...
+    // ...
 };

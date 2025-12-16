@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import "../styles1.css";
 
 // =======================================================
 // COMPONENTE: ClientForm (Con Guardado Real y Notificación)
@@ -27,6 +28,7 @@ const ClientForm = () => {
         if (isEditing) {
             const fetchClientData = async () => {
                 try {
+                    // Nota: En un entorno de producción, es vital manejar tokens/seguridad aquí.
                     const response = await fetch(`${apiBaseUrl}/${id}`);
                     if (!response.ok) {
                         throw new Error('No se pudo cargar el cliente para edición.');
@@ -103,6 +105,9 @@ const ClientForm = () => {
                 window.opener.postMessage('listUpdated', '*'); 
             }
 
+            // PASO CLAVE: Cerrar la pestaña
+            handleCloseTab(); 
+
         } catch (error) {
             console.error("Error al guardar cliente:", error);
             alert(`❌ Error al guardar el cliente: ${error.message}. Por favor, verifica la URL de la API y el servidor.`);
@@ -110,11 +115,13 @@ const ClientForm = () => {
     };
 
     return ( 
-        <form className="client-form card" onSubmit={handleSubmit}>
+        // 🚨 CAMBIO 1: Usar la clase global 'app-form' 
+        <form className="app-form card" onSubmit={handleSubmit}>
             <h2 className="module-title" style={{ textAlign: 'center' }}>
                 {isEditing ? `Editar Cliente #${id}` : 'Registrar Nuevo Cliente'}
             </h2>
             
+            {/* 🚨 CAMBIO 2: Ya usa 'section-group', lo cual está correcto */}
             <div className="section-group client-data">
                 
                 {/* NIT/CC */}
@@ -124,7 +131,7 @@ const ClientForm = () => {
                         type="text" 
                         id="nit" 
                         placeholder="Identificación" 
-                        value={clientData.nit || ''} // Usar || '' para evitar advertencias de React con valores null/undefined
+                        value={clientData.nit || ''} 
                         onChange={handleChange} 
                         required 
                     />
@@ -153,10 +160,14 @@ const ClientForm = () => {
                     <label htmlFor="email">Correo</label>
                     <input type="email" id="email" placeholder="Correo electrónico" value={clientData.email || ''} onChange={handleChange} />
                 </div>
+                
+                {/* Aquí podríamos agregar un campo de observaciones si fuera necesario, usando la clase 'full-width' */}
+
             </div>
 
             {/* Botones de Acción */}
-            <div className="final-buttons-group" style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginTop: '30px' }}>
+            {/* 🚨 CAMBIO 3: Usar la clase global 'final-buttons-group' y eliminar style inline */}
+            <div className="final-buttons-group">
                 <button 
                     type="submit" 
                     className="btn btn-success" 
@@ -175,7 +186,7 @@ const ClientForm = () => {
                 </button>
             </div>
         </form>
-    ); // 🚨 FIN DEL RETURN CORRECTO
+    ); 
 };
 
 export default ClientForm;

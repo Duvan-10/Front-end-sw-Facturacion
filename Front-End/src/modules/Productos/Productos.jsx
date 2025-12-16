@@ -1,61 +1,153 @@
-import React, { useState } from 'react'; 
-// NOTA: Se elimina la importación de ProductForm ya que se renderizará en otra ruta
+import React, { useState, useEffect } from 'react'; 
 
 // =======================================================
-// DATOS Y CONSTANTES (Simulación)
-// =======================================================
-
-const initialProducts = [
-    { id: 'PROD-001', code: 'C-LPT15', name: 'Laptop Comercial i7', price: 1500.00, stock: 25 },
-    { id: 'PROD-002', code: 'C-MNS05', name: 'Monitor LED 27"', price: 350.50, stock: 5 },
-    { id: 'PROD-003', code: 'C-PRT22', name: 'Impresora Láser B/N', price: 180.00, stock: 0 },
-];
-
-// =======================================================
-// COMPONENTE PRINCIPAL: PRODUCTOS (Ajustado a Navegación Externa)
+// COMPONENTE PRINCIPAL: PRODUCTOS 
+//   - Muestra "Valor Impuesto" calculado.
 // =======================================================
 
 function Productos() {
+    
+    // URL base de la API 
+    const apiBaseUrl = 'http://localhost:8080/api/productos'; 
+    
+    // 🚨 REEMPLAZA ESTO: Obtener el token JWT
+    const getAuthToken = () => {
+        return localStorage.getItem('authToken'); 
+    };
+
     // 1. Estados principales
-    const [products, setProducts] = useState(initialProducts); 
-    const [loading, setLoading] = useState(false);
+    const [allProducts, setAllProducts] = useState([]); 
+    const [products, setProducts] = useState([]); 
+    
+    // Estados de control
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    // **ESTADOS ELIMINADOS: isFormVisible y editingProductData ya no se usan**
+    const [refreshKey, setRefreshKey] = useState(0); 
+    const [searchQuery, setSearchQuery] = useState('');
     
-    // **FUNCIONES ELIMINADAS: handleToggleForm, handleSubmitProduct y handleEdit ya no son necesarias aquí**
+    
+    // =======================================================
+    // I. LÓGICA DE CARGA DE DATOS (fetch GET)
+    // =======================================================
+
+    const loadProducts = async () => {
+        const token = getAuthToken();
+        if (!token) {
+            setError("Error de autenticación: Token no encontrado. No se puede cargar la lista.");
+            setLoading(false);
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`${apiBaseUrl}?search=${searchQuery}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            });
+            
+            if (response.status === 401) throw new Error("Acceso denegado. Token inválido o expirado.");
+            if (!response.ok) throw new Error(`Error al cargar datos: ${response.status}`);
+            
+            const result = await response.json();
+            
+            const productArray = Array.isArray(result.data) ? result.data : []; 
+            
+            setAllProducts(productArray);
+            
+        } catch (err) {
+            console.error("Error al cargar productos de la API:", err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    useEffect(() => {
+        loadProducts(); 
+    }, [refreshKey, searchQuery]); 
+    
+    useEffect(() => {
+        setProducts(allProducts);
+    }, [allProducts]);
+    
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
 
     // =======================================================
-    // II. HANDLERS DE NAVEGACIÓN (NUEVA LÓGICA)
+    // II. CÁLCULO DE VALOR DE IMPUESTO
+    // =======================================================
+
+    const calculateTaxValue = (price, taxPercentage) => {
+        const p = parseFloat(price) || 0;
+        const t = parseFloat(taxPercentage) || 0;
+        
+        // Fórmula: Precio * (Porcentaje / 100)
+        const taxValue = p * (t / 100);
+        
+        return taxValue.toFixed(2);
+    };
+
+
+    // =======================================================
+    // III. HANDLER DE COMUNICACIÓN Y NAVEGACIÓN
     // =======================================================
     
+    useEffect(() => {
+        const handleMessage = (event) => {
+            if (event.data === 'listUpdated') {
+                setRefreshKey(prev => prev + 1); 
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        };
+    }, []); 
+
     const handleCreateNew = () => {
-        // Abre la ruta de creación en una nueva pestaña (Ruta: /productos/crear)
         window.open('/productos/crear', '_blank'); 
     };
 
     const handleEdit = (product) => {
-        // Abre la ruta de edición en una nueva pestaña, usando el ID del producto
         window.open(`/productos/editar/${product.id}`, '_blank');
     };
     
-
+    
     // =======================================================
-    // III. RENDERIZADO
+    // IV. RENDERIZADO (Tabla Final)
     // =======================================================
 
     return (
         <div className="main-content">
             <h1 className="module-title">Gestión de Productos</h1>
 
-            {/* --- 1. Controles y Botón de Registro --- */}
+            {/* --- Controles --- */}
             <section className="controls-section card">
-                {/* ... Controles de búsqueda aquí ... */}
+                
+                <div className="search-bar">
+                    <label htmlFor="search">Buscar Producto (Código o Nombre):</label>
+                    <input 
+                        type="text" 
+                        id="search"
+                        className="search-input" 
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        placeholder="Buscar por Código o Nombre..."
+                        disabled={loading}
+                    />
+                </div>
                 
                 <button 
-                    // Cambiado el onClick para usar la nueva función
                     className={`btn btn-primary btn-register-product`} 
-                    onClick={handleCreateNew} // <-- NUEVA FUNCIÓN
+                    onClick={handleCreateNew} 
+                    disabled={loading}
                 >
                     Registrar Nuevo Producto
                 </button>
@@ -64,50 +156,56 @@ function Productos() {
             <hr/>
             
             
-            {/* --- 3. Listado de Productos (Tabla) --- */}
+            {/* --- Listado de Productos (Tabla) --- */}
             <section className="list-section">
-                <h2>Listado de Productos</h2>
+                <h2>Listado de Productos ({products.length} encontrados)</h2>
                 
-                <table className="data-table">
-                    <thead>
-                        <tr>
-                            <th>Código</th>
-                            <th>Nombre</th>
-                            <th>Precio</th>
-                            <th>Stock</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {products.map((product) => (
-                            <tr key={product.id}>
-                                <td>{product.code}</td>
-                                <td>{product.name}</td>
-                                <td>${parseFloat(product.price).toFixed(2)}</td>
-                                <td>
-                                    <span className={`stock-indicator stock-${product.stock === 0 ? 'zero' : product.stock <= 10 ? 'low' : 'ok'}`}>
-                                        {product.stock}
-                                    </span>
-                                </td>
-                                <td className="actions-cell">
-                                    <button 
-                                        className="btn btn-sm btn-edit" 
-                                        // Cambiado el onClick para usar la nueva función
-                                        onClick={() => handleEdit(product)} 
-                                    >
-                                        Editar
-                                    </button>
-                                    <button 
-                                        className="btn btn-sm btn-danger" 
-                                        onClick={() => alert(`Simulando: Eliminar ${product.id}`)}
-                                    >
-                                        Eliminar
-                                    </button>
-                                </td>
+                {loading && <p>Cargando productos...</p>}
+                {error && <p style={{ color: 'red' }}>Error de conexión/autenticación: {error}. Por favor, inicie sesión o verifique la API.</p>}
+
+                {!loading && !error && products.length === 0 ? (
+                    <p>No hay productos registrados en la base de datos o no coinciden con la búsqueda.</p>
+                ) : (
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Impuesto (%)</th> 
+                                <th>Valor Impuesto</th> {/* 🚨 Columna de valor calculado */}
+                                <th>Acciones</th> 
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {products.map((product) => (
+                                <tr key={product.id}>
+                                    <td>{product.codigo}</td> 
+                                    <td>{product.nombre}</td>
+                                    <td>${parseFloat(product.precio || 0).toFixed(2)}</td>
+                                    
+                                    {/* Porcentaje guardado en la DB */}
+                                    <td>{parseFloat(product.impuesto_porcentaje || 0).toFixed(2)}%</td>
+                                    
+                                    {/* 🚨 Cálculo del Valor Monetario del Impuesto */}
+                                    <td>
+                                        ${calculateTaxValue(product.precio, product.impuesto_porcentaje)}
+                                    </td>
+                                    
+                                    <td className="actions-cell">
+                                        <button 
+                                            className="btn btn-sm btn-edit" 
+                                            onClick={() => handleEdit(product)} 
+                                            disabled={loading}
+                                        >
+                                            Editar
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </section>
         </div>
     );

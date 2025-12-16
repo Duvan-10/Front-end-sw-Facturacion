@@ -1,152 +1,266 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom'; // <-- NECESARIO para leer el ID de la URL
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import "../styles1.css"
 
 // =======================================================
-// COMPONENTE: ProductForm (Ahora auto-contenido)
+// COMPONENTE: ProductForm 
+//   - impuesto_porcentaje es readOnly en modo edición.
 // =======================================================
 
-// Eliminamos initialData, onCancel, onSubmit de los props
 const ProductForm = () => {
     
-    // --- I. LÓGICA DE CARGA POR URL ---
-    const { id } = useParams(); // Obtiene 'PROD-00X' si estamos en /productos/editar/PROD-00X
+    const { id } = useParams();
     const isEditing = !!id;
 
-    // Simulación: Cargar datos si estamos editando
-    // En un proyecto real, harías un useEffect y un fetch con el 'id'
-    const loadedData = isEditing ? {
-        id: id,
-        code: `SKU-${id.split('-')[1]}`,
-        name: `Producto Editado ${id}`,
-        description: 'Descripción cargada para edición.',
-        price: 999.99,
-        stock: 42,
-    } : null;
-
-    // Estado para manejar los datos del producto
-    const [productData, setProductData] = useState(loadedData || {
-        code: '',
-        name: '',
-        description: '',
-        price: 0.00,
-        stock: 0,
+    // URL base de la API (AJUSTA ESTO SI ES NECESARIO)
+    const apiBaseUrl = 'http://localhost:8080/api/productos'; 
+    
+    // 🚨 REEMPLAZA ESTO: Obtener el token JWT de donde lo almacenes
+    const getAuthToken = () => {
+        return localStorage.getItem('authToken'); 
+    };
+    
+    // Estado inicial ajustado a las claves del backend
+    const [productData, setProductData] = useState({
+        codigo: '',
+        nombre: '',
+        precio: '',
+        descripcion: '', 
+        impuesto_porcentaje: '0', 
     });
+    
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    // Handler genérico para actualizar el estado del formulario (Se mantiene)
+    // --- I. LÓGICA DE CARGA POR URL (fetch GET individual para edición) ---
+    useEffect(() => {
+        if (isEditing) {
+            const fetchProductData = async () => {
+                const token = getAuthToken();
+                if (!token) {
+                    setError("Error de autenticación: Token no encontrado.");
+                    return;
+                }
+                setLoading(true);
+                try {
+                    const response = await fetch(`${apiBaseUrl}/${id}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}` 
+                        }
+                    });
+                    
+                    if (response.status === 401) throw new Error("Acceso denegado. Token inválido o expirado.");
+                    if (!response.ok) throw new Error(`No se pudo cargar el producto ${id}. Código: ${response.status}`);
+                    
+                    const data = await response.json();
+                    
+                    setProductData({
+                        codigo: data.codigo || '',
+                        nombre: data.nombre || '',
+                        precio: data.precio ? String(data.precio) : '', 
+                        descripcion: data.descripcion || '',
+                        impuesto_porcentaje: data.impuesto_porcentaje ? String(data.impuesto_porcentaje) : '0',
+                    });
+                } catch (err) {
+                    console.error("Error al cargar datos:", err);
+                    setError(err.message);
+                    alert(`Error al cargar datos del producto: ${err.message}`);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchProductData();
+        }
+    }, [isEditing, id]); 
+
+    // Handler genérico
     const handleChange = (e) => {
-        const { id, value, type } = e.target;
-        // Convertir números para campos numéricos
-        const newValue = type === 'number' ? parseFloat(value) || 0 : value;
-        
+        const { id, value } = e.target;
         setProductData(prev => ({
             ...prev,
-            [id]: newValue
+            [id]: value
         }));
     };
     
-    // --- II. HANDLERS DE ACCIÓN ---
-    
-    // Función para cerrar la pestaña/ventana (Reemplaza a onCancel)
     const handleCloseTab = () => {
         window.close();
     };
 
-
-    const handleSubmit = (e) => {
+    // --- II. HANDLER DE ENVÍO (POST/PUT) ---
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(null);
+        setLoading(true);
+
+        const token = getAuthToken();
+        if (!token) {
+            alert("Error de autenticación: No hay token disponible.");
+            setLoading(false);
+            return;
+        }
+
+        let url = apiBaseUrl;
+        let method = 'POST';
         
-        // Determinar ID para el mensaje
-        const submissionId = id || `PROD-${Math.floor(Math.random() * 1000)}`;
+        // Preparar datos, asegurando que los números son números (usamos parseFloat)
         const finalData = { 
-            ...productData,
-            id: submissionId 
+            codigo: productData.codigo,
+            nombre: productData.nombre,
+            descripcion: productData.descripcion,
+            precio: parseFloat(productData.precio) || 0,
+            impuesto_porcentaje: parseFloat(productData.impuesto_porcentaje) || 0,
         };
         
-        // Simulación: Envío de datos a la API (o a la consola)
-        console.log("Datos de Producto a guardar/crear:", finalData);
+        if (isEditing) {
+            url = `${apiBaseUrl}/${id}`;
+            method = 'PUT';
+        }
 
-        // Mostrar mensaje de confirmación
-        const action = isEditing ? 'editó' : 'registró';
-        alert(`✅ Producto "${finalData.name}" ${action} con éxito. La pestaña se mantendrá abierta hasta que la cierre.`);
-        
-        // ¡IMPORTANTE! No se llama a onSubmit/onCancel y el formulario se queda abierto.
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify(finalData),
+            });
+
+            if (response.status === 401) throw new Error("Acceso denegado. Token inválido o expirado.");
+            if (!response.ok) {
+                const errorBody = await response.json(); 
+                throw new Error(errorBody.message || `Error ${response.status}: Error al procesar la solicitud.`);
+            }
+
+            const action = isEditing ? 'editó' : 'registró';
+            alert(`✅ Producto "${productData.nombre}" ${action} con éxito.`);
+            
+            if (window.opener) {
+                window.opener.postMessage('listUpdated', '*'); 
+            }
+
+            handleCloseTab(); 
+
+        } catch (err) {
+            console.error("Error al guardar producto:", err);
+            setError(err.message);
+            alert(`❌ Error al guardar el producto: ${err.message}`);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    return (
-        <form className="product-form card" onSubmit={handleSubmit}>
+    if (loading && isEditing) {
+        return <div className="loading-card card" style={{ padding: '20px', textAlign: 'center' }}>Cargando datos del producto...</div>;
+    }
+
+    if (error && isEditing) {
+        return <div className="error-card card" style={{ padding: '20px', color: 'red', textAlign: 'center' }}>Error: {error}</div>;
+    }
+
+    return ( 
+        <form className="app-form card" onSubmit={handleSubmit}>
             <h2 className="module-title" style={{ textAlign: 'center' }}>
                 {isEditing ? `Editar Producto #${id}` : 'Registrar Nuevo Producto'}
             </h2>
             
-            <div className="section-group product-fields">
+            <div className="section-group client-data">
                 
-                {/* Código de Producto (SKU) */}
+                {/* Código */}
                 <div className="field-col">
-                    <label htmlFor="code">Código</label>
+                    <label htmlFor="codigo">Código</label>
                     <input 
                         type="text" 
-                        id="code" 
-                        placeholder="PROD-XXX" 
-                        value={productData.code} 
+                        id="codigo" 
+                        placeholder="Código de Referencia" 
+                        value={productData.codigo} 
                         onChange={handleChange} 
                         required 
-                        // disabled={isEditing} // Opcional: Deshabilitar la edición del código
                     />
                 </div>
                 
                 {/* Nombre */}
                 <div className="field-col">
-                    <label htmlFor="name">Nombre del Producto</label>
-                    <input type="text" id="name" placeholder="Nombre comercial" value={productData.name} onChange={handleChange} required />
-                </div>
-
-                {/* Precio Unitario */}
-                <div className="field-col">
-                    <label htmlFor="price">Precio Unitario ($)</label>
-                    <input type="number" id="price" step="0.01" min="0" placeholder="0.00" value={productData.price} onChange={handleChange} required />
-                </div>
-                
-                {/* Stock Actual */}
-                <div className="field-col">
-                    <label htmlFor="stock">Stock Actual</label>
-                    <input type="number" id="stock" min="0" placeholder="0" value={productData.stock} onChange={handleChange} required />
-                </div>
-                
-                {/* Descripción (Ocupa dos columnas si el grid lo permite) */}
-                <div className="field-col description-field" style={{ gridColumn: '1 / -1' }}>
-                    <label htmlFor="description">Descripción Detallada</label>
-                    <textarea 
-                        id="description" 
-                        rows="3" 
-                        placeholder="Características, unidad de medida, etc." 
-                        value={productData.description} 
-                        onChange={handleChange}
+                    <label htmlFor="nombre">Nombre</label>
+                    <input 
+                        type="text" 
+                        id="nombre" 
+                        placeholder="Nombre completo del Producto" 
+                        value={productData.nombre} 
+                        onChange={handleChange} 
+                        required 
                     />
                 </div>
+
+                {/* Precio */}
+                <div className="field-col">
+                    <label htmlFor="precio">Precio Unitario ($)</label>
+                    <input 
+                        type="number" 
+                        id="precio" 
+                        placeholder="0.00" 
+                        step="0.01"
+                        min="0"
+                        value={productData.precio} 
+                        onChange={handleChange} 
+                        required 
+                    />
+                </div>
+                
+                {/* Impuesto: readOnly si estamos editando */}
+                <div className="field-col">
+                    <label htmlFor="impuesto_porcentaje">Impuesto (%)</label>
+                    <input 
+                        type="number" 
+                        id="impuesto_porcentaje" 
+                        placeholder="0" 
+                        step="1"
+                        min="0"
+                        value={productData.impuesto_porcentaje} 
+                        onChange={handleChange}
+                        readOnly={isEditing} 
+                        className={isEditing ? 'read-only-field' : ''}
+                    />
+                </div>
+                
+                {/* Descripción */}
+                <div className="field-col full-width">
+                    <label htmlFor="descripcion">Descripción</label>
+                    <textarea 
+                        id="descripcion" 
+                        placeholder="Detalles del producto" 
+                        value={productData.descripcion} 
+                        onChange={handleChange} 
+                        rows="3" 
+                    />
+                </div>
+
             </div>
 
             {/* Botones de Acción */}
-            <div className="final-buttons-group" style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginTop: '30px' }}>
+            <div className="final-buttons-group">
                 <button 
                     type="submit" 
                     className="btn btn-success" 
                     style={{ width: '200px' }}
+                    disabled={loading}
                 >
-                    {isEditing ? 'Guardar Cambios' : 'Registrar Producto'}
+                    {loading ? 'Guardando...' : (isEditing ? 'Guardar Cambios' : 'Registrar Producto')}
                 </button>
                 
-                {/* --- BOTÓN DE CIERRE MANUAL (Reemplaza Cancelar) --- */}
                 <button 
                     type="button" 
                     className="btn btn-danger" 
-                    onClick={handleCloseTab} // <-- NUEVA ACCIÓN
+                    onClick={handleCloseTab} 
                     style={{ width: '200px' }}
+                    disabled={loading}
                 >
                     Cerrar Pestaña
                 </button>
             </div>
         </form>
-    );
+    ); 
 };
 
 export default ProductForm;

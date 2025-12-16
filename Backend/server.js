@@ -1,4 +1,4 @@
-// Backend/server.js (VERSIÓN ACTUALIZADA)
+// Backend/server.js (CORRECCIÓN DE PUERTO Y RUTAS)
 
 // 1. Importar dotenv y configurarlo CON LA RUTA CORRECTA
 import * as dotenv from 'dotenv';
@@ -13,35 +13,45 @@ import clienteRoutes from './routes/cliente.routes.js';
 import productoRoutes from './routes/producto.routes.js';
 
 
-
-
-
 const app = express();
-const PORT = process.env.PORT || 3000;
+// 🚨 CORRECCIÓN CLAVE 1: Usar un puerto diferente al de React (3000)
+// Ajustaremos para usar 8080 (que usamos en el Frontend) o el que tengas configurado en .env
+const PORT = process.env.PORT || 8080; // Usaremos 8080 por defecto si .env no lo define. 
 
 // Middleware
-app.use(cors());
+// Si necesitas configurar CORS específicamente (ej. solo para 3000):
+/* app.use(cors({
+    origin: 'http://localhost:3000' // O la URL de tu frontend
+}));
+*/
+// Por ahora, lo dejamos abierto (app.use(cors());) para que funcione en desarrollo
+app.use(cors()); 
 app.use(express.json());
-app.use('/api/productos', productoRoutes);
+
 
 // Conexión de prueba a la base de datos
 testConnection(); 
 
-// Rutas
+// =======================================================
+// RUTAS DE LA API
+// =======================================================
+
 app.use('/api/auth', authRoutes);
 
-// 🚨 2. INTEGRAR LA RUTA DE CLIENTES
+// 🚨 INTEGRAR LA RUTA DE CLIENTES
 app.use('/api/clientes', clienteRoutes);
 
-// 🚨 2. INTEGRAR LA RUTA DE PRODUCTOS
-app.use('/api/auth', authRoutes);
+// 🚨 INTEGRAR LA RUTA DE PRODUCTOS
+app.use('/api/productos', productoRoutes);
+
+// 🚨 ELIMINAR app.use('/api/auth', authRoutes); duplicado.
 
 
 app.get('/', (req, res) => {
-res.send('API de PFEPS funcionando!');
+    res.send('API de PFEPS funcionando!');
 });
 
 // Iniciar el servidor
 app.listen(PORT, () => {
-console.log(`🚀 Servidor Express escuchando en http://localhost:${PORT}`);
+    console.log(`🚀 Servidor Express escuchando en http://localhost:${PORT}`);
 });

@@ -1,34 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; // Necesitas este hook para obtener el ID de la URL
+import { useParams } from 'react-router-dom';
+import '../styles1.css'; // Importa los estilos modulares actualizados
 
 // =======================================================
 // COMPONENTE: InvoiceForm (Ahora actúa como una página/ruta)
 // =======================================================
 
-// Eliminamos 'initialData', 'onCancel', y 'onSubmit' de los props, 
-// ya que la lógica de carga y guardado es auto-contenida en esta ruta.
 const InvoiceForm = () => { 
     
     // --- NUEVO: Obtener el ID de la URL para edición ---
-    const { id } = useParams(); // Obtiene 'FAC-00X' si estamos en /facturas/editar/FAC-00X
+    const { id } = useParams(); // Obtiene el ID si estamos en modo edición
     const isEditing = !!id;
 
     // Simulación: Cargar datos si estamos editando
-    // En un proyecto real, usarías useEffect y el 'id' para hacer una llamada a la API y setear los estados
     const loadedData = isEditing ? 
-        { id: id, clientName: `Cliente #${id}`, tipoFactura: 'Crédito' } : 
+        { 
+            id: id, 
+            clientName: `Cliente #${id}`, 
+            tipoFactura: 'Crédito', 
+            productos: [
+                { code: "PROD-A", cant: "2", detail: "Servicio de consultoría", unit: "150.00", total: 300.00 },
+                { code: "PROD-B", cant: "1", detail: "Licencia de software anual", unit: "500.00", total: 500.00 }
+            ]
+        } : 
         null;
 
     // ESTADOS DEL FORMULARIO: Usan loadedData si existe (edición)
     const [formData, setFormData] = useState(loadedData || {});
     const [tipoFactura, setTipoFactura] = useState(loadedData?.tipoFactura || 'Contado');
+    
     // Estado clave para líneas de producto: array de objetos
     const [productos, setProductos] = useState(
         loadedData?.productos || [{ code: "", cant: "", detail: "", unit: "", total: 0 }]
     );
 
     // =======================================================
-    // I. LÓGICA DE PRODUCTOS Y CÁLCULO DE TOTALES (Se mantiene)
+    // I. LÓGICA DE PRODUCTOS Y CÁLCULO DE TOTALES
     // =======================================================
     
     // Función de cálculo de subtotales, IVA (19%) y total final
@@ -51,6 +58,7 @@ const InvoiceForm = () => {
         const cant = parseFloat(updated[index].cant) || 0;
         const unit = parseFloat(updated[index].unit) || 0;
 
+        // Asegura que el total siempre se calcula
         updated[index].total = cant * unit;
 
         setProductos(updated);
@@ -82,11 +90,9 @@ const InvoiceForm = () => {
         setTipoFactura(type);
     };
     
-    // --- MODIFICADO: Muestra alerta y no cierra la pestaña ---
     const handleFormSubmit = (e) => {
         e.preventDefault();
         
-        // Determinar ID para el mensaje
         const submissionId = id || `FAC-${Math.floor(Math.random() * 1000)}`;
 
         const finalData = { 
@@ -100,68 +106,74 @@ const InvoiceForm = () => {
         // Simulación: Envío de datos a la API (o a la consola)
         console.log("Datos de la factura a guardar:", finalData);
         
-        // Mostrar mensaje de confirmación
         const action = isEditing ? 'editó' : 'registró';
         alert(`✅ Factura ${submissionId} ${action} con éxito. La pestaña se mantendrá abierta hasta que la cierre.`);
-
-        // IMPORTANTE: NO CERRAMOS LA PESTAÑA NI HACEMOS REDIRECCIÓN AQUÍ.
-        // El formulario queda abierto para revisión.
     };
 
-    // --- NUEVO: Función para Cerrar la Pestaña Manualmente ---
+    // Función para Cerrar la Pestaña Manualmente
     const handleCloseTab = () => {
-        // Esta función cierra la ventana o pestaña actual del navegador.
         window.close();
     };
 
-    // El handler 'cancelar' original ya no es necesario o debe ser handleCloseTab
     
     return (
-        // El componente usa la clase 'invoice-form card' para aplicar los estilos modulares
-        <form className="invoice-form card" onSubmit={handleFormSubmit}> 
+        // 🚨 CAMBIO 1: Usar la clase global 'app-form'
+        <form className="app-form card" onSubmit={handleFormSubmit}> 
             
             <h2 className="module-title">
                 {isEditing ? `Editar Factura #${id}` : 'Registrar Nueva Factura'}
             </h2> 
             
-            {/* ... Resto del Formulario (TIPO DE FACTURA, DATOS CLIENTE, DETALLE DE PRODUCTOS, TOTALES) se mantiene igual ... */}
+            {/* ------------------------------------------------------------- */}
+            {/* 1. Encabezado (Ya usa la estructura .section-group) */}
+            {/* ------------------------------------------------------------- */}
             
-            {/* TIPO DE FACTURA */}
-            <h2 className="section-title"></h2> 
             <div className="section-group header-fields">
-                <div className="field-col">
-                    {/* Tipo Factura (Radio Buttons) */}
-                    <div> 
-                        <label>Tipo Factura:</label>
-                        <div className="radio-group">
-                            <label className="radio-label">
-                                <input type="radio" name="tipoFactura" value="Contado" checked={tipoFactura === 'Contado'} onChange={() => handlePaymentType('Contado')} />
-                                Contado
-                            </label>
-                            <label className="radio-label">
-                                <input type="radio" name="tipoFactura" value="Crédito" checked={tipoFactura === 'Crédito'} onChange={() => handlePaymentType('Crédito')} />
-                                Crédito
-                            </label>
-                        </div>
-                    </div>
-
-                    {/* Número de Factura */}
-                    <div>
-                        <label htmlFor="num-factura">Número de Factura</label>
-                        <input type="text" id="num-factura" className="input-short" placeholder="fagin-factura" defaultValue={id || ''} disabled={isEditing} />
+                
+                {/* Campo 1: Tipo de Factura (Unidad independiente) */}
+                <div className="field-col"> 
+                    <label>Tipo Factura:</label>
+                    <div className="radio-group">
+                        <label className="radio-label">
+                            <input type="radio" name="tipoFactura" value="Contado" checked={tipoFactura === 'Contado'} onChange={() => handlePaymentType('Contado')} />
+                            Contado
+                        </label>
+                        <label className="radio-label">
+                            <input type="radio" name="tipoFactura" value="Crédito" checked={tipoFactura === 'Crédito'} onChange={() => handlePaymentType('Crédito')} />
+                            Crédito
+                        </label>
                     </div>
                 </div>
                 
+                {/* Campo 2: Número de Factura (Unidad independiente) */}
                 <div className="field-col">
-                    {/* Fecha */}
+                    <label htmlFor="num-factura">Número de Factura</label>
+                    <input 
+                        type="text" 
+                        id="num-factura" 
+                        className="input-short" 
+                        placeholder="fagin-factura" 
+                        defaultValue={id || ''} 
+                        disabled={isEditing} 
+                    />
+                </div>
+
+                {/* Campo 3: Fecha (Unidad independiente) */}
+                <div className="field-col">
                     <label htmlFor="fecha-emision">Fecha</label>
-                    <input type="date" id="fecha-emision" className="input-short" defaultValue={loadedData?.date || new Date().toISOString().substring(0, 10)} />
+                    <input 
+                        type="date" 
+                        id="fecha-emision" 
+                        className="input-short" 
+                        defaultValue={loadedData?.date || new Date().toISOString().substring(0, 10)} 
+                    />
                 </div>
             </div>
             
-            {/* ======================================================= */}
-            /* 2. DATOS DEL CLIENTE */
-            {/* ======================================================= */}
+            
+            {/* ------------------------------------------------------------- */}
+            {/* 2. Datos del Cliente (Ya usaba la estructura .section-group) */}
+            {/* ------------------------------------------------------------- */}
             <h2 className="section-title">2. Datos del Cliente</h2> 
             <div className="section-group client-data"> 
                 <div className="field-col">
@@ -184,12 +196,12 @@ const InvoiceForm = () => {
                     <label htmlFor="correo">Correo</label>
                     <input type="email" id="correo" placeholder="Correo electrónico" />
                 </div>
-                <div className="field-col"></div> 
+                <div className="field-col"></div> {/* Columna de relleno para mantener el grid */}
             </div>
-            
-            {/* ======================================================= */}
-            /* 3. DETALLE DE PRODUCTOS (Líneas dinámicas) */
-            {/* ======================================================= */}
+        
+            {/* ------------------------------------------------------------- */}
+            {/* 3. Detalle de Productos (Usa Grid, no .field-col) */}
+            {/* ------------------------------------------------------------- */}
             <h2 className="section-title">3. Detalle de Productos</h2> 
             
             {/* Encabezado del Grid */}
@@ -248,9 +260,8 @@ const InvoiceForm = () => {
             </button>
 
 
-            {/* ======================================================= */}
-            /* 4. TOTALES DE LA FACTURA */
-            {/* ======================================================= */}
+        
+            {/* ---------4. TOTALES DE LA FACTURA---------------------- */}
             <h2 className="section-title">4. Valor</h2> 
             <div className="totals-section">
                 <div className="total-line">
@@ -268,7 +279,8 @@ const InvoiceForm = () => {
             </div>
             
             {/* Botones Finales */}
-            <div className="final-buttons-group" style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginTop: '30px' }}>
+            {/* 🚨 CAMBIO 2: Usar la clase global 'final-buttons-group' y eliminar style inline */}
+            <div className="final-buttons-group">
                 <button 
                     type="submit" 
                     className="btn btn-success" 
@@ -277,7 +289,6 @@ const InvoiceForm = () => {
                     {isEditing ? 'Guardar Cambios' : 'Crear Factura'}
                 </button>
                 
-                {/* --- NUEVO BOTÓN: Cierre Manual --- */}
                 <button 
                     type="button" 
                     className="btn btn-danger" 
@@ -292,4 +303,3 @@ const InvoiceForm = () => {
 };
 
 export default InvoiceForm;
-

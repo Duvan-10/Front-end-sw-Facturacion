@@ -1,68 +1,159 @@
-import React, { useState } from 'react'; 
-// NOTA: Se eliminan 'useEffect' y 'fetch' ya que la carga de datos no es local.
-// NOTA: No hay estilos locales importados.
+import React, { useState, useEffect } from 'react'; 
+// Usaremos useEffect para que el filtro y el listener se apliquen automáticamente.
 
 // =======================================================
 // DATOS Y CONSTANTES (Redefinidos para simulación)
 // =======================================================
-// Se elimina apiBaseUrl y ITEMS_PER_PAGE. Usamos datos de simulación.
 const initialClientsData = [
     { id: 101, name: 'Técnicas Avanzadas S.A.', nit: '900.123.456-7', phone: '3105550001', email: 'contacto@tecnicas.com' },
     { id: 102, name: 'Distribuidora Global Ltda.', nit: '800.987.654-3', phone: '3115550002', email: 'info@global.com' },
     { id: 103, name: 'Innovación Digital E.U.', nit: '100.222.333-4', phone: '3125550003', email: 'soporte@digital.net' },
+    { id: 104, name: 'Martínez López, Ana', nit: '111.456.789-0', phone: '3151234567', email: 'ana@martinez.com' },
 ];
 
+// Función de simulación: obtendría datos de la API
+const fetchClientsSimulated = () => {
+    // NOTA: En una aplicación real, esta función haría un fetch()
+    // Aquí usamos un clon de los datos iniciales para simular la "recarga"
+    return [...initialClientsData]; 
+};
+
+
 // =======================================================
-// COMPONENTE PRINCIPAL: CLIENTES (Estructural/Mock Data)
+// COMPONENTE PRINCIPAL: CLIENTES
 // =======================================================
 
 function Clientes() {
     
-    // 1. Estado principal (Usando datos simulados, ya no hay 'loading' ni 'error')
-    const [clients, setClients] = useState(initialClientsData); 
+    // 1. Estados principales
+    const [allClients, setAllClients] = useState(initialClientsData); // Fuente de datos completa
+    const [clients, setClients] = useState(initialClientsData); // Lista filtrada/actual
+    
+    // 🟢 ESTADO CLAVE PARA RECARGA: Se incrementa para forzar useEffects
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    // Estado para la Búsqueda
+    const [searchQuery, setSearchQuery] = useState(''); 
 
     // =======================================================
-    // I. LÓGICA DE CARGA DE DATOS DESDE LA API (ELIMINADA)
+    // I. LÓGICA DE BÚSQUEDA Y FILTRADO (Dependiente de refreshKey)
     // =======================================================
-    // Se elimina fetchClients, useEffect de carga y useEffect de listener.
     
+    // Función para recargar la lista de la API (simulada)
+    const loadClients = () => {
+        // Simulando carga: En una app real, fetch aquí y usa setAllClients(fetchedData)
+        const loadedData = fetchClientsSimulated(); 
+        setAllClients(loadedData);
+        // NOTA: No llamamos a setClients aquí, lo hace el useEffect de filtrado.
+    };
+
+    const getFilteredClients = () => {
+        let filtered = allClients; 
+        
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase().trim();
+            filtered = filtered.filter(client => 
+                client.nit.toLowerCase().includes(query) ||
+                client.name.toLowerCase().includes(query)
+            );
+        }
+        
+        setClients(filtered);
+    };
+
+    // 1. Aplicar el filtro cada vez que 'searchQuery' o 'allClients' cambian
+    useEffect(() => {
+        getFilteredClients();
+    }, [searchQuery, allClients]); 
+    
+    // Handler para cambios en la búsqueda
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+
     // =======================================================
-    // II. HANDLERS DE NAVEGACIÓN (Se mantienen)
+    // II. HANDLER DE COMUNICACIÓN ENTRE PESTAÑAS (NUEVO)
+    // =======================================================
+    
+    // Este useEffect se monta una sola vez para escuchar los mensajes
+    useEffect(() => {
+        const handleMessage = (event) => {
+            // Asegura que el mensaje proviene de una fuente de confianza si es posible
+            // Usamos '*' en ClientForm, así que verificamos el contenido del mensaje
+            if (event.data === 'listUpdated') {
+                console.log("Mensaje recibido: listUpdated. Forzando recarga de lista...");
+                
+                // 1. En una aplicación real con API: loadClients();
+                
+                // 2. En esta simulación: Forzar recarga incrementando la clave (refreshKey)
+                setRefreshKey(prev => prev + 1); 
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        
+        // Limpieza: importante para evitar memory leaks al desmontar el componente
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        };
+    }, []); // Se ejecuta solo una vez al montar
+
+    // 3. Forzar una recarga de los datos de origen (simulado) cuando cambia refreshKey
+    useEffect(() => {
+        // Cuando refreshKey cambia, simulamos ir a buscar los datos actualizados.
+        loadClients(); 
+    }, [refreshKey]); // Depende de refreshKey
+
+
+    // =======================================================
+    // III. HANDLERS DE NAVEGACIÓN
     // =======================================================
     
     const handleCreateNew = () => {
-        // Asume que la aplicación maneja el routing (React Router)
-        console.log("Navegando a: /clientes/crear");
-        // window.open('/clientes/crear', '_blank'); // Se mantiene si se usa nueva pestaña
+        window.open('/clientes/crear', '_blank'); 
     };
 
     const handleEdit = (client) => {
-        console.log(`Navegando a: /clientes/editar/${client.id}`);
-        // window.open(`/clientes/editar/${client.id}`, '_blank'); // Se mantiene si se usa nueva pestaña
+        window.open(`/clientes/editar/${client.id}`, '_blank'); 
     };
     
-    // Función de ejemplo para Eliminar (ya no hace llamada API)
     const handleDelete = (clientId) => {
-        // Simulamos la eliminación de la lista local
-        setClients(clients.filter(client => client.id !== clientId));
-        console.log(`Simulando: Cliente ${clientId} eliminado localmente.`);
+        // La lógica de eliminación DEBERÍA llamar a la API y luego forzar la recarga
+        if (window.confirm("¿Estás seguro de que quieres eliminar este cliente?")) {
+            // Simulación de eliminación local
+            const updatedClients = allClients.filter(client => client.id !== clientId);
+            setAllClients(updatedClients); // Actualiza la fuente de datos principal
+            setRefreshKey(prev => prev + 1); // Forzar re-renderizado
+            console.log(`Simulando: Cliente ${clientId} eliminado.`);
+        }
     };
 
     // =======================================================
-    // III. RENDERIZADO
+    // IV. RENDERIZADO
     // =======================================================
-
-    // Nota: 'loading' y 'error' se han eliminado del JSX.
-    // Usamos variables de simulación si clients está vacío
-    const displayClients = clients.length > 0 ? clients : initialClientsData;
-
 
     return (
         <div className="main-content">
+            {/* ... JSX sigue igual ... */}
             <h1 className="module-title">Gestión de Clientes</h1>
 
-            {/* --- 1. Controles y Botón de Registro --- */}
+            {/* --- 1. Controles de Búsqueda y Botón de Registro --- */}
             <section className="controls-section card">
+                
+                {/* 🟢 BARRA DE BÚSQUEDA 🟢 */}
+                <div className="search-bar">
+                    <label htmlFor="search">Buscar Cliente (NIT/CC o Nombre/Razón Social):</label>
+                    <input 
+                        type="text" 
+                        id="search"
+                        className="search-input" 
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        placeholder="Buscar por NIT/CC o Nombre..."
+                    />
+                </div>
+                
                 <button 
                     className="btn btn-primary btn-register-client" 
                     onClick={handleCreateNew} 
@@ -75,10 +166,10 @@ function Clientes() {
             
             {/* --- 2. Listado de Clientes (Tabla) --- */}
             <section className="list-section">
-                <h2>Listado de Clientes</h2>
+                <h2>Listado de Clientes ({clients.length} encontrados)</h2>
                 
                 {clients.length === 0 ? (
-                    <p>No hay clientes registrados.</p>
+                    <p>No hay clientes que coincidan con la búsqueda.</p>
                 ) : (
                     <table className="data-table">
                         <thead>
