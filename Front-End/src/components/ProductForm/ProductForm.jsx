@@ -1,26 +1,23 @@
+// Front-end/src/modules/Products/ProductForm.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import "../styles1.css"
 
-// =======================================================
-// COMPONENTE: ProductForm 
-//   - impuesto_porcentaje es readOnly en modo edición.
-// =======================================================
-
 const ProductForm = () => {
-    
     const { id } = useParams();
-    const isEditing = !!id;
+    const isEditing = !!id; 
 
-    // URL base de la API (AJUSTA ESTO SI ES NECESARIO)
-    const apiBaseUrl = 'http://localhost:8080/api/productos'; 
+    // 🚨 CORRECCIÓN 1: Usar variable de entorno para portabilidad
+    const apiBaseUrl = import.meta.env.VITE_API_URL 
+        ? `${import.meta.env.VITE_API_URL}/productos` 
+        : 'http://localhost:8080/api/productos'; 
     
-    // 🚨 REEMPLAZA ESTO: Obtener el token JWT de donde lo almacenes
+    // 🚨 CORRECCIÓN 2: Cambiar sessionStorage a localStorage
     const getAuthToken = () => {
         return localStorage.getItem('authToken'); 
     };
     
-    // Estado inicial ajustado a las claves del backend
     const [productData, setProductData] = useState({
         codigo: '',
         nombre: '',
@@ -32,7 +29,6 @@ const ProductForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // --- I. LÓGICA DE CARGA POR URL (fetch GET individual para edición) ---
     useEffect(() => {
         if (isEditing) {
             const fetchProductData = async () => {
@@ -45,16 +41,15 @@ const ProductForm = () => {
                 try {
                     const response = await fetch(`${apiBaseUrl}/${id}`, {
                         method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}` 
-                        }
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
                     
-                    if (response.status === 401) throw new Error("Acceso denegado. Token inválido o expirado.");
-                    if (!response.ok) throw new Error(`No se pudo cargar el producto ${id}. Código: ${response.status}`);
+                    if (!response.ok) throw new Error(`No se pudo cargar el producto.`);
                     
-                    const data = await response.json();
-                    
+                    const result = await response.json();
+                    // Ajuste según estructura común de respuesta { data: {...} }
+                    const data = result.data || result; 
+
                     setProductData({
                         codigo: data.codigo || '',
                         nombre: data.nombre || '',
@@ -63,47 +58,34 @@ const ProductForm = () => {
                         impuesto_porcentaje: data.impuesto_porcentaje ? String(data.impuesto_porcentaje) : '0',
                     });
                 } catch (err) {
-                    console.error("Error al cargar datos:", err);
                     setError(err.message);
-                    alert(`Error al cargar datos del producto: ${err.message}`);
                 } finally {
                     setLoading(false);
                 }
             };
             fetchProductData();
         }
-    }, [isEditing, id]); 
+    }, [isEditing, id, apiBaseUrl]); 
 
-    // Handler genérico
     const handleChange = (e) => {
         const { id, value } = e.target;
-        setProductData(prev => ({
-            ...prev,
-            [id]: value
-        }));
+        setProductData(prev => ({ ...prev, [id]: value }));
     };
     
-    const handleCloseTab = () => {
-        window.close();
-    };
+    const handleCloseTab = () => window.close();
 
-    // --- II. HANDLER DE ENVÍO (POST/PUT) ---
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
         setLoading(true);
-
+        
         const token = getAuthToken();
         if (!token) {
-            alert("Error de autenticación: No hay token disponible.");
+            alert("Su sesión ha expirado. Inicie sesión nuevamente.");
             setLoading(false);
             return;
         }
 
-        let url = apiBaseUrl;
-        let method = 'POST';
-        
-        // Preparar datos, asegurando que los números son números (usamos parseFloat)
         const finalData = { 
             codigo: productData.codigo,
             nombre: productData.nombre,
@@ -111,11 +93,10 @@ const ProductForm = () => {
             precio: parseFloat(productData.precio) || 0,
             impuesto_porcentaje: parseFloat(productData.impuesto_porcentaje) || 0,
         };
-        
-        if (isEditing) {
-            url = `${apiBaseUrl}/${id}`;
-            method = 'PUT';
-        }
+
+        // 🚨 CORRECCIÓN 3: Asegurar URL y Método correctos
+        const url = isEditing ? `${apiBaseUrl}/${id}` : apiBaseUrl;
+        const method = isEditing ? 'PUT' : 'POST';
 
         try {
             const response = await fetch(url, {
@@ -127,136 +108,75 @@ const ProductForm = () => {
                 body: JSON.stringify(finalData),
             });
 
-            if (response.status === 401) throw new Error("Acceso denegado. Token inválido o expirado.");
+            const result = await response.json();
+
             if (!response.ok) {
-                const errorBody = await response.json(); 
-                throw new Error(errorBody.message || `Error ${response.status}: Error al procesar la solicitud.`);
+                // Manejo de errores de duplicidad o validación del servidor
+                const serverMsg = result.message || "Error en el servidor";
+                if (response.status === 409 || serverMsg.includes("duplicate")) {
+                    throw new Error("El código ya existe en otro producto.");
+                }
+                throw new Error(serverMsg);
             }
 
-            const action = isEditing ? 'editó' : 'registró';
-            alert(`✅ Producto "${productData.nombre}" ${action} con éxito.`);
+            alert(`✅ Producto guardado correctamente.`);
             
             if (window.opener) {
                 window.opener.postMessage('listUpdated', '*'); 
             }
-
             handleCloseTab(); 
 
         } catch (err) {
-            console.error("Error al guardar producto:", err);
             setError(err.message);
-            alert(`❌ Error al guardar el producto: ${err.message}`);
+            alert(`❌ ${err.message}`); 
         } finally {
             setLoading(false);
         }
     };
 
-    if (loading && isEditing) {
-        return <div className="loading-card card" style={{ padding: '20px', textAlign: 'center' }}>Cargando datos del producto...</div>;
-    }
-
-    if (error && isEditing) {
-        return <div className="error-card card" style={{ padding: '20px', color: 'red', textAlign: 'center' }}>Error: {error}</div>;
-    }
+    if (loading && isEditing) return <div className="card">Cargando datos del producto...</div>;
 
     return ( 
         <form className="app-form card" onSubmit={handleSubmit}>
-            <h2 className="module-title" style={{ textAlign: 'center' }}>
-                {isEditing ? `Editar Producto #${id}` : 'Registrar Nuevo Producto'}
+            <h2 className="module-title">
+                {isEditing ? `Editar Producto` : 'Registrar Nuevo Producto'}
             </h2>
             
+            {error && <p className="error-message">{error}</p>}
+            
             <div className="section-group client-data">
-                
-                {/* Código */}
                 <div className="field-col">
                     <label htmlFor="codigo">Código</label>
-                    <input 
-                        type="text" 
-                        id="codigo" 
-                        placeholder="Código de Referencia" 
-                        value={productData.codigo} 
-                        onChange={handleChange} 
-                        required 
-                    />
+                    <input type="text" id="codigo" value={productData.codigo} onChange={handleChange} required />
                 </div>
                 
-                {/* Nombre */}
                 <div className="field-col">
                     <label htmlFor="nombre">Nombre</label>
-                    <input 
-                        type="text" 
-                        id="nombre" 
-                        placeholder="Nombre completo del Producto" 
-                        value={productData.nombre} 
-                        onChange={handleChange} 
-                        required 
-                    />
+                    <input type="text" id="nombre" value={productData.nombre} onChange={handleChange} required />
                 </div>
 
-                {/* Precio */}
                 <div className="field-col">
                     <label htmlFor="precio">Precio Unitario ($)</label>
-                    <input 
-                        type="number" 
-                        id="precio" 
-                        placeholder="0.00" 
-                        step="0.01"
-                        min="0"
-                        value={productData.precio} 
-                        onChange={handleChange} 
-                        required 
-                    />
+                    <input type="number" id="precio" step="0.01" value={productData.precio} onChange={handleChange} required />
                 </div>
                 
-                {/* Impuesto: readOnly si estamos editando */}
                 <div className="field-col">
                     <label htmlFor="impuesto_porcentaje">Impuesto (%)</label>
-                    <input 
-                        type="number" 
-                        id="impuesto_porcentaje" 
-                        placeholder="0" 
-                        step="1"
-                        min="0"
-                        value={productData.impuesto_porcentaje} 
-                        onChange={handleChange}
-                        readOnly={isEditing} 
-                        className={isEditing ? 'read-only-field' : ''}
-                    />
+                    <input type="number" id="impuesto_porcentaje" value={productData.impuesto_porcentaje} onChange={handleChange} />
                 </div>
                 
-                {/* Descripción */}
                 <div className="field-col full-width">
                     <label htmlFor="descripcion">Descripción</label>
-                    <textarea 
-                        id="descripcion" 
-                        placeholder="Detalles del producto" 
-                        value={productData.descripcion} 
-                        onChange={handleChange} 
-                        rows="3" 
-                    />
+                    <textarea id="descripcion" value={productData.descripcion} onChange={handleChange} rows="3" />
                 </div>
-
             </div>
 
-            {/* Botones de Acción */}
             <div className="final-buttons-group">
-                <button 
-                    type="submit" 
-                    className="btn btn-success" 
-                    style={{ width: '200px' }}
-                    disabled={loading}
-                >
-                    {loading ? 'Guardando...' : (isEditing ? 'Guardar Cambios' : 'Registrar Producto')}
+                <button type="submit" className="btn btn-success" disabled={loading}>
+                    {loading ? 'Guardando...' : 'Guardar'}
                 </button>
-                
-                <button 
-                    type="button" 
-                    className="btn btn-danger" 
-                    onClick={handleCloseTab} 
-                    style={{ width: '200px' }}
-                    disabled={loading}
-                >
-                    Cerrar Pestaña
+                <button type="button" className="btn btn-danger" onClick={handleCloseTab}>
+                    Cancelar
                 </button>
             </div>
         </form>

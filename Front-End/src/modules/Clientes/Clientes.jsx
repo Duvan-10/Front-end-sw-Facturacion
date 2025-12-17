@@ -1,23 +1,4 @@
 import React, { useState, useEffect } from 'react'; 
-// Usaremos useEffect para que el filtro y el listener se apliquen automáticamente.
-
-// =======================================================
-// DATOS Y CONSTANTES (Redefinidos para simulación)
-// =======================================================
-const initialClientsData = [
-    { id: 101, name: 'Técnicas Avanzadas S.A.', nit: '900.123.456-7', phone: '3105550001', email: 'contacto@tecnicas.com' },
-    { id: 102, name: 'Distribuidora Global Ltda.', nit: '800.987.654-3', phone: '3115550002', email: 'info@global.com' },
-    { id: 103, name: 'Innovación Digital E.U.', nit: '100.222.333-4', phone: '3125550003', email: 'soporte@digital.net' },
-    { id: 104, name: 'Martínez López, Ana', nit: '111.456.789-0', phone: '3151234567', email: 'ana@martinez.com' },
-];
-
-// Función de simulación: obtendría datos de la API
-const fetchClientsSimulated = () => {
-    // NOTA: En una aplicación real, esta función haría un fetch()
-    // Aquí usamos un clon de los datos iniciales para simular la "recarga"
-    return [...initialClientsData]; 
-};
-
 
 // =======================================================
 // COMPONENTE PRINCIPAL: CLIENTES
@@ -25,109 +6,113 @@ const fetchClientsSimulated = () => {
 
 function Clientes() {
     
+    // URL base de la API
+    const apiBaseUrl = 'http://localhost:8080/api/clientes'; 
+    
+    const getAuthToken = () => {
+        return sessionStorage.getItem('authToken'); 
+    };
+
     // 1. Estados principales
-    const [allClients, setAllClients] = useState(initialClientsData); // Fuente de datos completa
-    const [clients, setClients] = useState(initialClientsData); // Lista filtrada/actual
+    const [allClients, setAllClients] = useState([]); // Fuente original de la DB
+    const [clients, setClients] = useState([]);      // Lista filtrada para mostrar
     
-    // 🟢 ESTADO CLAVE PARA RECARGA: Se incrementa para forzar useEffects
-    const [refreshKey, setRefreshKey] = useState(0);
-
-    // Estado para la Búsqueda
-    const [searchQuery, setSearchQuery] = useState(''); 
+    // Estados de control
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [refreshKey, setRefreshKey] = useState(0); 
+    
+    // Estados para búsqueda fluida (evita bloqueo de teclado)
+    const [inputValue, setInputValue] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     // =======================================================
-    // I. LÓGICA DE BÚSQUEDA Y FILTRADO (Dependiente de refreshKey)
+    // I. LÓGICA DE CARGA DE DATOS (fetch GET)
     // =======================================================
-    
-    // Función para recargar la lista de la API (simulada)
-    const loadClients = () => {
-        // Simulando carga: En una app real, fetch aquí y usa setAllClients(fetchedData)
-        const loadedData = fetchClientsSimulated(); 
-        setAllClients(loadedData);
-        // NOTA: No llamamos a setClients aquí, lo hace el useEffect de filtrado.
-    };
 
-    const getFilteredClients = () => {
-        let filtered = allClients; 
-        
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase().trim();
-            filtered = filtered.filter(client => 
-                client.nit.toLowerCase().includes(query) ||
-                client.name.toLowerCase().includes(query)
-            );
+    const loadClients = async () => {
+        const token = getAuthToken();
+        if (!token) {
+            setError("Error de autenticación: Token no encontrado.");
+            setLoading(false);
+            return;
         }
-        
-        setClients(filtered);
-    };
 
-    // 1. Aplicar el filtro cada vez que 'searchQuery' o 'allClients' cambian
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(apiBaseUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            });
+            
+            if (response.status === 401) throw new Error("Acceso denegado. Sesión expirada.");
+            if (!response.ok) throw new Error(`Error al cargar datos: ${response.status}`);
+            
+            const result = await response.json();
+            
+            // Si el backend devuelve { data: [...] } usamos result.data, si no, result directo
+            const clientArray = Array.isArray(result) ? result : (result.data || []); 
+            
+            setAllClients(clientArray);
+            
+        } catch (err) {
+            console.error("Error en API Clientes:", err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    // Ejecutar carga inicial y refrescos
     useEffect(() => {
-        getFilteredClients();
-    }, [searchQuery, allClients]); 
+        loadClients(); 
+    }, [refreshKey]); 
+
+    // --- Debounce: Actualiza searchQuery 300ms después de dejar de escribir ---
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setSearchQuery(inputValue);
+        }, 300);
+        return () => clearTimeout(timeoutId);
+    }, [inputValue]);
+
+    // --- II. LÓGICA DE FILTRADO LOCAL ---
+    useEffect(() => {
+        const filteredClients = allClients.filter(client => {
+            const query = searchQuery.toLowerCase().trim();
+            
+            // 🚨 CORRECCIÓN: Usamos 'nombre_razon_social' que es el campo de tu DB
+            const nombreStr = (client.nombre_razon_social || "").toLowerCase();
+            const idStr = (client.identificacion || "").toLowerCase();
+            
+            return nombreStr.includes(query) || idStr.includes(query);
+        });
+        setClients(filteredClients); 
+    }, [allClients, searchQuery]);
     
-    // Handler para cambios en la búsqueda
     const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
+        setInputValue(e.target.value); // Cambio instantáneo en el input
     };
 
-
     // =======================================================
-    // II. HANDLER DE COMUNICACIÓN ENTRE PESTAÑAS (NUEVO)
+    // III. HANDLERS Y NAVEGACIÓN
     // =======================================================
     
-    // Este useEffect se monta una sola vez para escuchar los mensajes
     useEffect(() => {
         const handleMessage = (event) => {
-            // Asegura que el mensaje proviene de una fuente de confianza si es posible
-            // Usamos '*' en ClientForm, así que verificamos el contenido del mensaje
-            if (event.data === 'listUpdated') {
-                console.log("Mensaje recibido: listUpdated. Forzando recarga de lista...");
-                
-                // 1. En una aplicación real con API: loadClients();
-                
-                // 2. En esta simulación: Forzar recarga incrementando la clave (refreshKey)
+            if (event.data === 'listUpdated') { 
                 setRefreshKey(prev => prev + 1); 
             }
         };
-
         window.addEventListener('message', handleMessage);
-        
-        // Limpieza: importante para evitar memory leaks al desmontar el componente
-        return () => {
-            window.removeEventListener('message', handleMessage);
-        };
-    }, []); // Se ejecuta solo una vez al montar
+        return () => window.removeEventListener('message', handleMessage);
+    }, []); 
 
-    // 3. Forzar una recarga de los datos de origen (simulado) cuando cambia refreshKey
-    useEffect(() => {
-        // Cuando refreshKey cambia, simulamos ir a buscar los datos actualizados.
-        loadClients(); 
-    }, [refreshKey]); // Depende de refreshKey
-
-
-    // =======================================================
-    // III. HANDLERS DE NAVEGACIÓN
-    // =======================================================
-    
-    const handleCreateNew = () => {
-        window.open('/clientes/crear', '_blank'); 
-    };
-
-    const handleEdit = (client) => {
-        window.open(`/clientes/editar/${client.id}`, '_blank'); 
-    };
-    
-    const handleDelete = (clientId) => {
-        // La lógica de eliminación DEBERÍA llamar a la API y luego forzar la recarga
-        if (window.confirm("¿Estás seguro de que quieres eliminar este cliente?")) {
-            // Simulación de eliminación local
-            const updatedClients = allClients.filter(client => client.id !== clientId);
-            setAllClients(updatedClients); // Actualiza la fuente de datos principal
-            setRefreshKey(prev => prev + 1); // Forzar re-renderizado
-            console.log(`Simulando: Cliente ${clientId} eliminado.`);
-        }
-    };
+    const handleCreateNew = () => window.open('/clientes/crear', '_blank');
+    const handleEdit = (client) => window.open(`/clientes/editar/${client.id}`, '_blank');
 
     // =======================================================
     // IV. RENDERIZADO
@@ -135,28 +120,26 @@ function Clientes() {
 
     return (
         <div className="main-content">
-            {/* ... JSX sigue igual ... */}
             <h1 className="module-title">Gestión de Clientes</h1>
 
-            {/* --- 1. Controles de Búsqueda y Botón de Registro --- */}
             <section className="controls-section card">
-                
-                {/* 🟢 BARRA DE BÚSQUEDA 🟢 */}
                 <div className="search-bar">
-                    <label htmlFor="search">Buscar Cliente (NIT/CC o Nombre/Razón Social):</label>
+                    <label htmlFor="search">Buscar Cliente (Identificación o Nombre):</label>
                     <input 
                         type="text" 
                         id="search"
                         className="search-input" 
-                        value={searchQuery}
+                        value={inputValue} 
                         onChange={handleSearchChange}
-                        placeholder="Buscar por NIT/CC o Nombre..."
+                        placeholder="Escribe para buscar..."
+                        autoComplete="off"
                     />
                 </div>
                 
                 <button 
                     className="btn btn-primary btn-register-client" 
                     onClick={handleCreateNew} 
+                    disabled={loading}
                 >
                     Registrar Nuevo Cliente
                 </button>
@@ -164,19 +147,22 @@ function Clientes() {
             
             <hr/>
             
-            {/* --- 2. Listado de Clientes (Tabla) --- */}
             <section className="list-section">
                 <h2>Listado de Clientes ({clients.length} encontrados)</h2>
                 
-                {clients.length === 0 ? (
-                    <p>No hay clientes que coincidan con la búsqueda.</p>
+                {loading && <p>Cargando datos...</p>}
+                {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+
+                {!loading && !error && clients.length === 0 ? (
+                    <p>No se encontraron clientes.</p>
                 ) : (
                     <table className="data-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Tipo ID</th>
+                                <th>Identificación</th>
                                 <th>Razón Social / Nombre</th>
-                                <th>NIT/CC</th>
                                 <th>Teléfono</th>
                                 <th>Correo</th>
                                 <th>Acciones</th>
@@ -186,22 +172,24 @@ function Clientes() {
                             {clients.map((client) => (
                                 <tr key={client.id}>
                                     <td>{client.id}</td>
-                                    <td>{client.name}</td>
-                                    <td>{client.nit}</td>
-                                    <td>{client.phone}</td>
-                                    <td>{client.email}</td>
+                                    <td>{client.tipo_identificacion}</td> 
+                                    <td>{client.identificacion}</td> 
+                                    
+                                    {/* 🚨 COLUMNA CORREGIDA CON NOMBRE_RAZON_SOCIAL */}
+                                    <td style={{ fontWeight: '600' }}>
+                                        {client.nombre_razon_social || "---"}
+                                    </td> 
+
+                                    <td>{client.telefono || 'N/A'}</td>
+                                    <td>{client.email || 'N/A'}</td>
+                                    
                                     <td className="actions-cell">
                                         <button 
                                             className="btn btn-sm btn-edit" 
                                             onClick={() => handleEdit(client)} 
+                                            disabled={loading}
                                         >
                                             Editar
-                                        </button>
-                                        <button 
-                                            className="btn btn-sm btn-danger" 
-                                            onClick={() => handleDelete(client.id)}
-                                        >
-                                            Eliminar
                                         </button>
                                     </td>
                                 </tr>
