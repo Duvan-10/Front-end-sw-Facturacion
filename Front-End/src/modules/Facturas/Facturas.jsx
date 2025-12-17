@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react'; 
 // Asegúrate de que Facturas.css está importado en algún lugar
-// import './Facturas.css'; 
-
-// Ya no necesitamos importar InvoiceForm en este archivo,
-// ya que será renderizado por el router en la nueva pestaña.
-// import InvoiceForm from '../../components/InvoiceForm/InvoiceForm';
 
 // =======================================================
 // DATOS Y CONSTANTES (Simulación)
