@@ -1,28 +1,25 @@
 import React, { useState, useEffect } from 'react'; 
-
-// =======================================================
-// COMPONENTE PRINCIPAL: CLIENTES
-// =======================================================
+import { useNavigate } from 'react-router-dom'; // Añadido para navegación
 
 function Clientes() {
+    const navigate = useNavigate();
     
     // URL base de la API
-    const apiBaseUrl = 'http://localhost:8080/api/clientes'; 
+    const apiBaseUrl = import.meta.env.VITE_API_URL 
+        ? `${import.meta.env.VITE_API_URL}/clientes` 
+        : 'http://localhost:8080/api/clientes';
     
+    // 🚨 CORRECCIÓN: Ahora lee de sessionStorage para coincidir con Login.jsx
     const getAuthToken = () => {
         return sessionStorage.getItem('authToken'); 
     };
 
-    // 1. Estados principales
-    const [allClients, setAllClients] = useState([]); // Fuente original de la DB
-    const [clients, setClients] = useState([]);      // Lista filtrada para mostrar
-    
-    // Estados de control
+    // Estados principales
+    const [allClients, setAllClients] = useState([]); 
+    const [clients, setClients] = useState([]);      
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [refreshKey, setRefreshKey] = useState(0); 
-    
-    // Estados para búsqueda fluida (evita bloqueo de teclado)
     const [inputValue, setInputValue] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -32,9 +29,12 @@ function Clientes() {
 
     const loadClients = async () => {
         const token = getAuthToken();
+        
+        // 🚨 MEJORA: Redirección automática si no hay token
         if (!token) {
-            setError("Error de autenticación: Token no encontrado.");
+            setError("Sesión no válida o expirada. Redirigiendo...");
             setLoading(false);
+            setTimeout(() => navigate('/login'), 2000);
             return;
         }
 
@@ -44,34 +44,37 @@ function Clientes() {
             const response = await fetch(apiBaseUrl, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}` 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
             });
             
-            if (response.status === 401) throw new Error("Acceso denegado. Sesión expirada.");
-            if (!response.ok) throw new Error(`Error al cargar datos: ${response.status}`);
+            if (response.status === 401 || response.status === 403) {
+                sessionStorage.removeItem('authToken'); // Limpiar token inválido
+                throw new Error("Acceso denegado. Sesión expirada.");
+            }
+            if (!response.ok) throw new Error(`Error en el servidor: ${response.status}`);
             
             const result = await response.json();
-            
-            // Si el backend devuelve { data: [...] } usamos result.data, si no, result directo
-            const clientArray = Array.isArray(result) ? result : (result.data || []); 
-            
+            const clientArray = Array.isArray(result) ? result : []; 
             setAllClients(clientArray);
             
         } catch (err) {
             console.error("Error en API Clientes:", err);
             setError(err.message);
+            if (err.message.includes("Acceso denegado")) {
+                setTimeout(() => navigate('/'), 2000);
+            }
         } finally {
             setLoading(false);
         }
     };
     
-    // Ejecutar carga inicial y refrescos
     useEffect(() => {
         loadClients(); 
     }, [refreshKey]); 
 
-    // --- Debounce: Actualiza searchQuery 300ms después de dejar de escribir ---
+    // Debounce para búsqueda
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             setSearchQuery(inputValue);
@@ -79,28 +82,22 @@ function Clientes() {
         return () => clearTimeout(timeoutId);
     }, [inputValue]);
 
-    // --- II. LÓGICA DE FILTRADO LOCAL ---
+    // II. LÓGICA DE FILTRADO LOCAL
     useEffect(() => {
         const filteredClients = allClients.filter(client => {
             const query = searchQuery.toLowerCase().trim();
-            
-            // 🚨 CORRECCIÓN: Usamos 'nombre_razon_social' que es el campo de tu DB
             const nombreStr = (client.nombre_razon_social || "").toLowerCase();
             const idStr = (client.identificacion || "").toLowerCase();
-            
             return nombreStr.includes(query) || idStr.includes(query);
         });
         setClients(filteredClients); 
     }, [allClients, searchQuery]);
     
     const handleSearchChange = (e) => {
-        setInputValue(e.target.value); // Cambio instantáneo en el input
+        setInputValue(e.target.value); 
     };
 
-    // =======================================================
-    // III. HANDLERS Y NAVEGACIÓN
-    // =======================================================
-    
+    // Escuchar mensajes de actualización desde ventanas emergentes
     useEffect(() => {
         const handleMessage = (event) => {
             if (event.data === 'listUpdated') { 
@@ -112,11 +109,7 @@ function Clientes() {
     }, []); 
 
     const handleCreateNew = () => window.open('/clientes/crear', '_blank');
-    const handleEdit = (client) => window.open(`/clientes/editar/${client.id}`, '_blank');
-
-    // =======================================================
-    // IV. RENDERIZADO
-    // =======================================================
+    const handleEdit = (id) => window.open(`/clientes/editar/${id}`, '_blank');
 
     return (
         <div className="main-content">
@@ -124,7 +117,7 @@ function Clientes() {
 
             <section className="controls-section card">
                 <div className="search-bar">
-                    <label htmlFor="search">Buscar Cliente (Identificación o Nombre):</label>
+                    <label htmlFor="search">Buscar Cliente (ID o Nombre):</label>
                     <input 
                         type="text" 
                         id="search"
@@ -137,7 +130,7 @@ function Clientes() {
                 </div>
                 
                 <button 
-                    className="btn btn-primary btn-register-client" 
+                    className="btn btn-primary" 
                     onClick={handleCreateNew} 
                     disabled={loading}
                 >
@@ -145,21 +138,22 @@ function Clientes() {
                 </button>
             </section>
             
-            <hr/>
-            
             <section className="list-section">
                 <h2>Listado de Clientes ({clients.length} encontrados)</h2>
                 
-                {loading && <p>Cargando datos...</p>}
-                {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+                {loading && <p>Cargando datos del servidor...</p>}
+                {error && (
+                    <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '4px', marginBottom: '10px' }}>
+                        ⚠️ {error}
+                    </div>
+                )}
 
                 {!loading && !error && clients.length === 0 ? (
-                    <p>No se encontraron clientes.</p>
+                    <p>No hay clientes registrados en la base de datos.</p>
                 ) : (
                     <table className="data-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Tipo ID</th>
                                 <th>Identificación</th>
                                 <th>Razón Social / Nombre</th>
@@ -171,22 +165,17 @@ function Clientes() {
                         <tbody>
                             {clients.map((client) => (
                                 <tr key={client.id}>
-                                    <td>{client.id}</td>
-                                    <td>{client.tipo_identificacion}</td> 
+                                    <td><span className="badge">{client.tipo_identificacion}</span></td> 
                                     <td>{client.identificacion}</td> 
-                                    
-                                    {/* 🚨 COLUMNA CORREGIDA CON NOMBRE_RAZON_SOCIAL */}
                                     <td style={{ fontWeight: '600' }}>
-                                        {client.nombre_razon_social || "---"}
+                                        {client.nombre_razon_social}
                                     </td> 
-
-                                    <td>{client.telefono || 'N/A'}</td>
-                                    <td>{client.email || 'N/A'}</td>
-                                    
-                                    <td className="actions-cell">
+                                    <td>{client.telefono || '---'}</td>
+                                    <td>{client.email || '---'}</td>
+                                    <td>
                                         <button 
                                             className="btn btn-sm btn-edit" 
-                                            onClick={() => handleEdit(client)} 
+                                            onClick={() => handleEdit(client.id)} 
                                             disabled={loading}
                                         >
                                             Editar

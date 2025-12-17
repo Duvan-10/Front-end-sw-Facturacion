@@ -1,295 +1,181 @@
-// ruta: Front-end-sw-Facturacion/Front-end/src/modules/Auth/Login.jsx
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import logo from '../../assets/logo.png';
 import './styles.css'; 
 
-
 function Login() {
-  const navigate = useNavigate(); 
-  
-  // ... (otros estados) ...
+  const navigate = useNavigate(); 
+  
+  const [name, setName] = useState(''); 
+  const [identification, setIdentification] = useState(''); 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const [name, setName] = useState(''); 
-  const [identification, setIdentification] = useState(''); 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(''); 
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Estados de control de la UI/Sesión
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [statusMessage, setStatusMessage] = useState(''); 
-  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState(null); 
+  const [token, setToken] = useState(sessionStorage.getItem('authToken')); 
 
-  // Gestión de la Sesión
-  const [user, setUser] = useState(null); 
-  
-  // 🚨 CAMBIO 1 DE 3: Inicializar token leyendo de sessionStorage
-  const [token, setToken] = useState(sessionStorage.getItem('authToken')); 
+  useEffect(() => {
+    // Si ya existe un token en la sesión, redirigir directamente al Home
+    if (token) {
+        try {
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            setUser(storedUser);
+            navigate('/home', { replace: true }); 
+        } catch (e) {
+            handleLogout();
+        }
+    }
+  }, [token, navigate]); 
 
-  // -------------------------------------------------------------------
-  // Lógica de Gestión de Sesión (usando sessionStorage)
-  useEffect(() => {
-    // Si hay un token guardado, recuperamos los datos del usuario...
-    if (token) {
-        try {
-            // Aún puedes leer 'user' de localStorage si quieres que persistan los datos del perfil, 
-            // pero el token (la llave de acceso) debe ser sessionStorage.
-            const storedUser = JSON.parse(localStorage.getItem('user'));
-            setUser(storedUser);
-            // REDIRECCIÓN A HOME
-            navigate('/home', { replace: true }); 
-        } catch (e) {
-            // Manejo de error si el JSON está mal
-            handleLogout();
-        }
-    } else {
-        setUser(null);
-    }
-  }, [token, navigate]); 
+  const handleLogout = () => {
+    sessionStorage.removeItem('authToken');
+    localStorage.removeItem('user'); 
+    setToken(null);
+    setUser(null);
+    setStatusMessage('Sesión cerrada correctamente.');
+    navigate('/');
+  };
 
-  const handleLogout = () => {
-    // 🚨 CAMBIO 2 DE 3: Usar sessionStorage para eliminar el token
-    sessionStorage.removeItem('authToken');
-    localStorage.removeItem('user'); // Mantenemos la limpieza de user
-    setToken(null);
-    setUser(null);
-    setStatusMessage('Sesión cerrada correctamente.');
-  };
+  const toggleMode = (mode) => {
+    setIsRegistering(mode);
+    setStatusMessage('');
+    setName('');
+    setIdentification('');
+    setEmail('');
+    setPassword('');
+  };
+  
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setStatusMessage('');
 
-  const toggleMode = (mode) => {
-    setIsRegistering(mode);
-    setStatusMessage('');
-    // Limpiar campos al alternar
-    setName('');
-    setIdentification('');
-    setEmail('');
-    setPassword('');
-  };
-  
-  // -------------------------------------------------------------------
-  // FUNCIÓN DE LOGIN
-  // -------------------------------------------------------------------
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setStatusMessage('');
+    try {
+        const response = await fetch('http://localhost:8080/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
 
-    if (!email || !password) {
-        setStatusMessage('Ingresa correo y contraseña.');
-        setIsLoading(false);
-        return;
-    }
+        const data = await response.json();
 
-    try {
-        // ... (Fetch del backend) ...
-        const response = await fetch('http://localhost:8080/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-        });
+        if (response.ok) {
+            // ESTÁNDAR: Guardamos en sessionStorage para consistencia global
+            sessionStorage.setItem('authToken', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user)); 
+            
+            setToken(data.token);
+            setUser(data.user);
+            
+            navigate('/home', { replace: true }); 
+        } else {
+            setStatusMessage(`❌ ${data.message || 'Credenciales incorrectas.'}`);
+        }
+    } catch (error) {
+        setStatusMessage('⚠️ Error de conexión con el servidor (Puerto 8080).');
+    } finally {
+        setIsLoading(false);
+    }
+  };
 
-        const data = await response.json();
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setStatusMessage('');
+    
+    const userData = { name, identification, email, password };
 
-        if (response.ok) {
-            // Guardar token y datos del usuario
-            // 🚨 CAMBIO 3 DE 3: Usar sessionStorage para guardar el token
-            sessionStorage.setItem('authToken', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user)); // user data puede persistir
-            setToken(data.token);
-            setUser(data.user);
-            setStatusMessage(`🎉 Login Exitoso. Redirigiendo a Home...`);
+    try {
+        const response = await fetch('http://localhost:8080/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData),
+        });
 
-            // NAVEGACIÓN DIRECTA A HOME
-            navigate('/home', { replace: true }); 
+        const data = await response.json();
 
-        } else {
-            setStatusMessage(`❌ Login Fallido: ${data.message || 'Credenciales incorrectas.'}`);
-        }
-    } catch (error) {
-        setStatusMessage('⚠️ Error de conexión con el servidor. Asegúrate de que Express esté corriendo en el puerto 8080.');
-    } finally {
-        setIsLoading(false);
-    }
-  };
+        if (response.ok) {
+            setStatusMessage(`🎉 Registro exitoso. ¡Ya puedes iniciar sesión!`);
+            toggleMode(false);
+        } else {
+            setStatusMessage(`❌ Error: ${data.message || 'Error al registrar.'}`);
+        }
+    } catch (error) {
+        setStatusMessage('⚠️ Error de conexión con el servidor.');
+    } finally {
+        setIsLoading(false);
+    }
+  };
 
+  const handleSubmit = isRegistering ? handleRegister : handleLogin;
+  const titleText = isRegistering ? 'Crear una nueva cuenta' : 'Accede a tu cuenta';
+  const buttonText = isRegistering ? (isLoading ? 'Guardando...' : 'Completar Registro') : (isLoading ? 'Iniciando...' : 'Iniciar sesión');
 
-  // ... (rest of the component: handleRegister, handleSubmit, return JSX) ...
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setStatusMessage('');
+  return (
+    <main className="auth">
+      <section className="auth-card">
+        <header className="auth-header">
+          <img src={logo} alt="Logo" className="brand-logo" /> 
+          <h1>PFEPS</h1>
+          <p className="subtitle">{titleText}</p>
+        </header>
 
-    if (!name || !identification || !email || !password) {
-        setStatusMessage('Todos los campos son obligatorios.');
-        setIsLoading(false);
-        return;
-    }
-    
-    const userData = { name, identification, email, password };
+        <form onSubmit={handleSubmit}>
+          {isRegistering && (
+            <>
+              <div className="field">
+                <label>Nombre Completo</label>
+                <input type="text" placeholder="Ej. Juan Pérez" value={name} onChange={(e) => setName(e.target.value)} required />
+              </div>
+              <div className="field">
+                <label>Identificación (Cédula)</label>
+                <input type="text" placeholder="Tu número de cédula" value={identification} onChange={(e) => setIdentification(e.target.value)} required />
+              </div>
+            </>
+          )}
 
-    try {
-        // 🚨 PUERTO CORREGIDO a 8080
-        const response = await fetch('http://localhost:8080/api/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(userData),
-        });
+          <div className="field">
+            <label>Correo electrónico</label>
+            <input type="email" placeholder="correo@ejemplo.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </div>
 
-        const data = await response.json();
+          <div className="field">
+            <div className="label-row">
+              <label>Contraseña</label>
+              <button type="button" className="link-button" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? 'Ocultar' : 'Mostrar'}
+              </button>
+            </div>
+            <input type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          </div>
 
-        if (response.ok) {
-            setStatusMessage(`🎉 Registro exitoso. ¡Ya puedes iniciar sesión!`);
-            toggleMode(false); // Cambiar a vista de Login
-        } else {
-            setStatusMessage(`❌ Error: ${data.message || 'Error al registrar.'}`);
-        }
+          <div className="form-actions">
+            <button type="submit" className="btn primary" disabled={isLoading}>
+              {buttonText}
+            </button>
+          </div>
+          
+          <div className="register-wrapper">
+            <p className="subtitle">
+              {isRegistering ? (
+                <>¿Ya tienes una cuenta? <button type="button" className="link" onClick={() => toggleMode(false)}>Iniciar sesión</button></>
+              ) : (
+                <>¿No tienes una cuenta? <button type="button" className="link register-link" onClick={() => toggleMode(true)}>Regístrate</button></>
+              )}
+            </p>
+          </div>
 
-    } catch (error) {
-        setStatusMessage('⚠️ Error de conexión con el servidor. Asegúrate de que Express esté corriendo en el puerto 8080.');
-    } finally {
-        setIsLoading(false);
-    }
-  };
-
-
-  const handleSubmit = isRegistering ? handleRegister : handleLogin;
-  
-  // Textos dinámicos
-  const titleText = isRegistering ? 'Crear una nueva cuenta' : 'Accede a tu cuenta';
-  const buttonText = isRegistering ? (isLoading ? 'Guardando...' : 'Completar Registro') : (isLoading ? 'Iniciando...' : 'Iniciar sesión');
-
-
-  // -------------------------------------------------------------------
-  // VISTA DE FORMULARIO (Login/Registro)
-  // -------------------------------------------------------------------
-  return (
-    <main className="auth">
-      <section className="auth-card" aria-labelledby="auth-title">
-
-        <header className="auth-header">
-          <img src={logo} alt="PFEPS Logo" className="brand-logo" /> 
-          <h1 id="auth-title">PFEPS</h1>
-          <p className="subtitle">{titleText}</p>
-          <p className="tagline">Software de Facturación Electrónica</p>
-        </header>
-
-        <form onSubmit={handleSubmit}>
-          
-          {/* Campo de Nombre (Solo en Registro) */}
-          {isRegistering && (
-            <div className="field">
-                <label htmlFor="name">Nombre Completo</label>
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Ej. Juan Pérez"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-            </div>
-          )}
-
-          {/* Campo de Identificación (Solo en Registro) */}
-          {isRegistering && (
-            <div className="field">
-                <label htmlFor="identification">Identificación (Cédula)</label>
-                <input
-                    type="text"
-                    id="identification"
-                    name="identification"
-                    placeholder="Tu número de cédula"
-                    value={identification}
-                    onChange={(e) => setIdentification(e.target.value)}
-                    required
-                />
-                <small className="help">Este campo es obligatorio y único.</small>
-            </div>
-          )}
-
-          {/* Campo de Email */}
-          <div className="field">
-            <label htmlFor="email">Correo electrónico</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Usa tu correo registrado"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Campo de Contraseña */}
-          <div className="field">
-            <div className="label-row">
-              <label htmlFor="password">Contraseña</label>
-              <button
-                type="button"
-                className="link-button" 
-                onClick={() => setShowPassword(prev => !prev)}
-                aria-controls="password"
-              >
-                {showPassword ? 'Ocultar' : 'Mostrar'}
-              </button>
-            </div>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              id="password"
-              name="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Fila de Checkbox y Olvidé Contraseña (Solo en Login) */}
-          {!isRegistering && (
-            <div className="form-row">
-              <label className="checkbox">
-                <input
-                  type="checkbox"
-                  name="remember"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                />
-                <span>Recordarme</span>
-              </label>
-              <a href="#" className="link">Olvidé mi contraseña</a>
-            </div>
-          )}
-
-          {/* Acciones del Formulario */}
-          <div className="form-actions">
-            <button type="submit" className="btn primary" disabled={isLoading}>
-              {buttonText}
-            </button>
-          </div>
-          
-          {/* Enlace para alternar entre Login y Register */}
-          <div className="register-wrapper">
-            <p className="subtitle">
-              {isRegistering ? (
-                <>¿Ya tienes una cuenta? <button type="button" className="link" onClick={() => toggleMode(false)}>Iniciar sesión</button></>
-              ) : (
-                <>¿No tienes una cuenta? <button type="button" className="link register-link" onClick={() => toggleMode(true)}>Regístrate</button></>
-              )}
-            </p>
-          </div>
-
-          {/* Mensaje de estado */}
-          {statusMessage && <p className="status" role="status" aria-live="polite">{statusMessage}</p>}
-        </form>
-
-      </section>
-    </main>
-  );
+          {statusMessage && <p className="status">{statusMessage}</p>}
+        </form>
+      </section>
+    </main>
+  );
 }
 
 export default Login;

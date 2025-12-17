@@ -1,38 +1,35 @@
 import React, { useState, useEffect } from 'react'; 
+import { useNavigate } from 'react-router-dom'; // Importado para manejo de sesión
 
 function Productos() {
+    const navigate = useNavigate();
     const apiBaseUrl = 'http://localhost:8080/api/productos'; 
     
+    // 🚨 CORRECCIÓN: Ahora lee de sessionStorage para coincidir con Login.jsx
     const getAuthToken = () => {
-        return localStorage.getItem('authToken'); 
+        return sessionStorage.getItem('authToken'); 
     };
 
-    // 1. Estados principales
     const [products, setProducts] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [refreshKey, setRefreshKey] = useState(0); 
-    
-    // 🚨 ESTADO SEPARADO: Uno para el valor del input (inmediato) 
-    // y otro para la búsqueda real (con retraso)
     const [inputValue, setInputValue] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
 
-    // =======================================================
-    // I. LÓGICA DE CARGA DE DATOS (fetch GET)
-    // =======================================================
-
     const loadProducts = async () => {
         const token = getAuthToken();
+        
+        // 🚨 MEJORA: Si no hay token, redirigir al usuario al Login
         if (!token) {
-            setError("Error de autenticación: Token no encontrado.");
+            setError("Sesión expirada. Redirigiendo...");
             setLoading(false);
+            setTimeout(() => navigate('/'), 2000);
             return;
         }
 
         setLoading(true);
         try {
-            // Se usa searchQuery (el valor con debounce) para la API
             const response = await fetch(`${apiBaseUrl}?search=${searchQuery}`, {
                 method: 'GET',
                 headers: {
@@ -40,7 +37,12 @@ function Productos() {
                 }
             });
             
-            if (response.status === 401) throw new Error("Acceso denegado. Token inválido.");
+            if (response.status === 401) {
+                // Si el token es inválido según el servidor, limpiar y salir
+                sessionStorage.removeItem('authToken');
+                throw new Error("Acceso denegado. Inicia sesión nuevamente.");
+            }
+            
             if (!response.ok) throw new Error(`Error: ${response.status}`);
             
             const result = await response.json();
@@ -49,33 +51,29 @@ function Productos() {
         } catch (err) {
             console.error("Error al cargar productos:", err);
             setError(err.message);
+            if (err.message.includes("Acceso denegado")) {
+                setTimeout(() => navigate('/login'), 2000);
+            }
         } finally {
             setLoading(false);
         }
     };
 
-    // --- EFFECT 1: Debounce para la búsqueda ---
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             setSearchQuery(inputValue);
-        }, 500); // Espera 500ms después de que el usuario deja de escribir
-
-        return () => clearTimeout(timeoutId); // Limpia el timer si el usuario sigue escribiendo
+        }, 500);
+        return () => clearTimeout(timeoutId);
     }, [inputValue]);
 
-    // --- EFFECT 2: Carga cuando cambia la búsqueda real o el refreshKey ---
     useEffect(() => {
         loadProducts(); 
     }, [refreshKey, searchQuery]); 
 
-    // Handler del input (ahora es instantáneo y no bloquea el foco)
     const handleSearchChange = (e) => {
         setInputValue(e.target.value);
     };
 
-    // =======================================================
-    // II. CÁLCULO DE PRECIO FINAL
-    // =======================================================
     const calculateFinalPrice = (price, taxPercentage) => {
         const p = parseFloat(price) || 0;
         const t = parseFloat(taxPercentage) || 0;
@@ -83,9 +81,6 @@ function Productos() {
         return finalPrice.toFixed(2);
     };
 
-    // =======================================================
-    // III. HANDLERS Y MENSAJES
-    // =======================================================
     useEffect(() => {
         const handleMessage = (event) => {
             if (event.data === 'listUpdated') {
@@ -110,11 +105,9 @@ function Productos() {
                         type="text" 
                         id="search"
                         className="search-input" 
-                        value={inputValue} // Usa inputValue para que sea fluido
+                        value={inputValue} 
                         onChange={handleSearchChange}
                         placeholder="Escribe para buscar..."
-                        // 🚨 IMPORTANTE: No deshabilitar el input mientras carga 
-                        // para no perder el foco.
                     />
                 </div>
                 
@@ -131,10 +124,14 @@ function Productos() {
             <section className="list-section">
                 <h2>Listado de Productos ({products.length})</h2>
                 
-                {loading && <p className="loading-text">Buscando...</p>}
-                {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+                {loading && <p className="loading-text">Cargando datos...</p>}
+                {error && (
+                    <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '4px', marginBottom: '10px' }}>
+                        ⚠️ {error}
+                    </div>
+                )}
 
-                {!loading && products.length === 0 ? (
+                {!loading && products.length === 0 && !error ? (
                     <p>No se encontraron productos.</p>
                 ) : (
                     <table className="data-table">
