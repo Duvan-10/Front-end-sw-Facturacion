@@ -1,0 +1,67 @@
+================================================================
+📌 GUÍA PROFESIONAL DE INSTALACIÓN Y PORTABILIDAD - SISTEMA PFEPS
+================================================================
+
+Este proyecto está diseñado para ser portado a cualquier equipo sin modificar 
+el código fuente. Solo se deben configurar los archivos de entorno (.env).
+
+1. REQUISITOS DEL SISTEMA
+-------------------------
+- Node.js: Versión 18 o superior (Recomendada v20+).
+- MySQL: Server 8.0+ y MySQL Workbench.
+
+2. PREPARACIÓN DE LA BASE DE DATOS (Local)
+------------------------------------------
+- Abre MySQL Workbench y ejecuta:
+  CREATE DATABASE login;
+
+- Crea la tabla de productos (Estructura validada):
+  CREATE TABLE productos (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      codigo VARCHAR(50) UNIQUE NOT NULL,
+      nombre VARCHAR(100) NOT NULL,
+      precio DECIMAL(10,2) NOT NULL,
+      impuesto_porcentaje DECIMAL(5,2) DEFAULT 0,
+      descripcion TEXT,
+      fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+
+3. CONFIGURACIÓN DEL BACKEND (Carpeta /Backend)
+-----------------------------------------------
+- Dentro de la carpeta 'Backend/', crea un archivo '.env':
+- Configura las variables según tu PC:
+    PORT=8080
+    DB_HOST=localhost
+    DB_USER=root
+    DB_PASSWORD=TU_CONTRASEÑA_AQUI
+    DB_NAME=login
+
+4. CONFIGURACIÓN DEL FRONTEND (Raíz del proyecto)
+-------------------------------------------------
+- En la carpeta raíz (donde está package.json), crea otro archivo '.env':
+- Este archivo permite que React sepa dónde está la API:
+    VITE_API_URL=http://localhost:8080/api
+
+5. INSTALACIÓN INICIAL
+----------------------
+- Abre una terminal en la carpeta raíz y ejecuta:
+  npm install
+
+6. EJECUCIÓN DEL SISTEMA
+------------------------
+- Terminal 1 (Servidor): 
+  npm run s
+- Terminal 2 (Interfaz): 
+  npm run f
+
+7. REGLAS DE NEGOCIO IMPLEMENTADAS (Seguridad)
+----------------------------------------------
+- PRODUCTOS:
+  * El precio NO puede ser negativo (Validado en Front y Back).
+  * Código y Nombre son obligatorios.
+  * Si la descripción se deja vacía, el sistema asigna "Sin detalles".
+- CONEXIÓN:
+  * Se utiliza un Pool de conexiones (máx 10) para evitar colapsos.
+  * Carga de .env mediante rutas absolutas (Path Resolve).
+
+================================================================

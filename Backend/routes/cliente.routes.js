@@ -1,37 +1,18 @@
-// Backend/routes/cliente.routes.js
+// ruta: Backend/routes/cliente.routes.js (FINAL - SIN RUTA DELETE)
 
-import express from 'express';
-// Importamos las funciones del controlador, incluyendo la nueva getClienteById
-import { 
-    getAllClientes, 
-    getClienteById, // <-- NUEVA FUNCIÓN NECESARIA PARA EDICIÓN
-    createCliente, 
-    updateCliente 
-} from '../controllers/clienteController.js'; 
-
-// Importamos el middleware (aunque lo deshabilitaremos temporalmente)
+import { Router } from 'express';
+import clienteController from '../controllers/clienteController.js'; 
 import { authenticate } from '../middleware/auth.middleware.js'; 
 
-const router = express.Router(); 
+const router = Router();
 
-// NOTA: Para las pruebas iniciales de conexión, se recomienda comentar el middleware 'authenticate'.
+// Rutas funcionales (Creación, Listado, Edición por ID, Actualización)
+router.post('/', authenticate, clienteController.createCliente);
+router.get('/', authenticate, clienteController.getClientes);
+router.get('/:id', authenticate, clienteController.getClienteById);
+router.put('/:id', authenticate, clienteController.updateCliente);
 
-// =======================================================
-// RUTAS CORREGIDAS Y CONSOLIDADAS
-// =======================================================
-
-// 1. OBTENER TODOS LOS CLIENTES (GET /api/clientes)
-router.get('/', /* authenticate, */ getAllClientes); 
-
-// 2. OBTENER UN CLIENTE POR ID (GET /api/clientes/:id)
-// Esta ruta es CRÍTICA para que ClientForm cargue los datos en modo edición
-router.get('/:id', /* authenticate, */ getClienteById); 
-
-// 3. REGISTRAR UN NUEVO CLIENTE (POST /api/clientes)
-router.post('/', /* authenticate, */ createCliente); 
-
-// 4. ACTUALIZAR UN CLIENTE EXISTENTE (PUT /api/clientes/:id)
-router.put('/:id', /* authenticate, */ updateCliente);
-
+// 🚨 RUTA DE ELIMINACIÓN DESACTIVADA
+// router.delete('/:id', authenticate, clienteController.deleteCliente); 
 
 export default router;

@@ -1,215 +1,174 @@
 import React, { useState, useEffect } from 'react'; 
 
-// =======================================================
-// COMPONENTE PRINCIPAL: PRODUCTOS 
-//   - Muestra "Precio Total" calculado.
-// =======================================================
-
 function Productos() {
-    
-    // URL base de la API 
-    const apiBaseUrl = 'http://localhost:8080/api/productos'; 
-    
-    // Obtener el token JWT
-    const getAuthToken = () => {
-        return localStorage.getItem('authToken'); 
-    };
+    const apiBaseUrl = 'http://localhost:8080/api/productos'; 
+    
+    const getAuthToken = () => {
+        return localStorage.getItem('authToken'); 
+    };
 
-    // 1. Estados principales
-    const [allProducts, setAllProducts] = useState([]); 
-    const [products, setProducts] = useState([]); 
-    
-    // Estados de control
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [refreshKey, setRefreshKey] = useState(0); 
-    const [searchQuery, setSearchQuery] = useState('');
-    
-    
-    // =======================================================
-    // I. LÓGICA DE CARGA DE DATOS (fetch GET)
-    // =======================================================
+    // 1. Estados principales
+    const [products, setProducts] = useState([]); 
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [refreshKey, setRefreshKey] = useState(0); 
+    
+    // 🚨 ESTADO SEPARADO: Uno para el valor del input (inmediato) 
+    // y otro para la búsqueda real (con retraso)
+    const [inputValue, setInputValue] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const loadProducts = async () => {
-        const token = getAuthToken();
-        if (!token) {
-            setError("Error de autenticación: Token no encontrado. No se puede cargar la lista.");
-            setLoading(false);
-            return;
-        }
+    // =======================================================
+    // I. LÓGICA DE CARGA DE DATOS (fetch GET)
+    // =======================================================
 
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await fetch(`${apiBaseUrl}?search=${searchQuery}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}` 
-                }
-            });
-            
-            if (response.status === 401) throw new Error("Acceso denegado. Token inválido o expirado.");
-            if (!response.ok) throw new Error(`Error al cargar datos: ${response.status}`);
-            
-            const result = await response.json();
-            
-            const productArray = Array.isArray(result.data) ? result.data : []; 
-            
-            setAllProducts(productArray);
-            
-        } catch (err) {
-            console.error("Error al cargar productos de la API:", err);
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    useEffect(() => {
-        loadProducts(); 
-    }, [refreshKey, searchQuery]); 
-    
-    useEffect(() => {
-        setProducts(allProducts);
-    }, [allProducts]);
-    
-    const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
-    };
+    const loadProducts = async () => {
+        const token = getAuthToken();
+        if (!token) {
+            setError("Error de autenticación: Token no encontrado.");
+            setLoading(false);
+            return;
+        }
 
+        setLoading(true);
+        try {
+            // Se usa searchQuery (el valor con debounce) para la API
+            const response = await fetch(`${apiBaseUrl}?search=${searchQuery}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}` 
+                }
+            });
+            
+            if (response.status === 401) throw new Error("Acceso denegado. Token inválido.");
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
+            
+            const result = await response.json();
+            setProducts(Array.isArray(result.data) ? result.data : []);
+            setError(null);
+        } catch (err) {
+            console.error("Error al cargar productos:", err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    // =======================================================
-    // II. CÁLCULO DE PRECIO FINAL (Precio Base + Impuesto)
-    // =======================================================
+    // --- EFFECT 1: Debounce para la búsqueda ---
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setSearchQuery(inputValue);
+        }, 500); // Espera 500ms después de que el usuario deja de escribir
 
-    // 🚨 Función renombrada y lógica actualizada.
-    const calculateFinalPrice = (price, taxPercentage) => {
-        const p = parseFloat(price) || 0;
-        const t = parseFloat(taxPercentage) || 0;
-        
-        // Fórmula: Precio Total = Precio Base * (1 + (Impuesto % / 100))
-        const finalPrice = p * (1 + (t / 100));
-        
-        return finalPrice.toFixed(2);
-    };
+        return () => clearTimeout(timeoutId); // Limpia el timer si el usuario sigue escribiendo
+    }, [inputValue]);
 
+    // --- EFFECT 2: Carga cuando cambia la búsqueda real o el refreshKey ---
+    useEffect(() => {
+        loadProducts(); 
+    }, [refreshKey, searchQuery]); 
 
-    // =======================================================
-    // III. HANDLER DE COMUNICACIÓN Y NAVEGACIÓN
-    // =======================================================
-    
-    useEffect(() => {
-        const handleMessage = (event) => {
-            if (event.data === 'listUpdated') {
-                setRefreshKey(prev => prev + 1); 
-            }
-        };
+    // Handler del input (ahora es instantáneo y no bloquea el foco)
+    const handleSearchChange = (e) => {
+        setInputValue(e.target.value);
+    };
 
-        window.addEventListener('message', handleMessage);
-        
-        return () => {
-            window.removeEventListener('message', handleMessage);
-        };
-    }, []); 
+    // =======================================================
+    // II. CÁLCULO DE PRECIO FINAL
+    // =======================================================
+    const calculateFinalPrice = (price, taxPercentage) => {
+        const p = parseFloat(price) || 0;
+        const t = parseFloat(taxPercentage) || 0;
+        const finalPrice = p * (1 + (t / 100));
+        return finalPrice.toFixed(2);
+    };
 
-    const handleCreateNew = () => {
-        window.open('/productos/crear', '_blank'); 
-    };
+    // =======================================================
+    // III. HANDLERS Y MENSAJES
+    // =======================================================
+    useEffect(() => {
+        const handleMessage = (event) => {
+            if (event.data === 'listUpdated') {
+                setRefreshKey(prev => prev + 1); 
+            }
+        };
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []); 
 
-    const handleEdit = (product) => {
-        window.open(`/productos/editar/${product.id}`, '_blank');
-    };
-    
-    
-    // =======================================================
-    // IV. RENDERIZADO (Tabla Final)
-    // =======================================================
+    const handleCreateNew = () => window.open('/productos/crear', '_blank');
+    const handleEdit = (product) => window.open(`/productos/editar/${product.id}`, '_blank');
 
-    return (
-        <div className="main-content">
-            <h1 className="module-title">Gestión de Productos</h1>
+    return (
+        <div className="main-content">
+            <h1 className="module-title">Gestión de Productos</h1>
 
-            {/* --- Controles --- */}
-            <section className="controls-section card">
-                
-                <div className="search-bar">
-                    <label htmlFor="search">Buscar Producto (Código o Nombre):</label>
-                    <input 
-                        type="text" 
-                        id="search"
-                        className="search-input" 
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        placeholder="Buscar por Código o Nombre..."
-                        disabled={loading}
-                    />
-                </div>
-                
-                <button 
-                    className={`btn btn-primary btn-register-product`} 
-                    onClick={handleCreateNew} 
-                    disabled={loading}
-                >
-                    Registrar Nuevo Producto
-                </button>
-            </section>
-            
-            <hr/>
-            
-            
-            {/* --- Listado de Productos (Tabla) --- */}
-            <section className="list-section">
-                <h2>Listado de Productos ({products.length} encontrados)</h2>
-                
-                {loading && <p>Cargando productos...</p>}
-                {error && <p style={{ color: 'red' }}>Error de conexión/autenticación: {error}. Por favor, inicie sesión o verifique la API.</p>}
+            <section className="controls-section card">
+                <div className="search-bar">
+                    <label htmlFor="search">Buscar Producto (Código o Nombre):</label>
+                    <input 
+                        type="text" 
+                        id="search"
+                        className="search-input" 
+                        value={inputValue} // Usa inputValue para que sea fluido
+                        onChange={handleSearchChange}
+                        placeholder="Escribe para buscar..."
+                        // 🚨 IMPORTANTE: No deshabilitar el input mientras carga 
+                        // para no perder el foco.
+                    />
+                </div>
+                
+                <button 
+                    className="btn btn-primary btn-register-product" 
+                    onClick={handleCreateNew}
+                >
+                    Registrar Nuevo Producto
+                </button>
+            </section>
+            
+            <hr/>
+            
+            <section className="list-section">
+                <h2>Listado de Productos ({products.length})</h2>
+                
+                {loading && <p className="loading-text">Buscando...</p>}
+                {error && <p style={{ color: 'red' }}>Error: {error}</p>}
 
-                {!loading && !error && products.length === 0 ? (
-                    <p>No hay productos registrados en la base de datos o no coinciden con la búsqueda.</p>
-                ) : (
-                    <table className="data-table">
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Nombre</th>
-                                <th>Precio</th>
-                                <th>Impuesto (%)</th> 
-                                <th>Precio Total</th> {/* 🚨 Nombre de columna corregido */}
-                                <th>Acciones</th> 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {products.map((product) => (
-                                <tr key={product.id}>
-                                    <td>{product.codigo}</td> 
-                                    <td>{product.nombre}</td>
-                                    <td>${parseFloat(product.precio || 0).toFixed(2)}</td>
-                                    
-                                    {/* Porcentaje guardado en la DB */}
-                                    <td>{parseFloat(product.impuesto_porcentaje || 0).toFixed(2)}%</td>
-                                    
-                                    {/* 🚨 Cálculo del Precio Total (Base + Impuesto) */}
-                                    <td>
-                                        ${calculateFinalPrice(product.precio, product.impuesto_porcentaje)}
-                                    </td>
-                                    
-                                    <td className="actions-cell">
-                                        <button 
-                                            className="btn btn-sm btn-edit" 
-                                            onClick={() => handleEdit(product)} 
-                                            disabled={loading}
-                                        >
-                                            Editar
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </section>
-        </div>
-    );
+                {!loading && products.length === 0 ? (
+                    <p>No se encontraron productos.</p>
+                ) : (
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Impuesto (%)</th> 
+                                <th>Precio Total</th>
+                                <th>Acciones</th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {products.map((product) => (
+                                <tr key={product.id}>
+                                    <td>{product.codigo}</td> 
+                                    <td>{product.nombre}</td>
+                                    <td>${parseFloat(product.precio || 0).toFixed(2)}</td>
+                                    <td>{parseFloat(product.impuesto_porcentaje || 0).toFixed(2)}%</td>
+                                    <td>${calculateFinalPrice(product.precio, product.impuesto_porcentaje)}</td>
+                                    <td className="actions-cell">
+                                        <button className="btn btn-sm btn-edit" onClick={() => handleEdit(product)}>
+                                            Editar
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </section>
+        </div>
+    );
 }
 
 export default Productos;
