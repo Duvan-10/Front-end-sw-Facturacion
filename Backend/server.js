@@ -14,17 +14,9 @@ import productoRoutes from './routes/producto.routes.js';
 
 
 const app = express();
-// 🚨 CORRECCIÓN CLAVE 1: Usar un puerto diferente al de React (3000)
-// Ajustaremos para usar 8080 (que usamos en el Frontend) o el que tengas configurado en .env
 const PORT = process.env.PORT || 8080; // Usaremos 8080 por defecto si .env no lo define. 
 
-// Middleware
-// Si necesitas configurar CORS específicamente (ej. solo para 3000):
-/* app.use(cors({
-    origin: 'http://localhost:3000' // O la URL de tu frontend
-}));
-*/
-// Por ahora, lo dejamos abierto (app.use(cors());) para que funcione en desarrollo
+
 app.use(cors()); 
 app.use(express.json());
 
@@ -35,6 +27,7 @@ testConnection();
 // =======================================================
 // RUTAS DE LA API
 // =======================================================
+
 
 app.use('/api/auth', authRoutes);
 
