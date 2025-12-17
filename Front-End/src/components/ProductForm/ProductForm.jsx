@@ -1,26 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import "../styles1.css"
 
 // =======================================================
 // COMPONENTE: ProductForm 
-//   - impuesto_porcentaje es readOnly en modo edición.
 // =======================================================
 
 const ProductForm = () => {
     
     const { id } = useParams();
-    const isEditing = !!id;
+    const isEditing = !!id; // True si estamos en /productos/editar/:id
+
+    // 🚨 1. Referencias para implementar la regla de solo lectura en edición
+    const taxInputRef = useRef(null); 
+    const codeInputRef = useRef(null);
 
     // URL base de la API (AJUSTA ESTO SI ES NECESARIO)
     const apiBaseUrl = 'http://localhost:8080/api/productos'; 
     
-    // 🚨 REEMPLAZA ESTO: Obtener el token JWT de donde lo almacenes
+    // 🚨 CORRECCIÓN DE SEGURIDAD: Leer el token de sessionStorage
+    // Esto asegura que la sesión se cierra automáticamente al cerrar el navegador.
     const getAuthToken = () => {
-        return localStorage.getItem('authToken'); 
+        return sessionStorage.getItem('authToken'); 
     };
     
-    // Estado inicial ajustado a las claves del backend
+    // Estado inicial
     const [productData, setProductData] = useState({
         codigo: '',
         nombre: '',
@@ -83,6 +87,26 @@ const ProductForm = () => {
         }));
     };
     
+    // Handler para alertar si se intenta editar el impuesto (solo lectura en edición)
+    const handleTaxFocus = () => {
+        if (isEditing) {
+            alert("⚠️ El porcentaje de impuesto solo puede modificarse al crear un nuevo producto.");
+            if (taxInputRef.current) {
+                taxInputRef.current.blur(); 
+            }
+        }
+    };
+
+    // Handler para alertar si se intenta editar el código (solo lectura en edición)
+    const handleCodeFocus = () => {
+        if (isEditing) {
+            alert("⚠️ El código de producto no puede ser modificado una vez que el producto ha sido registrado.");
+            if (codeInputRef.current) {
+                codeInputRef.current.blur();
+            }
+        }
+    };
+
     const handleCloseTab = () => {
         window.close();
     };
@@ -92,7 +116,7 @@ const ProductForm = () => {
         e.preventDefault();
         setError(null);
         setLoading(true);
-
+        
         const token = getAuthToken();
         if (!token) {
             alert("Error de autenticación: No hay token disponible.");
@@ -167,7 +191,7 @@ const ProductForm = () => {
             
             <div className="section-group client-data">
                 
-                {/* Código */}
+                {/* Código (SOLO LECTURA EN EDICIÓN) */}
                 <div className="field-col">
                     <label htmlFor="codigo">Código</label>
                     <input 
@@ -176,7 +200,11 @@ const ProductForm = () => {
                         placeholder="Código de Referencia" 
                         value={productData.codigo} 
                         onChange={handleChange} 
-                        required 
+                        required
+                        readOnly={isEditing} 
+                        ref={codeInputRef}
+                        onFocus={handleCodeFocus}
+                        className={isEditing ? 'read-only-field' : ''}
                     />
                 </div>
                 
@@ -208,7 +236,7 @@ const ProductForm = () => {
                     />
                 </div>
                 
-                {/* Impuesto: readOnly si estamos editando */}
+                {/* Impuesto: SOLO LECTURA EN EDICIÓN */}
                 <div className="field-col">
                     <label htmlFor="impuesto_porcentaje">Impuesto (%)</label>
                     <input 
@@ -220,6 +248,8 @@ const ProductForm = () => {
                         value={productData.impuesto_porcentaje} 
                         onChange={handleChange}
                         readOnly={isEditing} 
+                        ref={taxInputRef} 
+                        onFocus={handleTaxFocus} 
                         className={isEditing ? 'read-only-field' : ''}
                     />
                 </div>

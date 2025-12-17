@@ -18,7 +18,6 @@ import Reportes from './modules/Reportes/Reportes.jsx';
 // Componentes de Formularios (rutas absolutas, sin Layout)
 import InvoiceForm from './components/InvoiceForm/InvoiceForm';
 import ClientForm from './components/ClientForm/ClientForm'; 
-// ->>>>> 🟢 NUEVA IMPORTACIÓN DE PRODUCTOS 🟢 <<<<<---------------------------------
 import ProductForm from './components/ProductForm/ProductForm'; 
 
 import "./styles/global.css";
@@ -44,7 +43,7 @@ function App() {
                 <Route path="/clientes/crear" element={<ClientForm />} />
                 <Route path="/clientes/editar/:id" element={<ClientForm />} />
 
-                {/* ->>>>> 🟢 NUEVAS RUTAS DE PRODUCTOS 🟢 <<<<<------------------ */}
+
                 <Route path="/productos/crear" element={<ProductForm />} />
                 <Route path="/productos/editar/:id" element={<ProductForm />} />
                 {/* ------------------------------------------------------------ */}

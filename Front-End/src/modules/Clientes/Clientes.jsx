@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'; 
-// Usaremos useEffect para que el filtro y el listener se apliquen automáticamente.
 
 // =======================================================
 // DATOS Y CONSTANTES (Redefinidos para simulación)
