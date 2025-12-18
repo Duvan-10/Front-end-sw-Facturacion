@@ -1,302 +1,214 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import '../styles1.css'; // Importa los estilos modulares actualizados
-
-// =======================================================
-// COMPONENTE: InvoiceForm (Ahora actúa como una página/ruta)
-// =======================================================
+import { useParams, useNavigate } from 'react-router-dom';
+import '../styles1.css';
 
 const InvoiceForm = () => { 
-    
-    // --- NUEVO: Obtener el ID de la URL para edición ---
-    const { id } = useParams(); // Obtiene el ID si estamos en modo edición
+    const { id } = useParams();
+    const navigate = useNavigate();
     const isEditing = !!id;
 
-    // Simulación: Cargar datos si estamos editando
-    const loadedData = isEditing ? 
-        { 
-            id: id, 
-            clientName: `Cliente #${id}`, 
-            tipoFactura: 'Crédito', 
-            productos: [
-                { code: "PROD-A", cant: "2", detail: "Servicio de consultoría", unit: "150.00", total: 300.00 },
-                { code: "PROD-B", cant: "1", detail: "Licencia de software anual", unit: "500.00", total: 500.00 }
-            ]
-        } : 
-        null;
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
-    // ESTADOS DEL FORMULARIO: Usan loadedData si existe (edición)
-    const [formData, setFormData] = useState(loadedData || {});
-    const [tipoFactura, setTipoFactura] = useState(loadedData?.tipoFactura || 'Contado');
-    
-    // Estado clave para líneas de producto: array de objetos
-    const [productos, setProductos] = useState(
-        loadedData?.productos || [{ code: "", cant: "", detail: "", unit: "", total: 0 }]
-    );
+    // ESTADOS
+    const [loading, setLoading] = useState(false);
+    const [tipoFactura, setTipoFactura] = useState('Contado');
+    const [cliente, setCliente] = useState({ id: '', identificacion: '', nombre_razon_social: '', telefono: '', direccion: '', email: '' });
+    const [productos, setProductos] = useState([{ producto_id: "", code: "", cant: 1, detail: "", unit: 0, total: 0 }]);
+
+    // 🚨 SEGURIDAD: Validar sesión al cargar
+    useEffect(() => {
+        const token = sessionStorage.getItem('authToken');
+        if (!token) {
+            navigate('/');
+        }
+    }, [navigate]);
 
     // =======================================================
-    // I. LÓGICA DE PRODUCTOS Y CÁLCULO DE TOTALES
+    // LÓGICA DE BÚSQUEDA DE CLIENTE POR NIT
     // =======================================================
-    
-    // Función de cálculo de subtotales, IVA (19%) y total final
+    const buscarCliente = async (identificacion) => {
+        if (!identificacion) return;
+        try {
+            const token = sessionStorage.getItem('authToken');
+            const response = await fetch(`${apiBaseUrl}/clientes/identificacion/${identificacion}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setCliente(data);
+            }
+        } catch (err) {
+            console.error("Cliente no encontrado");
+        }
+    };
+
+    // =======================================================
+    // LÓGICA DE PRODUCTOS
+    // =======================================================
+    const handleProductChange = async (index, field, value) => {
+        const updated = [...productos];
+        updated[index][field] = value;
+
+        // Si cambia el código, buscamos el producto automáticamente
+        if (field === "code" && value.length > 2) {
+            try {
+                const token = sessionStorage.getItem('authToken');
+                const response = await fetch(`${apiBaseUrl}/productos/codigo/${value}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const prod = await response.json();
+                    updated[index].producto_id = prod.id;
+                    updated[index].detail = prod.nombre;
+                    updated[index].unit = prod.precio;
+                }
+            } catch (err) { console.log("Producto no encontrado"); }
+        }
+
+        const cant = parseFloat(updated[index].cant) || 0;
+        const unit = parseFloat(updated[index].unit) || 0;
+        updated[index].total = cant * unit;
+        setProductos(updated);
+    };
+
     const calcularTotales = () => {
-        const subtotal = productos.reduce(
-            (acc, p) => acc + (parseFloat(p.total) || 0),
-            0
-        );
-        const IVA_RATE = 0.19; 
-        const iva = subtotal * IVA_RATE;
+        const subtotal = productos.reduce((acc, p) => acc + (p.total || 0), 0);
+        const iva = subtotal * 0.19;
         const totalFinal = subtotal + iva;
         return { subtotal, iva, totalFinal };
     };
 
-    // Handler para cambios en las líneas de producto (actualiza el total de la línea)
-    const handleProductChange = (index, field, value) => {
-        const updated = [...productos];
-        updated[index][field] = value;
-
-        const cant = parseFloat(updated[index].cant) || 0;
-        const unit = parseFloat(updated[index].unit) || 0;
-
-        // Asegura que el total siempre se calcula
-        updated[index].total = cant * unit;
-
-        setProductos(updated);
-    };
-
-    // Añadir una nueva línea vacía
-    const addProduct = () => {
-        setProductos([
-            ...productos,
-            { code: "", cant: "", detail: "", unit: "", total: 0 },
-        ]);
-    };
-
-    // Eliminar una línea por índice
-    const deleteProduct = (index) => {
-        const updated = productos.filter((_, i) => i !== index);
-        setProductos(updated);
-    };
-    
-    // Obtener los totales calculados para renderizar
     const { subtotal, iva, totalFinal } = calcularTotales();
 
-
     // =======================================================
-    // II. HANDLERS GENERALES
+    // ENVÍO AL BACKEND
     // =======================================================
-    
-    const handlePaymentType = (type) => {
-        setTipoFactura(type);
-    };
-    
-    const handleFormSubmit = (e) => {
+    const handleFormSubmit = async (e) => {
         e.preventDefault();
-        
-        const submissionId = id || `FAC-${Math.floor(Math.random() * 1000)}`;
+        setLoading(true);
 
-        const finalData = { 
-            ...formData, 
-            tipoFactura, 
-            productos,
-            totales: { subtotal, iva, totalFinal },
-            id: submissionId
+        const token = sessionStorage.getItem('authToken');
+        const facturaData = {
+            cliente_id: cliente.id,
+            tipo_pago: tipoFactura,
+            fecha_emision: document.getElementById('fecha-emision').value,
+            subtotal,
+            iva,
+            total: totalFinal,
+            detalles: productos // El backend recibirá este array para insertarlo en factura_detalles
         };
 
-        // Simulación: Envío de datos a la API (o a la consola)
-        console.log("Datos de la factura a guardar:", finalData);
-        
-        const action = isEditing ? 'editó' : 'registró';
-        alert(`✅ Factura ${submissionId} ${action} con éxito. La pestaña se mantendrá abierta hasta que la cierre.`);
+        try {
+            const response = await fetch(`${apiBaseUrl}/facturas`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(facturaData)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert(`✅ Factura ${result.numero_factura} creada con éxito`);
+                window.close();
+            } else {
+                throw new Error("Error al guardar la factura");
+            }
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Función para Cerrar la Pestaña Manualmente
-    const handleCloseTab = () => {
-        window.close();
-    };
-
-    
     return (
-        // 🚨 CAMBIO 1: Usar la clase global 'app-form'
         <form className="app-form card" onSubmit={handleFormSubmit}> 
-            
             <h2 className="module-title">
                 {isEditing ? `Editar Factura #${id}` : 'Registrar Nueva Factura'}
             </h2> 
             
-            {/* ------------------------------------------------------------- */}
-            {/* 1. Encabezado (Ya usa la estructura .section-group) */}
-            {/* ------------------------------------------------------------- */}
-            
             <div className="section-group header-fields">
-                
-                {/* Campo 1: Tipo de Factura (Unidad independiente) */}
                 <div className="field-col"> 
                     <label>Tipo Factura:</label>
                     <div className="radio-group">
                         <label className="radio-label">
-                            <input type="radio" name="tipoFactura" value="Contado" checked={tipoFactura === 'Contado'} onChange={() => handlePaymentType('Contado')} />
-                            Contado
+                            <input type="radio" name="tipoFactura" checked={tipoFactura === 'Contado'} onChange={() => setTipoFactura('Contado')} /> Contado
                         </label>
                         <label className="radio-label">
-                            <input type="radio" name="tipoFactura" value="Crédito" checked={tipoFactura === 'Crédito'} onChange={() => handlePaymentType('Crédito')} />
-                            Crédito
+                            <input type="radio" name="tipoFactura" checked={tipoFactura === 'Crédito'} onChange={() => setTipoFactura('Crédito')} /> Crédito
                         </label>
                     </div>
                 </div>
                 
-                {/* Campo 2: Número de Factura (Unidad independiente) */}
                 <div className="field-col">
-                    <label htmlFor="num-factura">Número de Factura</label>
-                    <input 
-                        type="text" 
-                        id="num-factura" 
-                        className="input-short" 
-                        placeholder="fagin-factura" 
-                        defaultValue={id || ''} 
-                        disabled={isEditing} 
-                    />
+                    <label>Número de Factura</label>
+                    <input type="text" className="input-short" value="AUTO-GENERADO" disabled />
                 </div>
 
-                {/* Campo 3: Fecha (Unidad independiente) */}
                 <div className="field-col">
                     <label htmlFor="fecha-emision">Fecha</label>
-                    <input 
-                        type="date" 
-                        id="fecha-emision" 
-                        className="input-short" 
-                        defaultValue={loadedData?.date || new Date().toISOString().substring(0, 10)} 
-                    />
+                    <input type="date" id="fecha-emision" className="input-short" defaultValue={new Date().toISOString().substring(0, 10)} />
                 </div>
             </div>
             
-            
-            {/* ------------------------------------------------------------- */}
-            {/* 2. Datos del Cliente (Ya usaba la estructura .section-group) */}
-            {/* ------------------------------------------------------------- */}
             <h2 className="section-title">2. Datos del Cliente</h2> 
             <div className="section-group client-data"> 
                 <div className="field-col">
-                    <label htmlFor="nit-cc">NIT/CC</label>
-                    <input type="text" id="nit-cc" placeholder="Identificación" />
+                    <label>NIT/CC (Enter para buscar)</label>
+                    <input 
+                        type="text" 
+                        placeholder="Identificación" 
+                        onBlur={(e) => buscarCliente(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && buscarCliente(e.target.value)}
+                    />
                 </div>
                 <div className="field-col">
-                    <label htmlFor="razon-social">Razón Social / Nombre</label>
-                    <input type="text" id="razon-social" placeholder="Nombre completo" />
+                    <label>Razón Social / Nombre</label>
+                    <input type="text" value={cliente.nombre_razon_social} readOnly placeholder="Nombre completo" />
                 </div>
                 <div className="field-col">
-                    <label htmlFor="telefono">Teléfono</label>
-                    <input type="text" id="telefono" placeholder="Número contacto" />
+                    <label>Teléfono</label>
+                    <input type="text" value={cliente.telefono} readOnly />
                 </div>
                 <div className="field-col">
-                    <label htmlFor="direccion">Dirección</label>
-                    <input type="text" id="direccion" placeholder="Dirección" />
+                    <label>Dirección</label>
+                    <input type="text" value={cliente.direccion} readOnly />
                 </div>
-                <div className="field-col">
-                    <label htmlFor="correo">Correo</label>
-                    <input type="email" id="correo" placeholder="Correo electrónico" />
-                </div>
-                <div className="field-col"></div> {/* Columna de relleno para mantener el grid */}
             </div>
         
-            {/* ------------------------------------------------------------- */}
-            {/* 3. Detalle de Productos (Usa Grid, no .field-col) */}
-            {/* ------------------------------------------------------------- */}
             <h2 className="section-title">3. Detalle de Productos</h2> 
-            
-            {/* Encabezado del Grid */}
             <div className="product-grid product-header">
-                <span>Code</span>
-                <span>Cant.</span>
-                <span>Detalle</span>
-                <span>V.Unitario</span>
-                <span>V.Total</span>
-                <span>Acción</span>
+                <span>Código</span><span>Cant.</span><span>Detalle</span><span>V.Unitario</span><span>V.Total</span><span></span>
             </div>
 
-            {/* Iteración de productos */}
             {productos.map((p, idx) => (
                 <div className="product-grid product-row" key={idx}>
-                    <input
-                        type="text"
-                        placeholder="Código"
-                        value={p.code}
-                        onChange={(e) => handleProductChange(idx, "code", e.target.value)}
-                    />
-                    <input
-                        type="number" 
-                        placeholder="0"
-                        value={p.cant}
-                        onChange={(e) => handleProductChange(idx, "cant", e.target.value)}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Descripción detallada"
-                        value={p.detail}
-                        onChange={(e) => handleProductChange(idx, "detail", e.target.value)}
-                    />
-                    <input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        value={p.unit}
-                        onChange={(e) => handleProductChange(idx, "unit", e.target.value)}
-                    />
+                    <input type="text" placeholder="Cód." value={p.code} onChange={(e) => handleProductChange(idx, "code", e.target.value)} />
+                    <input type="number" value={p.cant} onChange={(e) => handleProductChange(idx, "cant", e.target.value)} />
+                    <input type="text" value={p.detail} readOnly />
+                    <input type="number" value={p.unit} readOnly />
                     <input type="text" disabled value={p.total.toFixed(2)} />
-
-                    <button
-                        type="button"
-                        className="delete-product"
-                        onClick={() => deleteProduct(idx)}
-                    >
-                        🗑
-                    </button>
+                    <button type="button" className="delete-product" onClick={() => setProductos(productos.filter((_, i) => i !== idx))}>🗑</button>
                 </div>
             ))}
 
-            {/* BOTÓN AÑADIR */}
-            <button type="button" className="btn btn-primary btn-sm" onClick={addProduct}>
+            <button type="button" className="btn btn-primary btn-sm" onClick={() => setProductos([...productos, { producto_id: "", code: "", cant: 1, detail: "", unit: 0, total: 0 }])}>
                 + Añadir Producto
             </button>
 
-
-        
-            {/* ---------4. TOTALES DE LA FACTURA---------------------- */}
-            <h2 className="section-title">4. Valor</h2> 
+            <h2 className="section-title">4. Totales</h2> 
             <div className="totals-section">
-                <div className="total-line">
-                    <label>Subtotal: $</label>
-                    <span id="subtotal">{subtotal.toFixed(2)}</span>
-                </div>
-                <div className="total-line">
-                    <label>IVA (19%): $</label>
-                    <span id="iva">{iva.toFixed(2)}</span>
-                </div>
-                <div className="total-line total-final">
-                    <label>Total: $</label>
-                    <span id="total">{totalFinal.toFixed(2)}</span>
-                </div>
+                <div className="total-line"><label>Subtotal:</label><span>${subtotal.toFixed(2)}</span></div>
+                <div className="total-line"><label>IVA (19%):</label><span>${iva.toFixed(2)}</span></div>
+                <div className="total-line total-final"><label>Total:</label><span>${totalFinal.toFixed(2)}</span></div>
             </div>
             
-            {/* Botones Finales */}
-            {/* 🚨 CAMBIO 2: Usar la clase global 'final-buttons-group' y eliminar style inline */}
             <div className="final-buttons-group">
-                <button 
-                    type="submit" 
-                    className="btn btn-success" 
-                    style={{ width: '200px' }}
-                >
-                    {isEditing ? 'Guardar Cambios' : 'Crear Factura'}
+                <button type="submit" className="btn btn-success" disabled={loading}>
+                    {loading ? 'Procesando...' : 'Crear Factura'}
                 </button>
-                
-                <button 
-                    type="button" 
-                    className="btn btn-danger" 
-                    onClick={handleCloseTab} 
-                    style={{ width: '200px' }}
-                >
-                    Cerrar Pestaña
-                </button>
+                <button type="button" className="btn btn-danger" onClick={() => window.close()}>Cancelar</button>
             </div>
         </form>
     );

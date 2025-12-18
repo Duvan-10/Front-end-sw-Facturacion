@@ -64,11 +64,11 @@ body {
 .field-col textarea { /* 🟢 Añadido textarea para Productos/Clientes 🟢 */
     width: 100%; 
     padding: 10px; 
-    border: 1px solid #ccc; 
+    border: 1px solid hsl(0, 0%, 80%); 
     border-radius: 4px; 
     box-sizing: border-box; /* ESENCIAL para el layout */
-    background-color: #fff;
-    color: #333;
+    background-color: hsl(0, 0%, 100%);
+    color: hsl(0, 0%, 20%);
     transition: border-color 0.3s, box-shadow 0.3s;
     font-size: 16px; /* Asegura buena legibilidad */
 }
@@ -123,55 +123,74 @@ body {
     align-items: center; 
     gap: 5px;
     cursor: pointer;
-    color: #555;
+    color: hsl(0, 0%, 33%);
 }
 
 /* ======================================================= */
-/* SECCIÓN DE TABLA DE PRODUCTOS (Detalle de Factura) */
+/* CORRECCIÓN DE ALINEACIÓN: GRID DE PRODUCTOS */
 /* ======================================================= */
-/* Mantenemos esta sección ya que es exclusiva de InvoiceForm */
 
-.product-table-container {
-    margin-top: 30px;
-    overflow-x: auto; 
+/* Definimos exactamente el ancho de cada una de las 6 columnas */
+.product-grid {
+    display: grid;
+    /* Col 1 (Code): 120px 
+       Col 2 (Cant): 80px
+       Col 3 (Detalle): el resto del espacio (1fr)
+       Col 4 (V.Unit): 150px
+       Col 5 (V.Total): 150px
+       Col 6 (Acción): 50px
+    */
+    grid-template-columns: 120px 80px 1fr 150px 150px 50px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
-.product-table {
-    width: 100%; 
-    border-collapse: collapse; 
-    margin-bottom: 20px;
-    min-width: 800px; /* Mínimo ancho para la tabla si no cabe en la vista */
-}
-
-/* Estilos de encabezados y celdas */
-.product-table th {
-    background-color: #007bff; 
-    color: white; 
-    padding: 12px 10px; 
-    text-align: left; 
-    border-bottom: 2px solid #ddd;
+/* Estilo para los títulos (Encabezado) */
+.product-header {
     font-weight: bold;
-    white-space: nowrap; 
-}
-
-.product-table td {
-    padding: 8px 10px;
-    border-bottom: 1px solid #eee;
-    vertical-align: middle; 
-}
-
-.product-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9; 
-}
-
-/* Estilos para los INPUTS dentro de la tabla */
-.product-table input {
-    width: 100%; 
-    padding: 8px; 
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; 
+    color: hsl(0, 0%, 27%);
+    border-bottom: 2px solid #eee;
+    padding-bottom: 8px;
     font-size: 14px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* Alineación de texto para los títulos de valores numéricos */
+.product-header span:nth-child(2), /* Cant. */
+.product-header span:nth-child(4), /* V.Unit */
+.product-header span:nth-child(5)  /* V.Total */ {
+    text-align: center;
+}
+
+/* Estilo para la fila de inputs */
+.product-row input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid hwb(0 13% 87%);
+    border-radius: 4px;
+    background-color: oklab(90.28% -0.00114 0.00377);
+    color:#333 
+}
+
+/* Alineación de números dentro de los inputs */
+.product-row input[type="number"],
+.product-row input[disabled] {
+    text-align: right;
+}
+
+.delete-product {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 18px;
+    transition: transform 0.2s;
+}
+
+.delete-product:hover {
+    transform: scale(1.2);
 }
 
 /* --------------------------------------------------- */
