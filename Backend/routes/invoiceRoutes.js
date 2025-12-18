@@ -6,5 +6,6 @@ import invoiceController from '../controllers/invoice.controller.js';
 router.get('/proximo-numero', invoiceController.getNextNumber);
 router.get('/', invoiceController.getAllInvoices);
 router.post('/', invoiceController.createInvoice);
+router.put('/:id', invoiceController.updateInvoice);
 
 export default router;
