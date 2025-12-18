@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'; 
 import { useNavigate } from 'react-router-dom'; // Añadido para navegación
+import '../../styles/global.css';
 
 function Clientes() {
     const navigate = useNavigate();

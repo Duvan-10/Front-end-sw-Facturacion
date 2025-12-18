@@ -1,39 +1,27 @@
+import '../../styles/global.css';
+
 import React, { useState, useEffect } from 'react';
 import '../../styles/global.css';
 
-// Cantidad de elementos por página
 const ITEMS_PER_PAGE = 30; 
 
 function Facturas() {
-    // 1. Estados principales
     const [invoices, setInvoices] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    // 2. Estados para Búsqueda y Paginación
     const [searchQuery, setSearchQuery] = useState(''); 
     const [filterState, setFilterState] = useState(''); 
     const [currentPage, setCurrentPage] = useState(1); 
     const [totalItems, setTotalItems] = useState(0); 
 
-    // =======================================================
-    // I. LÓGICA DE APOYO (FORMATO)
-    // =======================================================
-    
     const formatDate = (dateString) => {
         if (!dateString) return '---';
         const date = new Date(dateString);
         return date.toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
+            day: '2-digit', month: '2-digit', year: 'numeric'
         });
     };
 
-    // =======================================================
-    // II. CARGA DE DATOS (Backend)
-    // =======================================================
-    
     const fetchInvoices = async () => {
         setLoading(true);
         try {
@@ -50,7 +38,7 @@ function Facturas() {
             if (searchQuery) {
                 const query = searchQuery.toLowerCase();
                 filtered = filtered.filter(inv => 
-                    inv.id.toLowerCase().includes(query) ||
+                    inv.id.toString().toLowerCase().includes(query) ||
                     inv.client.toLowerCase().includes(query)
                 );
             }
@@ -72,50 +60,26 @@ function Facturas() {
         fetchInvoices();
     }, [searchQuery, filterState, currentPage]); 
 
-    // =======================================================
-    // III. HANDLERS (Acciones)
-    // =======================================================
-    
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
         setCurrentPage(1); 
     };
 
-    const handleCreateNew = () => {
-        window.open('/facturas/crear', '_blank'); 
-    };
-
-    const handleView = (invoice) => {
-        // Lógica para abrir vista de solo lectura
-        window.open(`/facturas/ver/${invoice.id}`, '_blank');
-    };
-    
-    const handleEdit = (invoice) => {
-        window.open(`/facturas/editar/${invoice.id}`, '_blank');
-    };
-
-    const handleEmit = (invoice) => {
-        alert(`Emitiendo factura ${invoice.id}...`);
-    };
-
-    // =======================================================
-    // IV. RENDERIZADO
-    // =======================================================
+    const handleCreateNew = () => { window.open('/facturas/crear', '_blank'); };
+    const handleView = (invoice) => { window.open(`/facturas/ver/${invoice.id}`, '_blank'); };
+    const handleEdit = (invoice) => { window.open(`/facturas/editar/${invoice.id}`, '_blank'); };
+    const handleEmit = (invoice) => { alert(`Emitiendo factura ${invoice.id}...`); };
 
     return (
         <div className="main-content">
             <h1 className="module-title">Gestión de Facturas</h1>
 
-            {/* Seccion de Controles */}
             <section className="controls-section card">
                 <div className="search-bar">
                     <label htmlFor="search">Buscar Factura:</label>
                     <input 
-                        type="text" 
-                        id="search"
-                        className="search-input" 
-                        value={searchQuery}
-                        onChange={handleSearchChange}
+                        type="text" id="search" className="search-input" 
+                        value={searchQuery} onChange={handleSearchChange}
                         placeholder="ID o Cliente..."
                     />
                 </div>
@@ -140,7 +104,7 @@ function Facturas() {
             <section className="list-section">
                 <h2>Listado de Facturas ({totalItems} en total)</h2>
 
-                {loading && <p className="loading-text">Cargando datos desde la base de datos...</p>}
+                {loading && <p className="loading-text">Cargando datos...</p>}
                 {error && <p className="error-message" style={{color: 'red'}}>{error}</p>}
 
                 {!loading && !error && (
@@ -150,6 +114,8 @@ function Facturas() {
                                 <th># Factura</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
+                                {/* 🟢 COLUMNA NUEVA */}
+                                <th style={{width: '25%'}}>Productos</th>
                                 <th>Tipo</th>
                                 <th>Total</th>
                                 <th>Estado</th> 
@@ -162,6 +128,21 @@ function Facturas() {
                                     <td><strong>{invoice.id}</strong></td>
                                     <td>{formatDate(invoice.date)}</td>
                                     <td>{invoice.client}</td>
+                                    
+                                    {/* 🟢 CELDA DE PRODUCTOS RELACIONADOS */}
+                                       <td>
+                                              <div className="product-relation-wrapper">
+                                           {/* Cambiamos .items por .detalles */}
+                                                   {invoice.detalles && invoice.detalles.length > 0 ? (
+                                                           invoice.detalles.map((item, idx) => (
+                                                              <span key={idx} className="product-badge">
+                                                                {item.producto_nombre}
+                </span>
+            ))
+        ) :                                      (<small style={{color: '#999'}}>Sin detalle</small>)}
+    </div>
+</td>
+
                                     <td>{invoice.tipoFactura}</td>
                                     <td>${parseFloat(invoice.total).toLocaleString()}</td>
                                     <td>

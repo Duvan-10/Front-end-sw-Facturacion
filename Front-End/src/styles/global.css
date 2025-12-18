@@ -5,43 +5,58 @@
 :root {
     --primary-green: #00c853;
     --hover-green: #00b44a;
-    --dark-bg: #121212;
-    --card-bg: #1e1e1e;
-    --table-header: #181818;
-    --text-white: #f5f5f5;
+    --dark-bg: oklab(18.22% 0 -0.00002);
+    --card-bg: #141414;
+    --table-header: rgb(37, 20, 20);
+    --text-white: hsl(0, 0%, 100%);
     --danger-red: #d32f2f;
     --info-blue: #007bff;
+    max-width: 2000px;
+
+    }
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: hsl(180, 33%, 92%);
 }
 
+
+
 body {
-    margin: 0;
+    margin: 60;
     font-family: 'Inter', sans-serif;
     background-color: var(--dark-bg); /* Cambiado de verde a oscuro para legibilidad */
     color: var(--text-white);
-    line-height: 1.6;
+    line-height: 0.5;
+    color: hwb(120 89% 8%);
 }
 
 h1, h2, h3 {
     color: var(--primary-green);
     margin-bottom: 15px;
+    color: hsl(210, 4%, 91%);
+    
+
 }
 
 /* --- NAVEGACIÓN --- */
 .app-header {
     padding: 15px;
-    background-color: #000;
-    text-align: center;
+    background-color: lch(9.37% 0.51 19.28);
+    text-align: left;
     font-size: 1.5rem;
     font-weight: bold;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid lab(73.46% -72.07 63.71);
 }
 
 .navbar {
     display: flex;
-    justify-content: center; /* Centrado mejorado */
+    justify-content: left; /* Centrado mejorado */
     align-items: center;
     padding: 10px 20px;
-    background-color: #1a1a1a;
+    background-color: hwb(0 10% 90%);
     border-bottom: 3px solid var(--primary-green);
 }
 
@@ -68,7 +83,7 @@ h1, h2, h3 {
 .card {
     background-color: var(--card-bg);
     border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    box-shadow: 0 8px 16px #00000080;
     padding: 25px;
     margin-bottom: 25px;
 }
@@ -86,9 +101,9 @@ h1, h2, h3 {
 .form-control, .search-input, .select-filter {
     padding: 10px;
     border-radius: 6px;
-    border: 1px solid #444;
+    border: 1px solid #444444;
     background-color: #2c2c2c;
-    color: white;
+    color: hwb(0 100% 0%);
     outline: none;
 }
 
@@ -135,6 +150,7 @@ tr:hover { background-color: #252525; }
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    
 }
 
 .btn-sm { padding: 5px 10px; font-size: 0.8rem; }

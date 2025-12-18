@@ -224,9 +224,16 @@ const InvoiceForm = () => {
 
             <h2 className="section-title">4. Totales</h2> 
             <div className="totals-section">
-                <div className="total-line"><label>Subtotal:</label><span>${subtotal.toFixed(2)}</span></div>
-                <div className="total-line"><label>IVA (19%):</label><span>${iva.toFixed(2)}</span></div>
-                <div className="total-line total-final"><label>Total:</label><span>${totalFinal.toFixed(2)}</span></div>
+                <div className="total-line"><label>Subtotal</label><span>${subtotal.toFixed(2)}</span></div>
+                <br></br>
+                <br></br>
+                <br></br>
+                <div className="total-line"><label>IVA (19%)</label><span>${iva.toFixed(2)}</span></div>
+                <br></br>
+                <br></br>
+                <br></br>
+                <div className="total-line total-final"><label>Total</label><span>${totalFinal.toFixed(2)}</span></div>
+                
             </div>
             
             <div className="final-buttons-group">

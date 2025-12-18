@@ -2,11 +2,11 @@
 /* ESTILOS GLOBALES Y LAYOUT DE PESTAÑAS/FORMULARIOS */
 /* ======================================================= */
 body {
-    background-color: #f4f7f6;
+    background-color: lab(96.29% -1.17 0.12);
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 20px;
-        color: #1a1818;
+    color: lab(92.85% 0.67 0.23);
 }
 
 /* 🟢 CLASE MAESTRA PARA TODOS LOS FORMULARIOS (Clientes, Productos, Facturas) 🟢 */
@@ -15,14 +15,14 @@ body {
     max-width: 1200px; /* Ancho máximo para formularios grandes como Facturas */
     margin: 0 auto;
     padding: 30px;
-    background: #fff;
+    background: hwb(0 7% 93%);
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .module-title {
     /* Estilos de títulos generales */
-    color: #333; /* Color más oscuro para visibilidad */
+    color: oklch(81.014% 0.23154 148.191); /* Color más oscuro para visibilidad */
     border-bottom: 2px solid #ddd;
     padding-bottom: 15px;
     margin-bottom: 25px;
@@ -55,14 +55,14 @@ body {
 .field-col label {
     margin-bottom: 5px;
     font-weight: bold;
-    color: #444; 
+    color: hwb(0 82% 16%); 
     font-size: 14px; 
 }
 
 /* Estilos del INPUT, SELECT, y TEXTAREA dentro de ese grupo */
 .field-col input, 
 .field-col select,
-.field-col textarea { /* 🟢 Añadido textarea para Productos/Clientes 🟢 */
+.field-col textarea { 
     width: 100%; 
     padding: 10px; 
     border: 1px solid hsl(0, 0%, 80%); 
@@ -105,7 +105,7 @@ body {
     gap: 30px; 
     margin-top: 30px; 
     padding-top: 20px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid hsl(0, 0%, 93%);
 }
 
 /* ------------------------------------------------------- */
@@ -124,7 +124,7 @@ body {
     align-items: center; 
     gap: 5px;
     cursor: pointer;
-    color: hsl(0, 0%, 33%);
+    color: oklch(88.859% 0.00877 16.689);
 }
 
 /* ======================================================= */
@@ -150,8 +150,8 @@ body {
 /* Estilo para los títulos (Encabezado) */
 .product-header {
     font-weight: bold;
-    color: hsl(0, 0%, 27%);
-    border-bottom: 2px solid #eee;
+    color: lab(85.61% 3.09 1.09);
+    border-bottom: 2px solid hsl(0, 0%, 93%);
     padding-bottom: 8px;
     font-size: 14px;
     text-transform: uppercase;
@@ -171,8 +171,8 @@ body {
     padding: 8px;
     border: 1px solid hwb(0 13% 87%);
     border-radius: 4px;
-    background-color: oklab(90.28% -0.00114 0.00377);
-    color:#333 
+    background-color: oklch(90.28% 0.00394 106.88);
+    color:hsl(0, 0%, 20%) 
 }
 
 /* Alineación de números dentro de los inputs */
@@ -184,9 +184,9 @@ body {
 .delete-product {
     background: none;
     border: none;
-    color: #dc3545;
+    color: hsl(0, 100%, 48%);
     cursor: pointer;
-    font-size: 18px;
+    font-size: 30px;
     transition: transform 0.2s;
 }
 

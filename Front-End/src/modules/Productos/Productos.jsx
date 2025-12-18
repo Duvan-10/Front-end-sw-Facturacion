@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'; 
 import { useNavigate } from 'react-router-dom'; // Importado para manejo de sesión
+import '../../styles/global.css';
 
 function Productos() {
     const navigate = useNavigate();
