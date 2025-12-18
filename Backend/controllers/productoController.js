@@ -91,3 +91,28 @@ export const updateProducto = async (req, res) => {
         res.status(500).json({ message: "Error interno al actualizar el producto" });
     }
 };
+
+// 5. BUSCAR PRODUCTO POR CÓDIGO (NUEVO: Para auto-relleno en Factura)
+// ------------------------------------------------------------------
+export const getProductoByCodigo = async (req, res) => {
+    const { codigo } = req.params; // Extraemos el código de la URL
+    try {
+        // Buscamos coincidencia exacta en la columna 'codigo'
+        const [rows] = await db.query(
+            "SELECT id, codigo, nombre, precio, impuesto_porcentaje FROM productos WHERE codigo = ? LIMIT 1",
+            [codigo]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: "Producto no encontrado" });
+        }
+
+        // Devolvemos el objeto directamente para que coincida con:
+        // const prod = await response.json(); en tu Frontend
+        res.json(rows[0]);
+
+    } catch (error) {
+        console.error("Error al buscar producto por código:", error);
+        res.status(500).json({ message: "Error interno en el servidor al buscar el producto" });
+    }
+};

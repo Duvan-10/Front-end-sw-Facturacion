@@ -103,6 +103,7 @@ h1, h2, h3 {
     background-color: var(--card-bg);
     border-radius: 8px;
     overflow: hidden;
+    color: hsl(214, 30%, 95%);
 }
 
 th {
@@ -112,6 +113,7 @@ th {
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 1px;
+    
 }
 
 td {
