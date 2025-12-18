@@ -12,16 +12,37 @@ const InvoiceForm = () => {
     // ESTADOS
     const [loading, setLoading] = useState(false);
     const [tipoFactura, setTipoFactura] = useState('Contado');
+    const [numeroFactura, setNumeroFactura] = useState('Cargando...'); // <--- NUEVO ESTADO
     const [cliente, setCliente] = useState({ id: '', identificacion: '', nombre_razon_social: '', telefono: '', direccion: '', email: '' });
     const [productos, setProductos] = useState([{ producto_id: "", code: "", cant: 1, detail: "", unit: 0, total: 0 }]);
 
-    // 🚨 SEGURIDAD: Validar sesión al cargar
+    // 🚨 SEGURIDAD Y CARGA INICIAL
     useEffect(() => {
         const token = sessionStorage.getItem('authToken');
         if (!token) {
             navigate('/');
+            return;
         }
-    }, [navigate]);
+
+        // TRAER EL PRÓXIMO NÚMERO DE FACTURA
+        const fetchNextNumber = async () => {
+            try {
+                const response = await fetch(`${apiBaseUrl}/facturas/proximo-numero`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setNumeroFactura(data.numero_factura); // Ej: "FAC-0005"
+                }
+            } catch (err) {
+                console.error("Error al obtener el número correlativo");
+            }
+        };
+
+        if (!isEditing) {
+            fetchNextNumber();
+        }
+    }, [navigate, apiBaseUrl, isEditing]);
 
     // =======================================================
     // LÓGICA DE BÚSQUEDA DE CLIENTE POR NIT
@@ -49,7 +70,6 @@ const InvoiceForm = () => {
         const updated = [...productos];
         updated[index][field] = value;
 
-        // Si cambia el código, buscamos el producto automáticamente
         if (field === "code" && value.length > 2) {
             try {
                 const token = sessionStorage.getItem('authToken');
@@ -85,8 +105,12 @@ const InvoiceForm = () => {
     // =======================================================
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        if (!cliente.id) {
+            alert("Por favor, seleccione un cliente válido.");
+            return;
+        }
 
+        setLoading(true);
         const token = sessionStorage.getItem('authToken');
         const facturaData = {
             cliente_id: cliente.id,
@@ -95,7 +119,7 @@ const InvoiceForm = () => {
             subtotal,
             iva,
             total: totalFinal,
-            detalles: productos // El backend recibirá este array para insertarlo en factura_detalles
+            detalles: productos 
         };
 
         try {
@@ -143,7 +167,8 @@ const InvoiceForm = () => {
                 
                 <div className="field-col">
                     <label>Número de Factura</label>
-                    <input type="text" className="input-short" value="AUTO-GENERADO" disabled />
+                    {/* CAMBIO: Ahora usa el estado numeroFactura */}
+                    <input type="text" className="input-short" value={numeroFactura} disabled />
                 </div>
 
                 <div className="field-col">
