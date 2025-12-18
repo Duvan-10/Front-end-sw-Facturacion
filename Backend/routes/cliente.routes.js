@@ -11,6 +11,7 @@ router.post('/', authenticate, clienteController.createCliente);
 router.get('/', authenticate, clienteController.getClientes);
 router.get('/:id', authenticate, clienteController.getClienteById);
 router.put('/:id', authenticate, clienteController.updateCliente);
+router.get('/identificacion/:identificacion', clienteController.getClienteByIdentificacion);
 
 // 🚨 RUTA DE ELIMINACIÓN DESACTIVADA
 // router.delete('/:id', authenticate, clienteController.deleteCliente); 

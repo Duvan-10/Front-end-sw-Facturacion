@@ -1,11 +1,12 @@
-// CORRECCIÓN: Usamos la ruta que ya funciona en tu server.js
-import  db  from '../models/db.js'; 
+import db from '../models/db.js'; 
 
 const invoiceController = {
+    // 1. OBTENER TODAS LAS FACTURAS (Tu código original)
     getAllInvoices: async (req, res) => {
         try {
             const query = `
                 SELECT 
+                    f.id AS id_real,
                     f.numero_factura AS id, 
                     c.nombre_razon_social AS client,
                     f.fecha_emision AS date,
@@ -18,12 +19,73 @@ const invoiceController = {
                     CASE WHEN f.estado = 'Pendiente' THEN 1 ELSE 2 END, 
                     f.fecha_emision DESC;
             `;
-            // IMPORTANTE: Asegúrate de que tu archivo db.js exporte una variable llamada 'db' o 'pool'
             const [rows] = await db.query(query);
             res.json(rows);
         } catch (error) {
             console.error("Error en getAllInvoices:", error);
-            res.status(500).json({ message: "Error al obtener facturas desde la DB" });
+            res.status(500).json({ message: "Error al obtener facturas" });
+        }
+    },
+
+    // 2. GENERAR PRÓXIMO NÚMERO (Para el formulario)
+    getNextNumber: async (req, res) => {
+        try {
+            const [rows] = await db.query("SELECT MAX(id) AS lastId FROM facturas");
+            const nextId = (rows[0].lastId || 0) + 1;
+            const formatted = `FAC-${nextId.toString().padStart(4, '0')}`;
+            res.json({ numero_factura: formatted });
+        } catch (error) {
+            res.status(500).json({ message: "Error al generar número" });
+        }
+    },
+
+    // 3. CREAR FACTURA (Lógica de guardado y stock)
+    createInvoice: async (req, res) => {
+        const connection = await db.getConnection(); // Para asegurar que todo se guarde o nada se guarde
+        try {
+            await connection.beginTransaction();
+
+            const { cliente_id, tipo_pago, fecha_emision, total, detalles } = req.body;
+
+            // A. Insertar cabecera de factura
+            // Primero generamos el número basado en el ID que vendrá
+            const [lastRecord] = await connection.query("SELECT MAX(id) AS lastId FROM facturas");
+            const nextId = (lastRecord[0].lastId || 0) + 1;
+            const numFactura = `FAC-${nextId.toString().padStart(4, '0')}`;
+
+            const [facturaResult] = await connection.query(
+                "INSERT INTO facturas (numero_factura, cliente_id, fecha_emision, total, tipo_pago, estado) VALUES (?, ?, ?, ?, ?, 'Pendiente')",
+                [numFactura, cliente_id, fecha_emision, total, tipo_pago]
+            );
+
+            const facturaId = facturaResult.insertId;
+
+            // B. Insertar los productos (detalles) y actualizar inventario
+            for (const item of detalles) {
+                if (!item.producto_id) continue;
+
+                // Guardar en factura_detalles
+                await connection.query(
+                    "INSERT INTO factura_detalles (factura_id, producto_id, cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?)",
+                    [facturaId, item.producto_id, item.cant, item.unit, item.total]
+                );
+
+                // Descontar Stock de la tabla productos
+                await connection.query(
+                    "UPDATE productos SET stock = stock - ? WHERE id = ?",
+                    [item.cant, item.producto_id]
+                );
+            }
+
+            await connection.commit();
+            res.status(201).json({ message: "Factura creada", numero_factura: numFactura });
+
+        } catch (error) {
+            await connection.rollback();
+            console.error("Error en createInvoice:", error);
+            res.status(500).json({ message: "Error al procesar la factura en el servidor" });
+        } finally {
+            connection.release();
         }
     }
 };
