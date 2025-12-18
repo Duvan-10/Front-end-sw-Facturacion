@@ -1,60 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import "../styles1.css"
 
-// =======================================================
-// COMPONENTE: ProductForm 
-//   - impuesto_porcentaje es readOnly en modo edición.
-// =======================================================
-
 const ProductForm = () => {
-    
     const { id } = useParams();
-    const isEditing = !!id;
+    const navigate = useNavigate();
+    const isEditing = !!id; 
 
-    // URL base de la API (AJUSTA ESTO SI ES NECESARIO)
-    const apiBaseUrl = 'http://localhost:8080/api/productos'; 
+    const apiBaseUrl = import.meta.env.VITE_API_URL 
+        ? `${import.meta.env.VITE_API_URL}/productos` 
+        : 'http://localhost:8080/api/productos'; 
     
-    // 🚨 REEMPLAZA ESTO: Obtener el token JWT de donde lo almacenes
-    const getAuthToken = () => {
-        return localStorage.getItem('authToken'); 
-    };
+    const getAuthToken = () => sessionStorage.getItem('authToken');
     
-    // Estado inicial ajustado a las claves del backend
     const [productData, setProductData] = useState({
-        codigo: '',
-        nombre: '',
-        precio: '',
-        descripcion: '', 
-        impuesto_porcentaje: '0', 
+        codigo: '', nombre: '', precio: '', descripcion: '', impuesto_porcentaje: '0', 
     });
     
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // --- I. LÓGICA DE CARGA POR URL (fetch GET individual para edición) ---
     useEffect(() => {
+        const token = getAuthToken();
+        if (!token) {
+            navigate('/');
+            return;
+        }
+
         if (isEditing) {
             const fetchProductData = async () => {
-                const token = getAuthToken();
-                if (!token) {
-                    setError("Error de autenticación: Token no encontrado.");
-                    return;
-                }
                 setLoading(true);
                 try {
                     const response = await fetch(`${apiBaseUrl}/${id}`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}` 
-                        }
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
                     
-                    if (response.status === 401) throw new Error("Acceso denegado. Token inválido o expirado.");
-                    if (!response.ok) throw new Error(`No se pudo cargar el producto ${id}. Código: ${response.status}`);
+                    if (response.status === 401) {
+                        sessionStorage.removeItem('authToken');
+                        navigate('/');
+                        return;
+                    }
+                    if (!response.ok) throw new Error(`No se pudo cargar el producto.`);
                     
-                    const data = await response.json();
-                    
+                    const result = await response.json();
+                    const data = result.data || result; 
                     setProductData({
                         codigo: data.codigo || '',
                         nombre: data.nombre || '',
@@ -63,201 +52,79 @@ const ProductForm = () => {
                         impuesto_porcentaje: data.impuesto_porcentaje ? String(data.impuesto_porcentaje) : '0',
                     });
                 } catch (err) {
-                    console.error("Error al cargar datos:", err);
                     setError(err.message);
-                    alert(`Error al cargar datos del producto: ${err.message}`);
                 } finally {
                     setLoading(false);
                 }
             };
             fetchProductData();
         }
-    }, [isEditing, id]); 
+    }, [isEditing, id, apiBaseUrl, navigate]); 
 
-    // Handler genérico
-    const handleChange = (e) => {
-        const { id, value } = e.target;
-        setProductData(prev => ({
-            ...prev,
-            [id]: value
-        }));
-    };
-    
-    const handleCloseTab = () => {
-        window.close();
-    };
-
-    // --- II. HANDLER DE ENVÍO (POST/PUT) ---
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null);
-        setLoading(true);
-
         const token = getAuthToken();
-        if (!token) {
-            alert("Error de autenticación: No hay token disponible.");
-            setLoading(false);
-            return;
-        }
+        if (!token) { navigate('/'); return; }
 
-        let url = apiBaseUrl;
-        let method = 'POST';
-        
-        // Preparar datos, asegurando que los números son números (usamos parseFloat)
+        setLoading(true);
         const finalData = { 
-            codigo: productData.codigo,
-            nombre: productData.nombre,
-            descripcion: productData.descripcion,
+            ...productData, 
             precio: parseFloat(productData.precio) || 0,
-            impuesto_porcentaje: parseFloat(productData.impuesto_porcentaje) || 0,
+            impuesto_porcentaje: parseFloat(productData.impuesto_porcentaje) || 0 
         };
-        
-        if (isEditing) {
-            url = `${apiBaseUrl}/${id}`;
-            method = 'PUT';
-        }
 
         try {
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` 
-                },
+            const response = await fetch(isEditing ? `${apiBaseUrl}/${id}` : apiBaseUrl, {
+                method: isEditing ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(finalData),
             });
 
-            if (response.status === 401) throw new Error("Acceso denegado. Token inválido o expirado.");
             if (!response.ok) {
-                const errorBody = await response.json(); 
-                throw new Error(errorBody.message || `Error ${response.status}: Error al procesar la solicitud.`);
+                if (response.status === 401) { navigate('/'); return; }
+                const result = await response.json();
+                throw new Error(result.message || "Error al guardar");
             }
 
-            const action = isEditing ? 'editó' : 'registró';
-            alert(`✅ Producto "${productData.nombre}" ${action} con éxito.`);
-            
+            alert(`✅ Producto guardado.`);
             if (window.opener) {
-                window.opener.postMessage('listUpdated', '*'); 
+                window.opener.postMessage('listUpdated', '*');
+                window.close();
+            } else {
+                navigate('/home/productos');
             }
-
-            handleCloseTab(); 
-
         } catch (err) {
-            console.error("Error al guardar producto:", err);
             setError(err.message);
-            alert(`❌ Error al guardar el producto: ${err.message}`);
         } finally {
             setLoading(false);
         }
     };
 
-    if (loading && isEditing) {
-        return <div className="loading-card card" style={{ padding: '20px', textAlign: 'center' }}>Cargando datos del producto...</div>;
-    }
-
-    if (error && isEditing) {
-        return <div className="error-card card" style={{ padding: '20px', color: 'red', textAlign: 'center' }}>Error: {error}</div>;
-    }
-
-    return ( 
+    return (
         <form className="app-form card" onSubmit={handleSubmit}>
-            <h2 className="module-title" style={{ textAlign: 'center' }}>
-                {isEditing ? `Editar Producto #${id}` : 'Registrar Nuevo Producto'}
-            </h2>
-            
+            <h2 className="module-title">{isEditing ? `Editar Producto` : 'Registrar Producto'}</h2>
+            {error && <p className="error-message">⚠️ {error}</p>}
             <div className="section-group client-data">
-                
-                {/* Código */}
                 <div className="field-col">
-                    <label htmlFor="codigo">Código</label>
-                    <input 
-                        type="text" 
-                        id="codigo" 
-                        placeholder="Código de Referencia" 
-                        value={productData.codigo} 
-                        onChange={handleChange} 
-                        required 
-                    />
+                    <label>Código</label>
+                    <input type="text" id="codigo" value={productData.codigo} onChange={(e) => setProductData({...productData, codigo: e.target.value})} required />
                 </div>
-                
-                {/* Nombre */}
                 <div className="field-col">
-                    <label htmlFor="nombre">Nombre</label>
-                    <input 
-                        type="text" 
-                        id="nombre" 
-                        placeholder="Nombre completo del Producto" 
-                        value={productData.nombre} 
-                        onChange={handleChange} 
-                        required 
-                    />
+                    <label>Nombre</label>
+                    <input type="text" id="nombre" value={productData.nombre} onChange={(e) => setProductData({...productData, nombre: e.target.value})} required />
                 </div>
-
-                {/* Precio */}
                 <div className="field-col">
-                    <label htmlFor="precio">Precio Unitario ($)</label>
-                    <input 
-                        type="number" 
-                        id="precio" 
-                        placeholder="0.00" 
-                        step="0.01"
-                        min="0"
-                        value={productData.precio} 
-                        onChange={handleChange} 
-                        required 
-                    />
+                    <label>Precio Unitario ($)</label>
+                    <input type="number" step="0.01" value={productData.precio} onChange={(e) => setProductData({...productData, precio: e.target.value})} required />
                 </div>
-                
-                {/* Impuesto: readOnly si estamos editando */}
                 <div className="field-col">
-                    <label htmlFor="impuesto_porcentaje">Impuesto (%)</label>
-                    <input 
-                        type="number" 
-                        id="impuesto_porcentaje" 
-                        placeholder="0" 
-                        step="1"
-                        min="0"
-                        value={productData.impuesto_porcentaje} 
-                        onChange={handleChange}
-                        readOnly={isEditing} 
-                        className={isEditing ? 'read-only-field' : ''}
-                    />
+                    <label>Impuesto (%)</label>
+                    <input type="number" value={productData.impuesto_porcentaje} onChange={(e) => setProductData({...productData, impuesto_porcentaje: e.target.value})} />
                 </div>
-                
-                {/* Descripción */}
-                <div className="field-col full-width">
-                    <label htmlFor="descripcion">Descripción</label>
-                    <textarea 
-                        id="descripcion" 
-                        placeholder="Detalles del producto" 
-                        value={productData.descripcion} 
-                        onChange={handleChange} 
-                        rows="3" 
-                    />
-                </div>
-
             </div>
-
-            {/* Botones de Acción */}
             <div className="final-buttons-group">
-                <button 
-                    type="submit" 
-                    className="btn btn-success" 
-                    style={{ width: '200px' }}
-                    disabled={loading}
-                >
-                    {loading ? 'Guardando...' : (isEditing ? 'Guardar Cambios' : 'Registrar Producto')}
-                </button>
-                
-                <button 
-                    type="button" 
-                    className="btn btn-danger" 
-                    onClick={handleCloseTab} 
-                    style={{ width: '200px' }}
-                    disabled={loading}
-                >
-                    Cerrar Pestaña
-                </button>
+                <button type="submit" className="btn btn-success" disabled={loading}>{loading ? '...' : 'Guardar'}</button>
+                <button type="button" className="btn btn-danger" onClick={() => window.close()}>Cancelar</button>
             </div>
         </form>
     ); 

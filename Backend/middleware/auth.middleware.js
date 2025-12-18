@@ -20,7 +20,7 @@ export const authenticate = (req, res, next) => {
         // Asegúrate de que process.env.JWT_SECRET esté cargado
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-        req.userId = decoded.id; 
+        req.user = decoded; 
         next(); 
 
     } catch (err) {

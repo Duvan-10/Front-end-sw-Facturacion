@@ -1,192 +1,167 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import "../styles1.css";
+import { useParams, useNavigate } from 'react-router-dom';
 
-// =======================================================
-// COMPONENTE: ClientForm (Con Guardado Real y Notificación)
-// =======================================================
-
-const ClientForm = () => {
-    
+function ClienteForm() {
     const { id } = useParams();
-    const isEditing = !!id;
+    const navigate = useNavigate();
+    const isEdit = Boolean(id);
 
-    // Simulación de URL base de la API (AJUSTA ESTO A TU BACKEND REAL)
-    const apiBaseUrl = 'http://localhost:8080/api/clientes'; 
+    const apiBaseUrl = import.meta.env.VITE_API_URL 
+        ? `${import.meta.env.VITE_API_URL}/clientes` 
+        : 'http://localhost:8080/api/clientes';
 
-    // Estado inicial
-    const [clientData, setClientData] = useState({
-        nit: '',
-        name: '',
-        phone: '',
-        address: '',
+    const [formData, setFormData] = useState({
+        tipo_identificacion: 'Cédula de Ciudadanía',
+        identificacion: '',
+        nombre_razon_social: '',
         email: '',
+        telefono: '',
+        direccion: ''
     });
 
-    // --- I. LÓGICA DE CARGA POR URL (fetch de datos para edición) ---
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    // Obtener token desde sessionStorage
+    const getAuthToken = () => sessionStorage.getItem('authToken');
+
     useEffect(() => {
-        if (isEditing) {
-            const fetchClientData = async () => {
+        const token = getAuthToken();
+        
+        // Redirección inmediata si no hay token (Evita 404 al usar '/')
+        if (!token) {
+            navigate('/'); 
+            return;
+        }
+
+        if (isEdit) {
+            const fetchCliente = async () => {
                 try {
-                    // Nota: En un entorno de producción, es vital manejar tokens/seguridad aquí.
-                    const response = await fetch(`${apiBaseUrl}/${id}`);
-                    if (!response.ok) {
-                        throw new Error('No se pudo cargar el cliente para edición.');
+                    const response = await fetch(`${apiBaseUrl}/${id}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (response.status === 401 || response.status === 403) {
+                        sessionStorage.removeItem('authToken');
+                        navigate('/'); 
+                        return;
                     }
+                    
+                    if (!response.ok) throw new Error("No se pudo cargar el cliente.");
                     const data = await response.json();
-                    setClientData(data);
-                } catch (error) {
-                    console.error("Error al cargar datos:", error);
-                    alert(`Error al cargar los datos del cliente ${id}: ${error.message}`);
+                    setFormData(data);
+                } catch (err) {
+                    setError(err.message);
                 }
             };
-            fetchClientData();
+            fetchCliente();
         }
-    }, [isEditing, id, apiBaseUrl]); // Se ejecuta al cambiar isEditing o id
+    }, [id, isEdit, apiBaseUrl, navigate]);
 
-    // Handler genérico para actualizar el estado del formulario
     const handleChange = (e) => {
-        const { id, value } = e.target;
-        setClientData(prev => ({
-            ...prev,
-            [id]: value
-        }));
-    };
-    
-    // --- II. HANDLERS DE ACCIÓN ---
-    
-    const handleCloseTab = () => {
-        window.close();
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        let url = apiBaseUrl;
-        let method = 'POST';
-        
-        const finalData = { ...clientData };
-        
-        if (isEditing) {
-            url = `${apiBaseUrl}/${id}`;
-            method = 'PUT';
-            finalData.id = id; 
-        } else {
-            // Asegura que el ID no se envíe si es un registro nuevo (para que la DB lo genere)
-            delete finalData.id; 
+        setLoading(true);
+        setError(null);
+
+        const token = getAuthToken();
+        if (!token) {
+            navigate('/');
+            return;
         }
 
+        const method = isEdit ? 'PUT' : 'POST';
+        const url = isEdit ? `${apiBaseUrl}/${id}` : apiBaseUrl;
+
         try {
-            console.log(`Enviando ${method} a: ${url}`, finalData);
-            
-            // LLAMADA REAL A LA API
             const response = await fetch(url, {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
-                    // Incluye headers de autenticación si son necesarios
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(finalData),
+                body: JSON.stringify(formData)
             });
 
+            const result = await response.json();
+
             if (!response.ok) {
-                // Intenta leer el cuerpo del error si es posible
-                const errorText = await response.text(); 
-                throw new Error(`Error ${response.status}: ${errorText}`);
+                if (response.status === 401) {
+                    sessionStorage.removeItem('authToken');
+                    navigate('/');
+                    return;
+                }
+                throw new Error(result.message || "Error en la operación");
             }
 
-            const savedClient = await response.json(); 
-            
-            const action = isEditing ? 'editó' : 'registró';
-            alert(`✅ Cliente "${savedClient.name || finalData.name}" ${action} con éxito.`);
-            
-            // PASO CLAVE: Notificar a la ventana padre para que recargue
+            alert("✅ Operación exitosa");
             if (window.opener) {
-                window.opener.postMessage('listUpdated', '*'); 
+                window.opener.postMessage('listUpdated', '*');
+                window.close();
+            } else {
+                navigate('/home/clientes'); 
             }
 
-            // PASO CLAVE: Cerrar la pestaña
-            handleCloseTab(); 
-
-        } catch (error) {
-            console.error("Error al guardar cliente:", error);
-            alert(`❌ Error al guardar el cliente: ${error.message}. Por favor, verifica la URL de la API y el servidor.`);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
-    return ( 
-        // 🚨 CAMBIO 1: Usar la clase global 'app-form' 
-        <form className="app-form card" onSubmit={handleSubmit}>
-            <h2 className="module-title" style={{ textAlign: 'center' }}>
-                {isEditing ? `Editar Cliente #${id}` : 'Registrar Nuevo Cliente'}
-            </h2>
-            
-            {/* 🚨 CAMBIO 2: Ya usa 'section-group', lo cual está correcto */}
-            <div className="section-group client-data">
-                
-                {/* NIT/CC */}
-                <div className="field-col">
-                    <label htmlFor="nit">NIT/CC</label>
-                    <input 
-                        type="text" 
-                        id="nit" 
-                        placeholder="Identificación" 
-                        value={clientData.nit || ''} 
-                        onChange={handleChange} 
-                        required 
-                    />
+    return (
+        <div className="app-form card">
+            <h1 className="module-title">{isEdit ? 'Editar Cliente' : 'Registro de Nuevo Cliente'}</h1>
+            {error && <p style={{ color: '#721c24', backgroundColor: '#f8d7da', padding: '10px', borderRadius: '4px' }}>⚠️ {error}</p>}
+            <form onSubmit={handleSubmit}>
+                <div className="section-group">
+                    <div className="field-col">
+                        <label>Tipo de ID:</label>
+                        <select name="tipo_identificacion" value={formData.tipo_identificacion} onChange={handleChange} required>
+                            <option value="Cédula de Ciudadanía">Cédula de Ciudadanía</option>
+                            <option value="NIT">NIT</option>
+                            <option value="Cédula de Extranjería">Cédula de Extranjería</option>
+                            <option value="Pasaporte">Pasaporte</option>
+                        </select>
+                    </div>
+                    <div className="field-col">
+                        <label>Número de Identificación:</label>
+                        <input type="text" name="identificacion" value={formData.identificacion} onChange={handleChange} required />
+                    </div>
                 </div>
-                
-                {/* Razón Social / Nombre */}
-                <div className="field-col">
-                    <label htmlFor="name">Razón Social / Nombre</label>
-                    <input type="text" id="name" placeholder="Nombre completo" value={clientData.name || ''} onChange={handleChange} required />
+                <div className="section-group">
+                    <div className="field-col full-width">
+                        <label>Nombre / Razón Social:</label>
+                        <input type="text" name="nombre_razon_social" value={formData.nombre_razon_social} onChange={handleChange} required />
+                    </div>
                 </div>
+                <div className="section-group">
+                    <div className="field-col">
+                        <label>Email:</label>
+                        <input type="email" name="email" value={formData.email} onChange={handleChange} />
+                    </div>
+                    <div className="field-col">
+                        <label>Teléfono:</label>
+                        <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} />
+                    </div>
+                </div>
+                <div className="section-group">
+                    <div className="field-col full-width">
+                        <label>Dirección:</label>
+                        <textarea name="direccion" value={formData.direccion} onChange={handleChange} />
+                    </div>
+                </div>
+                <div className="final-buttons-group">
+                    <button type="button" onClick={() => isEdit ? navigate('/home/clientes') : window.close()} className="btn-secondary">Cancelar</button>
+                    <button type="submit" disabled={loading} className="btn-primary">{loading ? 'Guardando...' : 'Guardar Cliente'}</button>
+                </div>
+            </form>
+        </div>
+    );
+}
 
-                {/* Teléfono */}
-                <div className="field-col">
-                    <label htmlFor="phone">Teléfono</label>
-                    <input type="text" id="phone" placeholder="Número contacto" value={clientData.phone || ''} onChange={handleChange} />
-                </div>
-                
-                {/* Dirección */}
-                <div className="field-col">
-                    <label htmlFor="address">Dirección</label>
-                    <input type="text" id="address" placeholder="Dirección" value={clientData.address || ''} onChange={handleChange} />
-                </div>
-                
-                {/* Correo */}
-                <div className="field-col">
-                    <label htmlFor="email">Correo</label>
-                    <input type="email" id="email" placeholder="Correo electrónico" value={clientData.email || ''} onChange={handleChange} />
-                </div>
-                
-                {/* Aquí podríamos agregar un campo de observaciones si fuera necesario, usando la clase 'full-width' */}
-
-            </div>
-
-            {/* Botones de Acción */}
-            {/* 🚨 CAMBIO 3: Usar la clase global 'final-buttons-group' y eliminar style inline */}
-            <div className="final-buttons-group">
-                <button 
-                    type="submit" 
-                    className="btn btn-success" 
-                    style={{ width: '200px' }}
-                >
-                    {isEditing ? 'Guardar Cambios' : 'Registrar Cliente'}
-                </button>
-                
-                <button 
-                    type="button" 
-                    className="btn btn-danger" 
-                    onClick={handleCloseTab} 
-                    style={{ width: '200px' }}
-                >
-                    Cerrar Pestaña
-                </button>
-            </div>
-        </form>
-    ); 
-};
-
-export default ClientForm;
+export default ClienteForm;
