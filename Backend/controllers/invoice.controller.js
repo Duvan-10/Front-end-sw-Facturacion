@@ -45,7 +45,7 @@ const invoiceController = {
         try {
             await connection.beginTransaction();
 
-            const { cliente_id, tipo_pago, fecha_emision, total, detalles } = req.body;
+            const { cliente_id, tipo_pago, fecha_emision, subtotal, iva, total, detalles } = req.body;
 
             // A. Insertar cabecera de factura
             // Primero generamos el número basado en el ID que vendrá
@@ -54,9 +54,9 @@ const invoiceController = {
             const numFactura = `FAC-${nextId.toString().padStart(4, '0')}`;
 
             const [facturaResult] = await connection.query(
-                "INSERT INTO facturas (numero_factura, cliente_id, fecha_emision, total, tipo_pago, estado) VALUES (?, ?, ?, ?, ?, 'Pendiente')",
-                [numFactura, cliente_id, fecha_emision, total, tipo_pago]
-            );
+            "INSERT INTO facturas (numero_factura, cliente_id, fecha_emision, subtotal, iva, total, tipo_pago, estado) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pendiente')",
+            [numFactura, cliente_id, fecha_emision, subtotal, iva, total, tipo_pago]
+              );
 
             const facturaId = facturaResult.insertId;
 
@@ -70,11 +70,7 @@ const invoiceController = {
                     [facturaId, item.producto_id, item.cant, item.unit, item.total]
                 );
 
-                // Descontar Stock de la tabla productos
-                await connection.query(
-                    "UPDATE productos SET stock = stock - ? WHERE id = ?",
-                    [item.cant, item.producto_id]
-                );
+
             }
 
             await connection.commit();
