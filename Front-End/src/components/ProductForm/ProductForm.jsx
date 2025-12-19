@@ -105,6 +105,7 @@ const ProductForm = () => {
             <h2 className="module-title">{isEditing ? `Editar Producto` : 'Registrar Producto'}</h2>
             {error && <p className="error-message">⚠️ {error}</p>}
             <div className="section-group client-data">
+
                 <div className="field-col">
                     <label>Código</label>
                     <input type="text" id="codigo" value={productData.codigo} onChange={(e) => setProductData({...productData, codigo: e.target.value})} required />
@@ -112,6 +113,15 @@ const ProductForm = () => {
                 <div className="field-col">
                     <label>Nombre</label>
                     <input type="text" id="nombre" value={productData.nombre} onChange={(e) => setProductData({...productData, nombre: e.target.value})} required />
+<br></br>
+<br></br>
+                    
+                <div className="input-especial">
+                <label>Descripcion </label>
+                <input type="text, number" step="nombre" value={productData.descripcion} onChange={(e) => setProductData({...productData, descripcion: e.target.value})} required />
+                </div>
+
+
                 </div>
                 <div className="field-col">
                     <label>Precio Unitario ($)</label>
@@ -121,6 +131,9 @@ const ProductForm = () => {
                     <label>Impuesto (%)</label>
                     <input type="number" value={productData.impuesto_porcentaje} onChange={(e) => setProductData({...productData, impuesto_porcentaje: e.target.value})} />
                 </div>
+                
+
+
             </div>
             <div className="final-buttons-group">
                 <button type="submit" className="btn btn-success" disabled={loading}>{loading ? '...' : 'Guardar'}</button>

@@ -140,6 +140,7 @@ function Productos() {
                             <tr>
                                 <th>Código</th>
                                 <th>Nombre</th>
+                                <th>Descripción</th>
                                 <th>Precio</th>
                                 <th>Impuesto (%)</th> 
                                 <th>Precio Total</th>
@@ -151,6 +152,7 @@ function Productos() {
                                 <tr key={product.id}>
                                     <td>{product.codigo}</td> 
                                     <td>{product.nombre}</td>
+                                    <td>{product.descripcion || "Sin descripción"}</td>
                                     <td>${parseFloat(product.precio || 0).toFixed(2)}</td>
                                     <td>{parseFloat(product.impuesto_porcentaje || 0).toFixed(2)}%</td>
                                     <td>${calculateFinalPrice(product.precio, product.impuesto_porcentaje)}</td>
