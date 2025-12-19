@@ -11,6 +11,7 @@ import clienteRoutes from './routes/cliente.routes.js';
 import productoRoutes from './routes/producto.routes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js'; 
 import perfilRoutes from './routes/perfil.routes.js';
+import facturaRoutes from './routes/facturas.routes.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,6 +32,8 @@ app.use('/api/productos', productoRoutes);
 app.use('/api/facturas', invoiceRoutes);
 app.use('/api', perfilRoutes);
 app.use('/api', perfilRoutes);
+app.use('/api/facturas', facturaRoutes);
+
 
 app.get('/', (req, res) => {
     res.json({ message: 'API de Facturación funcionando! 🚀' });
