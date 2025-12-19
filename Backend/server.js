@@ -30,6 +30,7 @@ app.use('/api/clientes', clienteRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api/facturas', invoiceRoutes);
 app.use('/api', perfilRoutes);
+app.use('/api', perfilRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'API de Facturación funcionando! 🚀' });

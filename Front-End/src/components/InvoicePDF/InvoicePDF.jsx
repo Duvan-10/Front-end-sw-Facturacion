@@ -1,109 +1,54 @@
 import React from 'react';
-import './InvoicePDF.css';
+import { Page, Text, View, Document, Image } from '@react-pdf/renderer';
+import { styles } from './InvoiceStyles';
 
 const InvoicePDF = ({ data, emisor }) => {
-    if (!data) return null;
-
-    const infoEmisor = emisor || {
-        nombre_razon_social: "PFEP S.A.S",
-        nit: "109.832.999-7",
-        direccion: "Barrio Asdeflor Calle 123 # 45 - 67",
-        telefono: "(+57) 3156259645",
-        ciudad: "Floridablanca",
-        pais: "Colombia",
-        logo_url: "/logo-empresa.png" 
-    };
+    const formatCurrency = (val) => `$${(val || 0).toLocaleString('es-CO')}`;
+    
+    // Ruta del logo en la carpeta public
+    const logoUrl = emisor?.logo_url ? window.location.origin + emisor.logo_url : null;
 
     return (
-        <div id="invoice-pdf-template" className="pdf-container">
-            <header className="pdf-header">
-                {/* SECCIÓN DEL LOGO Y DATOS */}
-                <div className="header-left">
-                    {infoEmisor.logo_url && (
-                        <img 
-                            src={infoEmisor.logo_url} 
-                            alt="Logo Empresa" 
-                            className="invoice-logo" 
-                        />
-                    )}
-                    <div className="emisor-details">
-                        <h2 className="emisor-name">{infoEmisor.nombre_razon_social}</h2>
-                        <p><strong>NIT:</strong> {infoEmisor.nit}</p>
-                        <p>{infoEmisor.direccion}</p>
-                        <p>{infoEmisor.telefono}</p>
-                        <p>{infoEmisor.ciudad}, {infoEmisor.pais}</p>
-                    </div>
-                </div>
+        <Document>
+            <Page size="A4" style={styles.page}>
+                <View style={styles.header}>
+                    <View style={styles.emisorInfo}>
+                        {emisor?.logo_url && <Image src={logoUrl} style={styles.logo} />}
+                        
+                        {/* Mapeo exacto de tu JSON */}
+                        <Text style={styles.emisorName}>{emisor?.nombre_razon_social || 'PFEP S.A.S'}</Text>
+                        <Text>NIT: {emisor?.nit || '109.832.999-7'}</Text>
+                        <Text>{emisor?.direccion || 'Dirección no definida'}</Text>
+                        <Text>{emisor?.ciudad || 'Floridablanca'}, {emisor?.pais || 'Colombia'}</Text>
+                        <Text>Tel: {emisor?.telefono || 'Sin teléfono'}</Text>
+                    </View>
+                    
+                    <View style={styles.invoiceMeta}>
+                        <Text style={styles.title}>FACTURA DE VENTA</Text>
+                        <Text style={{color: 'red'}}>N° {data.numero_factura}</Text>
+                        <Text>Fecha: {new Date(data.fecha_emision).toLocaleDateString()}</Text>
+                    </View>
+                </View>
 
-                <div className="invoice-meta">
-                    <h1>FACTURA DE VENTA</h1>
-                    <div className="invoice-number">N° {data.numero_factura}</div>
-                    <p className="info-text">Fecha: <strong>{data.fecha_emision}</strong></p>
-                </div>
-            </header>
-
-            <section className="client-section">
-                <div>
-                    <div className="section-label">DATOS DEL CLIENTE</div>
-                    <div className="info-text">
-                        <strong>{data.cliente?.nombre_razon_social}</strong><br />
-                        NIT/CC: {data.cliente?.identificacion}<br />
-                        Email: {data.cliente?.email || 'N/A'}
-                    </div>
-                </div>
-                <div className="text-right">
-                    <div className="section-label">DIRECCIÓN DE COBRO</div>
-                    <div className="info-text">
-                        {data.cliente?.direccion}<br />
-                        Tel: {data.cliente?.telefono}
-                    </div>
-                </div>
-            </section>
-
-            <table className="pdf-table">
-                <thead>
-                    <tr>
-                        <th>Cód.</th>
-                        <th>Descripción</th>
-                        <th className="text-center">Cant.</th>
-                        <th className="text-right">V. Unitario</th>
-                        <th className="text-right">V. Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {(data.detalles || []).map((item, index) => (
-                        <tr key={index}>
-                            <td>{item.code}</td>
-                            <td>{item.detail}</td>
-                            <td className="text-center">{item.cant}</td>
-                            <td className="text-right">${(Number(item.unit) || 0).toLocaleString('es-CO')}</td>
-                            <td className="text-right">${(Number(item.total) || 0).toLocaleString('es-CO')}</td>
-                        </tr>
+                {/* TABLA SIMPLIFICADA PARA PRUEBA */}
+                <View style={styles.table}>
+                    <View style={[styles.tableRow, styles.tableHeader]}>
+                        <Text style={{ width: '70%', color: 'white', paddingLeft: 5 }}>Descripción</Text>
+                        <Text style={{ width: '30%', color: 'white', textAlign: 'right', paddingRight: 5 }}>Total</Text>
+                    </View>
+                    {data.detalles.map((item, i) => (
+                        <View key={i} style={styles.tableRow}>
+                            <Text style={{ width: '70%', paddingLeft: 5 }}>{item.detail}</Text>
+                            <Text style={{ width: '30%', textAlign: 'right', paddingRight: 5 }}>{formatCurrency(item.total)}</Text>
+                        </View>
                     ))}
-                </tbody>
-            </table>
+                </View>
 
-            <footer className="totals-container">
-                <div className="totals-table">
-                    <div className="total-row">
-                        <span>SUBTOTAL</span>
-                        <span>${(Number(data.subtotal) || 0).toLocaleString('es-CO')}</span>
-                    </div>
-                    <div className="total-row">
-                        <span>IVA (19%)</span>
-                        <span>${(Number(data.iva) || 0).toLocaleString('es-CO')}</span>
-                    </div>
-                    <div className="total-row grand-total">
-                        <span>TOTAL A PAGAR</span>
-                        <span>${(Number(data.total) || 0).toLocaleString('es-CO')}</span>
-                    </div>
-                </div>
-            </footer>
-
-            <div className="pdf-footer">
-                <p>Generado por Sistema PFEP. Nit: {infoEmisor.nit}</p>
-            </div>
-        </div>
+                <View style={{ alignItems: 'flex-end' }}>
+                    <Text style={{ fontWeight: 'bold' }}>TOTAL: {formatCurrency(data.total)}</Text>
+                </View>
+            </Page>
+        </Document>
     );
 };
 

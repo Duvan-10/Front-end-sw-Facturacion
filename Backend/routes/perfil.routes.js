@@ -1,22 +1,20 @@
-import express from 'express';
+import express from 'express'; // Cambiado de require a import
+import db from '../config/db.config.js'; // Cambiado de require a import (agrega .js al final)
+
 const router = express.Router();
-import db from '../config/db.config.js'; // Asegúrate de que termine en .js
 
-router.get('/perfil-emisor', async (req, res) => {
+// Endpoint para obtener los datos de perfil_emisor
+router.get('/emisor', async (req, res) => {
     try {
-        // Consulta exacta según tu tabla perfil_emisor
         const [rows] = await db.query('SELECT * FROM perfil_emisor LIMIT 1');
-        
         if (rows.length === 0) {
-            return res.status(404).json({ message: "No hay datos del emisor" });
+            return res.status(404).json({ message: "No hay datos" });
         }
-
-        res.json(rows[0]);
+        // Enviamos el primer objeto directamente
+        res.json(rows[0]); 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error en el servidor" });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// Cambia module.exports por export default
-export default router;
+export default router; // Cambiado de module.exports a export default
