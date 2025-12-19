@@ -7,47 +7,47 @@ const TestPDF = () => {
     const ejecutarPrueba = async () => {
         setCargando(true);
         try {
-            // 1. Obtener Emisor (Tu empresa)
+            // 1. Obtener Emisor (Tu empresa - PFEP S.A.S)
             const resEmisor = await fetch('http://localhost:8080/api/emisor');
             const emisor = await resEmisor.json();
 
-            // 2. Obtener Factura 15 (La que me mostraste)
+            // 2. Obtener Factura 15 (Datos desde tu DB)
             const idFactura = 15; 
             const resFactura = await fetch(`http://localhost:8080/api/facturas/${idFactura}`);
             
             if (!resFactura.ok) throw new Error("No se encontró la factura 15");
             const facturaDB = await resFactura.json();
 
-            // 3. MAPEO EXACTO según tu JSON
+            // 3. MAPEO PARA LA NUEVA ESTRUCTURA DEL PDF
             const facturaMapeada = {
-                numero_factura: facturaDB.numero_factura, // "FAC-0001"
-                fecha_emision: facturaDB.fecha_emision,   // "2025-12-18..."
+                numero_factura: facturaDB.numero_factura,
+                fecha_emision: facturaDB.fecha_emision,
                 cliente: {
-                    nombre_razon_social: facturaDB.cliente.nombre_razon_social, // "Maria Lucero..."
                     identificacion: facturaDB.cliente.identificacion,
+                    nombre_razon_social: facturaDB.cliente.nombre_razon_social,
+                    telefono: facturaDB.cliente.telefono, // Agregado para el nuevo diseño
                     direccion: facturaDB.cliente.direccion
                 },
-                // Mapeamos los detalles usando tus nombres: code, detail, cant, unit, total
+                // Mapeo de detalles (Cant, Detalle, V.Unit, V.Total)
                 detalles: facturaDB.detalles.map(d => ({
-                    code: d.code,
-                    detail: d.detail,
                     cant: d.cant,
-                    unit: parseFloat(d.unit), // Convertimos de string "1000.00" a número
+                    detail: d.detail,
+                    unit: parseFloat(d.unit),
                     total: d.total
                 })),
-                // Calculamos los totales si no vienen en el JSON principal
+                // Cálculos de Totales
                 subtotal: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0),
-                iva: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0) * 0.19, // Ejemplo IVA 19%
+                iva: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0) * 0.19,
                 total: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0) * 1.19
             };
 
-            console.log("Generando PDF para:", facturaMapeada.cliente.nombre_razon_social);
+            console.log("Datos listos para enviar al PDF:", facturaMapeada);
 
-            // 4. Generar el PDF
+            // 4. Generar el PDF con el componente actualizado
             await visualizarFactura(facturaMapeada, emisor);
 
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Error detallado:", error);
             alert("Error al generar: " + error.message);
         } finally {
             setCargando(false);
@@ -56,8 +56,8 @@ const TestPDF = () => {
 
     return (
         <div style={{ textAlign: 'center', marginTop: '100px', fontFamily: 'sans-serif' }}>
-            <h1 style={{ color: '#2c3e50' }}>Sistema de Facturación</h1>
-            <p>Factura detectada: <strong>FAC-0001 (Maria Lucero Aranda)</strong></p>
+            <h1 style={{ color: '#2c3e50' }}>Generador de Documentos</h1>
+            <p>Estado del sistema: <strong>Conectado a MySQL</strong></p>
             
             <button 
                 onClick={ejecutarPrueba} 
@@ -70,10 +70,11 @@ const TestPDF = () => {
                     color: 'white', 
                     border: 'none', 
                     borderRadius: '5px',
-                    transition: '0.3s'
+                    transition: '0.3s',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                 }}
             >
-                {cargando ? 'Procesando...' : '📄 DESCARGAR FACTURA #15'}
+                {cargando ? 'Consultando Datos...' : '📄 GENERAR FACTURA #15'}
             </button>
         </div>
     );
