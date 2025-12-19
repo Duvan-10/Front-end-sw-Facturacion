@@ -95,11 +95,13 @@ export const updateProducto = async (req, res) => {
 // 5. BUSCAR PRODUCTO POR CÓDIGO (NUEVO: Para auto-relleno en Factura)
 // ------------------------------------------------------------------
 export const getProductoByCodigo = async (req, res) => {
-    const { codigo } = req.params; // Extraemos el código de la URL
+    const { codigo } = req.params; 
     try {
-        // Buscamos coincidencia exacta en la columna 'codigo'
+        // 1. Agregamos 'descripcion' a la consulta y usamos CONCAT para crear el detalle combinado
         const [rows] = await db.query(
-            "SELECT id, codigo, nombre, precio, impuesto_porcentaje FROM productos WHERE codigo = ? LIMIT 1",
+            `SELECT id, codigo, nombre, precio, impuesto_porcentaje, descripcion,
+             CONCAT(nombre, ' - ', descripcion) AS detalle_completo 
+             FROM productos WHERE codigo = ? LIMIT 1`,
             [codigo]
         );
 
@@ -107,9 +109,18 @@ export const getProductoByCodigo = async (req, res) => {
             return res.status(404).json({ message: "Producto no encontrado" });
         }
 
-        // Devolvemos el objeto directamente para que coincida con:
-        // const prod = await response.json(); en tu Frontend
-        res.json(rows[0]);
+        const producto = rows[0];
+
+        // 2. Formateamos la respuesta para que el Frontend la entienda sin errores
+        res.json({
+            id: producto.id,
+            codigo: producto.codigo,
+            precio: producto.precio,
+            impuesto_porcentaje: producto.impuesto_porcentaje,
+            // Enviamos el detalle combinado en la propiedad 'descripcion' 
+            // que es la que tu Frontend está buscando para llenar el campo 'detail'
+            descripcion: producto.detalle_completo 
+        });
 
     } catch (error) {
         console.error("Error al buscar producto por código:", error);

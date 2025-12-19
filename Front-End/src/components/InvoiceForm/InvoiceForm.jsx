@@ -16,99 +16,218 @@ const InvoiceForm = () => {
     const [cliente, setCliente] = useState({ id: '', identificacion: '', nombre_razon_social: '', telefono: '', direccion: '', email: '' });
     const [productos, setProductos] = useState([{ producto_id: "", code: "", cant: 1, detail: "", unit: 0, total: 0 }]);
 
-    // 🚨 CARGA DE DATOS (Creación o Edición)
-    useEffect(() => {
+// 🚨 EDICION Solo para Facturas NUEVAS
+useEffect(() => {
+    const fetchSiguienteNumero = async () => {
+        if (!isEditing) {
+            try {
+                const token = sessionStorage.getItem('authToken');
+                // IMPORTANTE: Asegúrate que esta ruta en el backend devuelva el MAX(id)+1
+                const response = await fetch(`${apiBaseUrl}/facturas/siguiente-numero`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    setNumeroFactura(data.numero_factura);
+                } else {
+                    setNumeroFactura("FAC-0001"); // Valor inicial si no hay facturas
+                }
+            } catch (err) {
+                console.error("Error obteniendo número correlativo:", err);
+                setNumeroFactura("Error");
+            }
+        }
+    };
+    fetchSiguienteNumero();
+}, [isEditing, apiBaseUrl]);
+
+// BÚSQUEDA DE CLIENTE ACTUALIZADA (Sin alerts bloqueantes)
+const buscarCliente = async (identificacion) => {
+
+    setCliente(prev => ({ ...prev, identificacion }));
+
+  
+    if (!identificacion || identificacion.length < 5) {
+        // Si borra el número, limpiamos los datos de búsqueda pero mantenemos el número
+        setCliente(prev => ({ ...prev, id: '', nombre_razon_social: '' }));
+        return;
+    }
+
+    try {
         const token = sessionStorage.getItem('authToken');
-const fetchData = async () => {
+        const response = await fetch(`${apiBaseUrl}/clientes/identificacion/${identificacion}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // ✅ CLIENTE REAL ENCONTRADO (Trae ID de la base de datos)
+            setCliente(data); 
+        } else {
+            // ❌ NO EXISTE: Dejamos el ID vacío para bloquear el guardado
+            setCliente(prev => ({ 
+                ...prev,
+                id: '', 
+                nombre_razon_social: '❌ CLIENTE NO ENCONTRADO', 
+                telefono: '', 
+                direccion: ''
+            }));
+        }
+    } catch (err) { 
+        console.error("Error al buscar cliente:", err);
+        setCliente(prev => ({ ...prev, id: '', nombre_razon_social: '⚠️ Error de conexión' }));
+    }
+};
+
+
+// 🛡️ BLOQUEO DE SEGURIDA
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+
+    if (!cliente || !cliente.id) {
+        alert("No se puede guardar: Seleccione un cliente válido que exista en el sistema.");
+        return; // Detiene el envío
+    }
+
+    // Validar que haya productos
+    if (productos.length === 0 || !productos[0].producto_id) {
+        alert("Debe agregar al menos un producto.");
+        return;
+    }
+
+    // Proceder con el fetch de guardar/actualizar...
+    // const response = await fetch(...);
+};
+
+
+// 🚨 EDICIÓN de facturas existentes
+useEffect(() => {
+    const fetchDatosFactura = async () => {
         if (isEditing && id) {
             try {
+                const token = sessionStorage.getItem('authToken');
                 const response = await fetch(`${apiBaseUrl}/facturas/${id}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
+
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Datos recibidos del server:", data); // 👈 Revisa esto en la consola
-
-                    // MAPEADO EXACTO:
-                    setNumeroFactura(data.numero_factura);
-                    setTipoFactura(data.tipo_pago);
                     
-                    // Ajuste de fecha para el input type="date"
+                    if (data.numero_factura) {
+                        setNumeroFactura(data.numero_factura);
+                    }
+                    
+                    setTipoFactura(data.tipo_pago);
+                    setCliente(data.cliente);
+                    setProductos(data.detalles);
+
                     if (data.fecha_emision) {
                         setFechaEmision(data.fecha_emision.split('T')[0]);
                     }
-                    
-                    setCliente(data.cliente); // El JSON ya trae el objeto 'cliente'
-                    setProductos(data.detalles); // El JSON ya trae el array 'detalles'
                 }
             } catch (err) {
-                console.error("Error cargando factura:", err);
+                console.error("Error cargando datos de edición:", err);
+                setNumeroFactura("Error al cargar");
             }
         }
     };
-    fetchData();
-}, [id, isEditing]);
+    fetchDatosFactura();
+}, [id, isEditing, apiBaseUrl]);
 
+// LÓGICA DE PRODUCTOS CORREGIDA
+const handleProductChange = async (index, field, value) => {
+    // 1. Actualización inmediata para que el usuario vea lo que escribe
+    setProductos(prevProductos => {
+        const newProducts = [...prevProductos];
+        newProducts[index][field] = value;
 
-    // BÚSQUEDA DE CLIENTE
-    const buscarCliente = async (identificacion) => {
-        if (!identificacion) return;
+        if (field === "code") {
+            newProducts[index].producto_id = "";
+            // Solo ponemos "Buscando..." si hay 3 o más caracteres
+            newProducts[index].detail = value.length >= 3 ? "Buscando..." : "";
+        }
+
+        // Recalcular total de la fila basado en los valores actuales del input
+        const cant = parseFloat(newProducts[index].cant) || 0;
+        const unit = parseFloat(newProducts[index].unit) || 0;
+        newProducts[index].total = cant * unit;
+
+        return newProducts;
+    });
+
+    // 2. Búsqueda en el servidor (Solo para el campo código)
+    if (field === "code" && value.length >= 3) {
         try {
             const token = sessionStorage.getItem('authToken');
-            const response = await fetch(`${apiBaseUrl}/clientes/identificacion/${identificacion}`, {
+            const response = await fetch(`${apiBaseUrl}/productos/codigo/${value}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
+
             if (response.ok) {
-                const data = await response.json();
-                setCliente(data);
-            }
-        } catch (err) { console.error("Cliente no encontrado"); }
-    };
-
-    // LÓGICA DE PRODUCTOS
-    const handleProductChange = async (index, field, value) => {
-        const updated = [...productos];
-        updated[index][field] = value;
-
-        if (field === "code" && value.length > 2) {
-            try {
-                const token = sessionStorage.getItem('authToken');
-                const response = await fetch(`${apiBaseUrl}/productos/codigo/${value}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                const prod = await response.json();
+                
+                setProductos(prev => {
+                    const updated = [...prev];
+                    // Verificamos que el usuario no haya seguido escribiendo otro código
+                    if (updated[index].code === value) {
+                        updated[index].producto_id = prod.id;
+                        // Aquí recibimos el "Nombre - Descripcion" que configuramos en el Backend
+                        updated[index].detail = prod.descripcion; 
+                        updated[index].unit = prod.precio;
+                        updated[index].total = (parseFloat(updated[index].cant) || 0) * prod.precio;
+                    }
+                    return updated;
                 });
-                if (response.ok) {
-                    const prod = await response.json();
-                    updated[index].producto_id = prod.id;
-                    updated[index].detail = prod.nombre;
-                    updated[index].unit = prod.precio;
-                }
-            } catch (err) { console.log("Producto no encontrado"); }
+            } else {
+                setProductos(prev => {
+                    const updated = [...prev];
+                    if (updated[index].code === value) {
+                        updated[index].detail = "❌ NO ENCONTRADO";
+                        updated[index].producto_id = "";
+                    }
+                    return updated;
+                });
+            }
+        } catch (err) {
+            console.error("Error buscando producto:", err);
+            setProductos(prev => {
+                const updated = [...prev];
+                updated[index].detail = "⚠️ Error de conexión";
+                return updated;
+            });
         }
+    }
+};
 
-        const cant = parseFloat(updated[index].cant) || 0;
-        const unit = parseFloat(updated[index].unit) || 0;
-        updated[index].total = cant * unit;
-        setProductos(updated);
-    };
+// Función para calcular los totales generales (Subtotal, IVA, Total)
+const calcularTotales = () => {
+    const subtotal = productos.reduce((acc, p) => acc + (p.total || 0), 0);
+    const iva = subtotal * 0.19;
+    const totalFinal = subtotal + iva;
+    return { subtotal, iva, totalFinal };
+};
 
-    const calcularTotales = () => {
-        const subtotal = productos.reduce((acc, p) => acc + (p.total || 0), 0);
-        const iva = subtotal * 0.19;
-        const totalFinal = subtotal + iva;
-        return { subtotal, iva, totalFinal };
-    };
-
-    const { subtotal, iva, totalFinal } = calcularTotales();
+// Desestructuración de los totales para usar en el JSX
+const { subtotal, iva, totalFinal } = calcularTotales();
 
     // ENVÍO AL BACKEND (POST o PUT)
     const handleFormSubmit = async (e) => {
         e.preventDefault();
+
+        // Bloqueo 1: Cliente inexistente
         if (!cliente.id) {
-            alert("Por favor, seleccione un cliente válido.");
-            return;
+            alert("⚠️ No puedes guardar la factura: El cliente no es válido.");
+        return;
         }
 
+        const productosInvalidos = productos.some(p => !p.producto_id || p.producto_id === "");
+    if (productosInvalidos) {
+        alert("⚠️ Hay productos en la lista que no existen o no tienen código válido.");
+        return;
+    }
         setLoading(true);
         const token = sessionStorage.getItem('authToken');
         
@@ -170,7 +289,8 @@ const fetchData = async () => {
                 
                 <div className="field-col">
                     <label>Número de Factura</label>
-                    <input type="text" className="input-short" value={numeroFactura} disabled />
+                    <input type="text" className="input-short"
+                     value={numeroFactura} disabled />
                 </div>
 
                 <div className="field-col">
@@ -192,7 +312,7 @@ const fetchData = async () => {
                     <input 
                         type="text" 
                         placeholder="Identificación" 
-                        value={cliente.identificacion}
+                        value={cliente?.identificacion || ''}
                         onChange={(e) => setCliente({...cliente, identificacion: e.target.value})}
                         onBlur={(e) => buscarCliente(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && buscarCliente(e.target.value)}
@@ -200,15 +320,20 @@ const fetchData = async () => {
                 </div>
                 <div className="field-col">
                     <label>Razón Social / Nombre</label>
-                    <input type="text" value={cliente.nombre_razon_social} readOnly placeholder="Nombre completo" />
-                </div>
+
+                    <input type="text" 
+                    value={cliente?.nombre_razon_social || ""}
+                    readOnly placeholder="Nombre completo" />
+               </div>
+
+
                 <div className="field-col">
                     <label>Teléfono</label>
-                    <input type="text" value={cliente.telefono} readOnly />
+                    <input type="text" value={cliente?.telefono || ""} readOnly />
                 </div>
                 <div className="field-col">
                     <label>Dirección</label>
-                    <input type="text" value={cliente.direccion} readOnly />
+                    <input type="text" value={cliente?.direccion || ""} readOnly />
                 </div>
             </div>
         

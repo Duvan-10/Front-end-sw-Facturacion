@@ -48,50 +48,58 @@ getInvoiceById: async (req, res) => {
     try {
         const { id } = req.params;
         
-        // 1. Obtener cabecera
-        const [factura] = await db.query(`
-            SELECT f.*, c.identificacion, c.nombre_razon_social, c.telefono, c.direccion 
-            FROM facturas f 
-            JOIN clientes c ON f.cliente_id = c.id 
+        // 1. Obtener la cabecera (La información de la factura y el cliente)
+        const [facturaRows] = await db.query(`
+            SELECT f.id, f.numero_factura, f.fecha_emision, f.tipo_pago, f.cliente_id,
+                   c.identificacion, c.nombre_razon_social, c.telefono, c.direccion
+            FROM facturas f
+            JOIN clientes c ON f.cliente_id = c.id
             WHERE f.id = ?`, [id]);
 
-        if (factura.length === 0) {
+        // Si no hay resultados, enviamos 404
+        if (facturaRows.length === 0) {
             return res.status(404).json({ message: "Factura no encontrada" });
         }
 
-            // 2. Traer detalles con códigos de producto
-            const [detalles] = await db.query(`
-            SELECT fd.*, p.codigo AS code, p.nombre AS detail 
-            FROM factura_detalles fd 
-            JOIN productos p ON fd.producto_id = p.id 
+        const f = facturaRows[0];
+
+        // 2. Obtener los detalles (Los productos de esa factura)
+        const [detallesRows] = await db.query(`
+            SELECT fd.producto_id, fd.cantidad, fd.precio_unitario, 
+                   p.codigo AS code, 
+                   CONCAT(p.nombre, ' - ', p.descripcion) AS combined_detail
+            FROM factura_detalles fd
+            JOIN productos p ON fd.producto_id = p.id
             WHERE fd.factura_id = ?`, [id]);
 
-            // 3.0Formatear para que el frontend lo entienda
-             res.json({
-            numero_factura: factura[0].numero_factura,
-            tipo_pago: factura[0].tipo_pago,
-            fecha_emision: factura[0].fecha_emision,
+        // 3. Formatear la respuesta para el Frontend
+        res.json({
+            numero_factura: f.numero_factura,
+            fecha_emision: f.fecha_emision,
+            tipo_pago: f.tipo_pago,
             cliente: {
-                id: factura[0].cliente_id,
-                identificacion: factura[0].identificacion,
-                nombre_razon_social: factura[0].nombre_razon_social,
-                telefono: factura[0].telefono,
-                direccion: factura[0].direccion
+                id: f.cliente_id,
+                identificacion: f.identificacion,
+                nombre_razon_social: f.nombre_razon_social,
+                telefono: f.telefono,
+                direccion: f.direccion
             },
-            detalles: detalles.map(d => ({
+            detalles: detallesRows.map(d => ({
                 producto_id: d.producto_id,
                 code: d.code,
                 cant: d.cantidad,
-                detail: d.detail,
+                detail: d.combined_detail, // Nombre - Descripción
                 unit: d.precio_unitario,
                 total: parseFloat(d.cantidad) * parseFloat(d.precio_unitario)
             }))
         });
+
     } catch (error) {
         console.error("Error en getInvoiceById:", error);
-        res.status(500).json({ message: "Error al recuperar la factura" });
+        res.status(500).json({ message: "Error interno en el servidor", error: error.message });
     }
 },
+
     getNextNumber: async (req, res) => {
         try {
             const [rows] = await db.query("SELECT MAX(id) AS lastId FROM facturas");
