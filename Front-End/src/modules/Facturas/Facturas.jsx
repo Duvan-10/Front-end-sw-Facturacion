@@ -1,15 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import '../../styles/global.css';
+import { visualizarFactura } from '../../utils/pdfGenerator'; 
 
 const ITEMS_PER_PAGE = 30; 
 
-
-    
-  
-
 function Facturas() {
-    
     const navigate = useNavigate();
     const [invoices, setInvoices] = useState([]); 
     const [loading, setLoading] = useState(true);
@@ -18,6 +14,8 @@ function Facturas() {
     const [filterState, setFilterState] = useState(''); 
     const [currentPage, setCurrentPage] = useState(1); 
     const [totalItems, setTotalItems] = useState(0); 
+    // 2. Estado para controlar el botón de "Ver" mientras genera
+    const [isGenerating, setIsGenerating] = useState(null);
 
     const formatDate = (dateString) => {
         if (!dateString) return '---';
@@ -71,15 +69,58 @@ function Facturas() {
     };
 
     const handleCreateNew = () => { window.open('/facturas/crear', '_blank'); };
-    const handleView = (invoice) => { navigate(`/facturas/ver/${invoice.id_real}`);};
+
+    // 3. MODIFICACIÓN DE HANDLEVIEW PARA GENERAR PDF
+    const handleView = async (invoice) => {
+        setIsGenerating(invoice.id_real);
+        try {
+            // A. Obtener datos del emisor
+            const resEmisor = await fetch('http://localhost:8080/api/emisor');
+            const emisorData = await resEmisor.json();
+
+            // B. Obtener datos completos de la factura (con el JOIN que hicimos en backend)
+            const resFactura = await fetch(`http://localhost:8080/api/facturas/${invoice.id_real}`);
+            if (!resFactura.ok) throw new Error("No se pudo obtener el detalle de la factura.");
+            const facturaDB = await resFactura.json();
+
+            // C. Mapeo de datos al formato requerido por InvoicePDF
+            const facturaMapeada = {
+                numero_factura: facturaDB.numero_factura,
+                fecha_emision: facturaDB.fecha_emision,
+                cliente: {
+                    identificacion: facturaDB.cliente.identificacion,
+                    nombre_razon_social: facturaDB.cliente.nombre_razon_social,
+                    telefono: facturaDB.cliente.telefono,
+                    direccion: facturaDB.cliente.direccion
+                },
+                detalles: facturaDB.detalles.map(d => ({
+                    cant: d.cant,
+                    detail: d.detail,
+                    unit: parseFloat(d.unit),
+                    total: d.total
+                })),
+                subtotal: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0),
+                iva: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0) * 0.19,
+                total: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0) * 1.19
+            };
+
+            await visualizarFactura(facturaMapeada, emisorData);
+        } catch (err) {
+            alert("Error al generar PDF: " + err.message);
+        } finally {
+            setIsGenerating(null);
+        }
+    };
+
     const handleEdit = (invoice) => { 
-    console.log("Datos de la factura al editar:", invoice); // 👈 Mira la consola (F12)
-    if (invoice.id_real) {
-        navigate(`/facturas/editar/${invoice.id_real}`);
-    } else {
-        alert("Error: El objeto factura no tiene 'id_real'. Revisa el backend.");
-    }
-}
+        console.log("Datos de la factura al editar:", invoice);
+        if (invoice.id_real) {
+            navigate(`/facturas/editar/${invoice.id_real}`);
+        } else {
+            alert("Error: El objeto factura no tiene 'id_real'.");
+        }
+    };
+
     const handleEmit = (invoice) => { alert(`Emitiendo factura ${invoice.id}...`); };
 
     return (
@@ -126,7 +167,6 @@ function Facturas() {
                                 <th># Factura</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
-                                {/* 🟢 COLUMNA NUEVA */}
                                 <th style={{width: '25%'}}>Productos</th>
                                 <th>Tipo</th>
                                 <th>Total</th>
@@ -140,20 +180,17 @@ function Facturas() {
                                     <td><strong>{invoice.id}</strong></td>
                                     <td>{formatDate(invoice.date)}</td>
                                     <td>{invoice.client}</td>
-                                    
-                                    {/* 🟢 CELDA DE PRODUCTOS RELACIONADOS */}
-                                       <td>
-                                              <div className="product-relation-wrapper">
-                                           {/* Cambiamos .items por .detalles */}
-                                                   {invoice.detalles && invoice.detalles.length > 0 ? (
-                                                           invoice.detalles.map((item, idx) => (
-                                                              <span key={idx} className="product-badge">
-                                                                {item.producto_nombre}
-                </span>
-            ))
-        ) :                                      (<small style={{color: '#999'}}>Sin detalle</small>)}
-    </div>
-</td>
+                                    <td>
+                                        <div className="product-relation-wrapper">
+                                            {invoice.detalles && invoice.detalles.length > 0 ? (
+                                                invoice.detalles.map((item, idx) => (
+                                                    <span key={idx} className="product-badge">
+                                                        {item.producto_nombre}
+                                                    </span>
+                                                ))
+                                            ) : (<small style={{color: '#999'}}>Sin detalle</small>)}
+                                        </div>
+                                    </td>
 
                                     <td>{invoice.tipoFactura}</td>
                                     <td>${parseFloat(invoice.total).toLocaleString()}</td>
@@ -163,7 +200,14 @@ function Facturas() {
                                         </span>
                                     </td>
                                     <td className="actions-cell">
-                                        <button className="btn btn-sm btn-view" onClick={() => handleView(invoice)}>Ver</button>
+                                        {/* BOTÓN "VER" ACTUALIZADO CON ESTADO DE CARGA */}
+                                        <button 
+                                            className="btn btn-sm btn-view" 
+                                            onClick={() => handleView(invoice)}
+                                            disabled={isGenerating === invoice.id_real}
+                                        >
+                                            {isGenerating === invoice.id_real ? '...' : 'Ver'}
+                                        </button>
                                         <button className="btn btn-sm btn-edit" onClick={() => handleEdit(invoice)}>Editar</button>
                                         <button className="btn btn-sm btn-success" onClick={() => handleEmit(invoice)}>Emitir</button>
                                     </td>
