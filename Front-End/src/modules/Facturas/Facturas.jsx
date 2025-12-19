@@ -1,11 +1,16 @@
-import '../../styles/global.css';
-
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import '../../styles/global.css';
 
 const ITEMS_PER_PAGE = 30; 
 
+
+    
+  
+
 function Facturas() {
+    
+    const navigate = useNavigate();
     const [invoices, setInvoices] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -66,8 +71,15 @@ function Facturas() {
     };
 
     const handleCreateNew = () => { window.open('/facturas/crear', '_blank'); };
-    const handleView = (invoice) => { window.open(`/facturas/ver/${invoice.id}`, '_blank'); };
-    const handleEdit = (invoice) => { window.open(`/facturas/editar/${invoice.id}`, '_blank'); };
+    const handleView = (invoice) => { navigate(`/facturas/ver/${invoice.id_real}`);};
+    const handleEdit = (invoice) => { 
+    console.log("Datos de la factura al editar:", invoice); // 👈 Mira la consola (F12)
+    if (invoice.id_real) {
+        navigate(`/facturas/editar/${invoice.id_real}`);
+    } else {
+        alert("Error: El objeto factura no tiene 'id_real'. Revisa el backend.");
+    }
+}
     const handleEmit = (invoice) => { alert(`Emitiendo factura ${invoice.id}...`); };
 
     return (
@@ -124,7 +136,7 @@ function Facturas() {
                         </thead>
                         <tbody>
                             {invoices.map((invoice) => (
-                                <tr key={invoice.id}>
+                                <tr key={invoice.id_real}> 
                                     <td><strong>{invoice.id}</strong></td>
                                     <td>{formatDate(invoice.date)}</td>
                                     <td>{invoice.client}</td>

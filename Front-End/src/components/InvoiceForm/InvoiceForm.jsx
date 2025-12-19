@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import '../styles1.css';
 
 const InvoiceForm = () => { 
     const { id } = useParams();
@@ -12,41 +11,47 @@ const InvoiceForm = () => {
     // ESTADOS
     const [loading, setLoading] = useState(false);
     const [tipoFactura, setTipoFactura] = useState('Contado');
-    const [numeroFactura, setNumeroFactura] = useState('Cargando...'); // <--- NUEVO ESTADO
+    const [numeroFactura, setNumeroFactura] = useState('Cargando...');
+    const [fechaEmision, setFechaEmision] = useState(new Date().toISOString().substring(0, 10)); // <--- Controlado
     const [cliente, setCliente] = useState({ id: '', identificacion: '', nombre_razon_social: '', telefono: '', direccion: '', email: '' });
     const [productos, setProductos] = useState([{ producto_id: "", code: "", cant: 1, detail: "", unit: 0, total: 0 }]);
 
-    // 🚨 SEGURIDAD Y CARGA INICIAL
+    // 🚨 CARGA DE DATOS (Creación o Edición)
     useEffect(() => {
         const token = sessionStorage.getItem('authToken');
-        if (!token) {
-            navigate('/');
-            return;
-        }
-
-        // TRAER EL PRÓXIMO NÚMERO DE FACTURA
-        const fetchNextNumber = async () => {
+const fetchData = async () => {
+        if (isEditing && id) {
             try {
-                const response = await fetch(`${apiBaseUrl}/facturas/proximo-numero`, {
+                const response = await fetch(`${apiBaseUrl}/facturas/${id}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                
                 if (response.ok) {
                     const data = await response.json();
-                    setNumeroFactura(data.numero_factura); // Ej: "FAC-0005"
+                    console.log("Datos recibidos del server:", data); // 👈 Revisa esto en la consola
+
+                    // MAPEADO EXACTO:
+                    setNumeroFactura(data.numero_factura);
+                    setTipoFactura(data.tipo_pago);
+                    
+                    // Ajuste de fecha para el input type="date"
+                    if (data.fecha_emision) {
+                        setFechaEmision(data.fecha_emision.split('T')[0]);
+                    }
+                    
+                    setCliente(data.cliente); // El JSON ya trae el objeto 'cliente'
+                    setProductos(data.detalles); // El JSON ya trae el array 'detalles'
                 }
             } catch (err) {
-                console.error("Error al obtener el número correlativo");
+                console.error("Error cargando factura:", err);
             }
-        };
-
-        if (!isEditing) {
-            fetchNextNumber();
         }
-    }, [navigate, apiBaseUrl, isEditing]);
+    };
+    fetchData();
+}, [id, isEditing]);
 
-    // =======================================================
-    // LÓGICA DE BÚSQUEDA DE CLIENTE POR NIT
-    // =======================================================
+
+    // BÚSQUEDA DE CLIENTE
     const buscarCliente = async (identificacion) => {
         if (!identificacion) return;
         try {
@@ -58,14 +63,10 @@ const InvoiceForm = () => {
                 const data = await response.json();
                 setCliente(data);
             }
-        } catch (err) {
-            console.error("Cliente no encontrado");
-        }
+        } catch (err) { console.error("Cliente no encontrado"); }
     };
 
-    // =======================================================
     // LÓGICA DE PRODUCTOS
-    // =======================================================
     const handleProductChange = async (index, field, value) => {
         const updated = [...productos];
         updated[index][field] = value;
@@ -100,9 +101,7 @@ const InvoiceForm = () => {
 
     const { subtotal, iva, totalFinal } = calcularTotales();
 
-    // =======================================================
-    // ENVÍO AL BACKEND
-    // =======================================================
+    // ENVÍO AL BACKEND (POST o PUT)
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         if (!cliente.id) {
@@ -112,10 +111,11 @@ const InvoiceForm = () => {
 
         setLoading(true);
         const token = sessionStorage.getItem('authToken');
+        
         const facturaData = {
             cliente_id: cliente.id,
             tipo_pago: tipoFactura,
-            fecha_emision: document.getElementById('fecha-emision').value,
+            fecha_emision: fechaEmision, // Ahora usa el estado
             subtotal,
             iva,
             total: totalFinal,
@@ -123,8 +123,12 @@ const InvoiceForm = () => {
         };
 
         try {
-            const response = await fetch(`${apiBaseUrl}/facturas`, {
-                method: 'POST',
+            // Decidimos URL y MÉTODO según si editamos o creamos
+            const url = isEditing ? `${apiBaseUrl}/facturas/${id}` : `${apiBaseUrl}/facturas`;
+            const method = isEditing ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
                 headers: { 
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -133,11 +137,10 @@ const InvoiceForm = () => {
             });
 
             if (response.ok) {
-                const result = await response.json();
-                alert(`✅ Factura ${result.numero_factura} creada con éxito`);
-                window.close();
+                alert(isEditing ? `✅ Factura actualizada con éxito` : `✅ Factura creada con éxito`);
+               navigate('/home/facturas');
             } else {
-                throw new Error("Error al guardar la factura");
+                throw new Error("Error al procesar la factura");
             }
         } catch (err) {
             alert(err.message);
@@ -149,7 +152,7 @@ const InvoiceForm = () => {
     return (
         <form className="app-form card" onSubmit={handleFormSubmit}> 
             <h2 className="module-title">
-                {isEditing ? `Editar Factura #${id}` : 'Registrar Nueva Factura'}
+                {isEditing ? `Editar Factura ${numeroFactura}` : 'Registrar Nueva Factura'}
             </h2> 
             
             <div className="section-group header-fields">
@@ -167,13 +170,18 @@ const InvoiceForm = () => {
                 
                 <div className="field-col">
                     <label>Número de Factura</label>
-                    {/* CAMBIO: Ahora usa el estado numeroFactura */}
                     <input type="text" className="input-short" value={numeroFactura} disabled />
                 </div>
 
                 <div className="field-col">
                     <label htmlFor="fecha-emision">Fecha</label>
-                    <input type="date" id="fecha-emision" className="input-short" defaultValue={new Date().toISOString().substring(0, 10)} />
+                    <input 
+                        type="date" 
+                        id="fecha-emision" 
+                        className="input-short" 
+                        value={fechaEmision} 
+                        onChange={(e) => setFechaEmision(e.target.value)} 
+                    />
                 </div>
             </div>
             
@@ -184,6 +192,8 @@ const InvoiceForm = () => {
                     <input 
                         type="text" 
                         placeholder="Identificación" 
+                        value={cliente.identificacion}
+                        onChange={(e) => setCliente({...cliente, identificacion: e.target.value})}
                         onBlur={(e) => buscarCliente(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && buscarCliente(e.target.value)}
                     />
@@ -233,14 +243,19 @@ const InvoiceForm = () => {
                 <br></br>
                 <br></br>
                 <div className="total-line total-final"><label>Total</label><span>${totalFinal.toFixed(2)}</span></div>
-                
             </div>
             
             <div className="final-buttons-group">
                 <button type="submit" className="btn btn-success" disabled={loading}>
-                    {loading ? 'Procesando...' : 'Crear Factura'}
+                    {loading ? 'Procesando...' : isEditing ? 'Guardar Cambios' : 'Crear Factura'}
                 </button>
-                <button type="button" className="btn btn-danger" onClick={() => window.close()}>Cancelar</button>
+                  <button 
+                  type="button" 
+                   className="btn btn-danger" 
+                  onClick={() => navigate('/home/facturas')} 
+                       >
+                  Cancelar
+                    </button>
             </div>
         </form>
     );
