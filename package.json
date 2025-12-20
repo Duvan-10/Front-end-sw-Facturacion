@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host --open",
+    "f": "vite --host --open",
     "build": "vite build",
-    "server": "nodemon Backend/server.js",
+    "s": "nodemon Backend/server.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
