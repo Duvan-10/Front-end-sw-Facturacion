@@ -175,3 +175,33 @@ tr:hover { background-color: #252525; }
 
 .status-pagada { background-color: rgba(0, 200, 83, 0.2); color: #00c853; }
 .status-pendiente { background-color: rgba(255, 152, 0, 0.2); color: #ff9800; }
+
+
+/*Colunma PAGO*/
+/* Badges de la columna Pago */
+.badge-pago {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+    min-width: 45px;
+    text-align: center;
+}
+
+.badge-si {
+    background-color: #d1e7dd; /* Verde claro */
+    color: #0f5132;
+    border: 1px solid #badbcc;
+}
+
+.badge-no {
+    background-color: #f8d7da; /* Rojo claro */
+    color: #842029;
+    border: 1px solid #f5c2c7;
+}
+
+/* Estilos adicionales para los estados de factura */
+.status-pagada { background-color: #d1e7dd; color: #0f5132; }
+.status-pendiente { background-color: #fff3cd; color: #856404; }

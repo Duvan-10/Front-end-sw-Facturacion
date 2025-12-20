@@ -22,8 +22,8 @@ body {
 
 .module-title {
     /* Estilos de títulos generales */
-    color: oklch(81.014% 0.23154 148.191); /* Color más oscuro para visibilidad */
-    border-bottom: 2px solid #ddd;
+    color: #1bc253; /* Color más oscuro para visibilidad */
+    border-bottom: 2px solid hwb(110 10% 14%);
     padding-bottom: 15px;
     margin-bottom: 25px;
     text-align: left;
@@ -32,28 +32,58 @@ body {
 /*--------------------------------------------------------*/
 /* Estilo para Eleccion de Pago--------------------------*/
 /*--------------------------------------------------------*/
-.field-row-inline {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
+/* Estilo base para las etiquetas */
+
+/* Contenedor Pago + opciones en una sola fila */
+.Option-Page {
+  display: flex;
+  align-items: center;   /* Centra verticalmente texto e inputs */
+  gap: 12px;             /* Espacio entre Pago y las opciones */
+  margin-bottom: 15px;
 }
 
-/* Contenedor de los radios para que no salten de línea */
-.radio-group-horizontal {
-    display: flex;
-    flex-direction: row;
-    gap: 20px; /* Espacio entre Default, Si y No */
+/* Solo el título "PAGO:" */
+.Option-Page > label[for="opt1"] {
+  font-weight: bold;
+  color: hsl(109, 14%, 84%); 
+  margin: 0;      
 }
 
-/* Estilo para cada opción individual */
+/* Cada opción de radio */
 .radio-label-inline {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    gap: 5px; /* Espacio entre el circulito y el texto */
-    white-space: nowrap; /* Evita que el texto se parta */
-    color: hsl(32, 100%, 50%);
+  display: flex;         /* Input + texto alineados */
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* Contenedor de radios */
+.radio-group-horizontal {
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+}
+
+/* Colores por estado */
+.selected-default {
+  border: 2px solid #d6d8db;
+  color: #6b7280; /* Gris */
+}
+
+.selected-si {
+  border: 2px solid #16a34a;
+  color: #16a34a; /* Verde */
+  font-weight: bold;
+}
+
+.selected-no {
+  border: 2px solid #dc2626;
+  color: #dc2626; /* Rojo */
+  font-weight: bold;
 }
 
 /* ------------------------------------------------------- */
@@ -82,8 +112,8 @@ body {
 .field-col label {
     margin-bottom: 8px;
     font-weight: bold;
-    color: lch(80.08% 5.96 19.78); 
-    font-size: 20px; 
+    color: oklab(85.241% -0.18854 0.15002); 
+    font-size: 15px; 
     
 }
 
@@ -203,7 +233,7 @@ body {
 /* Estilo para los títulos (Encabezado) */
 .product-header {
     font-weight: bold;
-    color: lab(85.61% 3.09 1.09);
+    color: oklab(85.241% -0.18854 0.15002); 
     border-bottom: 2px solid hsl(0, 0%, 93%);
     padding-bottom: 8px;
     font-size: 14px;

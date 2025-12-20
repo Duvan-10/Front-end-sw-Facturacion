@@ -14,7 +14,6 @@ function Facturas() {
     const [filterState, setFilterState] = useState(''); 
     const [currentPage, setCurrentPage] = useState(1); 
     const [totalItems, setTotalItems] = useState(0); 
-    // 2. Estado para controlar el botón de "Ver" mientras genera
     const [isGenerating, setIsGenerating] = useState(null);
 
     const formatDate = (dateString) => {
@@ -70,20 +69,16 @@ function Facturas() {
 
     const handleCreateNew = () => { window.open('/facturas/crear', '_blank'); };
 
-    // 3. MODIFICACIÓN DE HANDLEVIEW PARA GENERAR PDF
     const handleView = async (invoice) => {
         setIsGenerating(invoice.id_real);
         try {
-            // A. Obtener datos del emisor
             const resEmisor = await fetch('http://localhost:8080/api/emisor');
             const emisorData = await resEmisor.json();
 
-            // B. Obtener datos completos de la factura (con el JOIN que hicimos en backend)
             const resFactura = await fetch(`http://localhost:8080/api/facturas/${invoice.id_real}`);
             if (!resFactura.ok) throw new Error("No se pudo obtener el detalle de la factura.");
             const facturaDB = await resFactura.json();
 
-            // C. Mapeo de datos al formato requerido por InvoicePDF
             const facturaMapeada = {
                 numero_factura: facturaDB.numero_factura,
                 fecha_emision: facturaDB.fecha_emision,
@@ -113,7 +108,6 @@ function Facturas() {
     };
 
     const handleEdit = (invoice) => { 
-        console.log("Datos de la factura al editar:", invoice);
         if (invoice.id_real) {
             navigate(`/facturas/editar/${invoice.id_real}`);
         } else {
@@ -167,8 +161,8 @@ function Facturas() {
                                 <th># Factura</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
-                                <th style={{width: '25%'}}>Productos</th>
-                                <th>Tipo</th>
+                                <th>Productos</th>
+                                <th>Pago</th>
                                 <th>Total</th>
                                 <th>Estado</th> 
                                 <th>Acciones</th> 
@@ -192,7 +186,13 @@ function Facturas() {
                                         </div>
                                     </td>
 
-                                    <td>{invoice.tipoFactura}</td>
+                                    {/* COLUMNA PAGO CON PLANTILLA DE CADENA DINÁMICA */}
+                                    <td>
+                                        <span className={`badge-pago ${invoice.tipoFactura === 'Si' ? 'badge-si' : 'badge-no'}`}>
+                                            {invoice.tipoFactura || 'No'}
+                                        </span>
+                                    </td>
+
                                     <td>${parseFloat(invoice.total).toLocaleString()}</td>
                                     <td>
                                         <span className={`invoice-status status-${invoice.status?.toLowerCase()}`}>
@@ -200,7 +200,6 @@ function Facturas() {
                                         </span>
                                     </td>
                                     <td className="actions-cell">
-                                        {/* BOTÓN "VER" ACTUALIZADO CON ESTADO DE CARGA */}
                                         <button 
                                             className="btn btn-sm btn-view" 
                                             onClick={() => handleView(invoice)}
