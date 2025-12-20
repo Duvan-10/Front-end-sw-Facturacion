@@ -29,6 +29,33 @@ body {
     text-align: left;
 }
 
+/*--------------------------------------------------------*/
+/* Estilo para Eleccion de Pago--------------------------*/
+/*--------------------------------------------------------*/
+.field-row-inline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+/* Contenedor de los radios para que no salten de línea */
+.radio-group-horizontal {
+    display: flex;
+    flex-direction: row;
+    gap: 20px; /* Espacio entre Default, Si y No */
+}
+
+/* Estilo para cada opción individual */
+.radio-label-inline {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 5px; /* Espacio entre el circulito y el texto */
+    white-space: nowrap; /* Evita que el texto se parta */
+    color: hsl(32, 100%, 50%);
+}
+
 /* ------------------------------------------------------- */
 /* LAYOUT GRID: Contenedor principal de grupos de campos */
 /* ------------------------------------------------------- */

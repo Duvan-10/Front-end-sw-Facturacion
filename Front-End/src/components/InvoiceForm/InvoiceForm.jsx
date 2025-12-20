@@ -10,7 +10,7 @@ const InvoiceForm = () => {
 
     // ESTADOS
     const [loading, setLoading] = useState(false);
-    const [tipoFactura, setTipoFactura] = useState('Contado');
+    const [pagoRealizado, setPagoRealizado] = useState('Default');
     const [numeroFactura, setNumeroFactura] = useState('Cargando...');
     const [fechaEmision, setFechaEmision] = useState(new Date().toISOString().substring(0, 10)); // <--- Controlado
     const [cliente, setCliente] = useState({ id: '', identificacion: '', nombre_razon_social: '', telefono: '', direccion: '', email: '' });
@@ -275,18 +275,42 @@ const { subtotal, iva, totalFinal } = calcularTotales();
             </h2> 
             
             <div className="section-group header-fields">
-                <div className="field-col"> 
-                    <label>Tipo Factura:</label>
-                    <div className="radio-group">
-                        <label className="radio-label">
-                            <input type="radio" name="tipoFactura" checked={tipoFactura === 'Contado'} onChange={() => setTipoFactura('Contado')} /> Contado
-                        </label>
-                        <label className="radio-label">
-                            <input type="radio" name="tipoFactura" checked={tipoFactura === 'Crédito'} onChange={() => setTipoFactura('Crédito')} /> Crédito
-                        </label>
-                    </div>
-                </div>
+              <div className="field-row-inline"> 
+              <label style={{ marginRight: '15px', fontWeight: 'bold' }}>Pago:</label>
+             <div className="radio-group-horizontal">
+              <label className="radio-label-inline">
+            <input 
+                type="radio" 
+                name="pagoEstado" 
+                value="Default"
+                checked={pagoRealizado === 'Default'} 
+                onChange={(e) => setPagoRealizado(e.target.value)} 
+            /> Default
+        </label>
+        
+        <label className="radio-label-inline">
+            <input 
+                type="radio" 
+                name="pagoEstado" 
+                value="Si"
+                checked={pagoRealizado === 'Si'} 
+                onChange={(e) => setPagoRealizado(e.target.value)} 
+            /> Si
+        </label>
+        
+        <label className="radio-label-inline">
+            <input 
+                type="radio" 
+                name="pagoEstado" 
+                value="No"
+                checked={pagoRealizado === 'No'} 
+                onChange={(e) => setPagoRealizado(e.target.value)} 
+            /> No
+        </label>
+    </div>
+</div>
                 
+
                 <div className="field-col">
                     <label>Número de Factura</label>
                     <input type="text" className="input-short"
