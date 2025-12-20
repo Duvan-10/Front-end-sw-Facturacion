@@ -29,8 +29,6 @@ testConnection();
 app.use('/api/auth', authRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/productos', productoRoutes);
-app.use('/api/facturas', invoiceRoutes);
-app.use('/api', perfilRoutes);
 app.use('/api', perfilRoutes);
 app.use('/api/facturas', facturaRoutes);
 

@@ -1,19 +1,20 @@
-// ruta: Backend/routes/cliente.routes.js (FINAL - SIN RUTA DELETE)
+import express from 'express';
+import clienteController from '../controllers/cliente.controller.js';
+import authMiddleware from '../middleware/auth.middleware.js';
 
-import { Router } from 'express';
-import clienteController from '../controllers/clienteController.js'; 
-import { authenticate } from '../middleware/auth.middleware.js'; 
+const router = express.Router();
 
-const router = Router();
+// Ruta de búsqueda para el autocompletado
+router.get('/buscar', authMiddleware, clienteController.searchClientes);
 
-// Rutas funcionales (Creación, Listado, Edición por ID, Actualización)
-router.post('/', authenticate, clienteController.createCliente);
-router.get('/', authenticate, clienteController.getClientes);
-router.get('/:id', authenticate, clienteController.getClienteById);
-router.put('/:id', authenticate, clienteController.updateCliente);
-router.get('/identificacion/:identificacion', clienteController.getClienteByIdentificacion);
+// Rutas estándar de CRUD
 
-// 🚨 RUTA DE ELIMINACIÓN DESACTIVADA
-// router.delete('/:id', authenticate, clienteController.deleteCliente); 
+
+router.get('/', authMiddleware, clienteController.getClientes);
+router.post('/', authMiddleware, clienteController.createCliente);
+router.get('/:id', authMiddleware, clienteController.getClienteById);
+router.get('/identificacion/:identificacion', authMiddleware, clienteController.getClienteByIdentificacion);
+router.put('/:id', authMiddleware, clienteController.updateCliente);
+router.delete('/:id', authMiddleware, clienteController.deleteCliente);
 
 export default router;

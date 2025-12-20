@@ -22,8 +22,8 @@ body {
 
 .module-title {
     /* Estilos de títulos generales */
-    color: oklch(81.014% 0.23154 148.191); /* Color más oscuro para visibilidad */
-    border-bottom: 2px solid #ddd;
+    color: hwb(136 7% 38%); /* Color más oscuro para visibilidad */
+    border-bottom: 2px solid lab(82.27% -4.55 4.01);
     padding-bottom: 15px;
     margin-bottom: 25px;
     text-align: left;
@@ -32,28 +32,28 @@ body {
 /*--------------------------------------------------------*/
 /* Estilo para Eleccion de Pago--------------------------*/
 /*--------------------------------------------------------*/
-.field-row-inline {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
+/* Estilo base para las etiquetas */
+
+
+/* Solo el título "PAGO:" */
+.pago{
+font-weight: bold;
+color: hsl(109, 14%, 84%); 
+display: flex;
+gap: 20px;
 }
 
-/* Contenedor de los radios para que no salten de línea */
-.radio-group-horizontal {
-    display: flex;
-    flex-direction: row;
-    gap: 20px; /* Espacio entre Default, Si y No */
+
+.selected-si {
+  
+  color: #16a34a; /* Verde */
+  font-weight: bold;
 }
 
-/* Estilo para cada opción individual */
-.radio-label-inline {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    gap: 5px; /* Espacio entre el circulito y el texto */
-    white-space: nowrap; /* Evita que el texto se parta */
-    color: hsl(32, 100%, 50%);
+.selected-no {
+ 
+  color: #dc2626; /* Rojo */
+  font-weight: bold;
 }
 
 /* ------------------------------------------------------- */
@@ -82,8 +82,8 @@ body {
 .field-col label {
     margin-bottom: 8px;
     font-weight: bold;
-    color: lch(80.08% 5.96 19.78); 
-    font-size: 20px; 
+    color: oklch(81.708% 0.00524 146.354); 
+    font-size: 15px; 
     
 }
 
@@ -203,7 +203,7 @@ body {
 /* Estilo para los títulos (Encabezado) */
 .product-header {
     font-weight: bold;
-    color: lab(85.61% 3.09 1.09);
+    color: rgb(88, 90, 88); 
     border-bottom: 2px solid hsl(0, 0%, 93%);
     padding-bottom: 8px;
     font-size: 14px;
@@ -276,4 +276,3 @@ body {
     width: 60px;
     text-align: center; 
 }
-

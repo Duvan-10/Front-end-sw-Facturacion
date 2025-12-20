@@ -1,15 +1,35 @@
+// Front-end-sw-Facturacion\Backend\routes\facturas.routes.js
+
 import express from 'express';
 import db from '../config/db.config.js';
 
 const router = express.Router();
 
+// PRUEBA DE ACCESO DIRECTO
+router.get('/proximo-numero', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT IFNULL(MAX(id), 0) + 1 as nextId FROM facturas');
+        const proximoId = rows[0].nextId;
+        const numeroFactura = `FAC-${String(proximoId).padStart(4, '0')}`;
+        
+        // Enviamos la respuesta sin validar tokens por ahora
+        return res.status(200).json({ numero: numeroFactura });
+    } catch (error) {
+        console.error("Error en DB:", error);
+        return res.status(500).json({ error: "Error al consultar la base de datos" });
+    }
+});
+
+// ... resto de tus rutas (POST, etc.)
+/**
+ * RUTA EXISTENTE: Guardar Factura
+ */
 router.post('/', async (req, res) => {
-    // 1. Recibimos los datos del InvoiceForm.jsx
     const { 
         cliente_id, 
         tipo_pago, 
         fecha_emision, 
-        total, // Total general de la factura
+        total, 
         detalles 
     } = req.body;
 
@@ -18,16 +38,14 @@ router.post('/', async (req, res) => {
     try {
         await connection.beginTransaction();
 
-        // 2. LÓGICA DE ESTADO AUTOMÁTICO
-        // 'Contado' -> Pagada | 'Crédito' -> Pendiente
         const estadoFinal = (tipo_pago === 'Contado') ? 'Pagada' : 'Pendiente';
 
-        // 3. Generar número de factura (FAC-XXXX)
+        // Generar número de factura (FAC-XXXX)
         const [rows] = await connection.query('SELECT IFNULL(MAX(id), 0) + 1 as nextId FROM facturas');
         const proximoId = rows[0].nextId;
         const numeroFactura = `FAC-${String(proximoId).padStart(4, '0')}`;
 
-        // 4. INSERTAR ENCABEZADO (Tabla: facturas)
+        // INSERTAR ENCABEZADO
         const [resultFactura] = await connection.query(
             `INSERT INTO facturas (numero_factura, cliente_id, tipo_pago, status, total, fecha_creacion) 
              VALUES (?, ?, ?, ?, ?, ?)`, 
@@ -36,9 +54,8 @@ router.post('/', async (req, res) => {
 
         const facturaId = resultFactura.insertId;
 
-        // 5. INSERTAR DETALLES (Tabla: factura_detalles según tu imagen)
+        // INSERTAR DETALLES
         const queriesDetalles = detalles.map(prod => {
-            // Calculamos el total de la línea (unit * cant * 1.19 si manejas IVA del 19%)
             const totalLinea = prod.total * 1.19; 
 
             return connection.query(
@@ -50,7 +67,6 @@ router.post('/', async (req, res) => {
 
         await Promise.all(queriesDetalles);
 
-        // Si todo sale bien, confirmamos los cambios
         await connection.commit();
 
         res.json({ 
@@ -61,7 +77,6 @@ router.post('/', async (req, res) => {
         });
 
     } catch (error) {
-        // Si hay error, deshacemos todo para no dejar datos huérfanos
         await connection.rollback();
         console.error("Error al guardar factura:", error);
         res.status(500).json({ error: "Error interno al procesar la factura" });

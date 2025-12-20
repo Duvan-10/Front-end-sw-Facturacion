@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import "../styles1.css"
 
+
 const ProductForm = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -101,45 +102,46 @@ const ProductForm = () => {
     };
 
     return (
-        <form className="app-form card" onSubmit={handleSubmit}>
-            <h2 className="module-title">{isEditing ? `Editar Producto` : 'Registrar Producto'}</h2>
-            {error && <p className="error-message">⚠️ {error}</p>}
-            <div className="section-group client-data">
-
-                <div className="field-col">
-                    <label>Código</label>
-                    <input type="text" id="codigo" value={productData.codigo} onChange={(e) => setProductData({...productData, codigo: e.target.value})} required />
-                </div>
-                <div className="field-col">
-                    <label>Nombre</label>
-                    <input type="text" id="nombre" value={productData.nombre} onChange={(e) => setProductData({...productData, nombre: e.target.value})} required />
-<br></br>
-<br></br>
-                    
-                <div className="input-especial">
-                <label>Descripcion </label>
-                <input type="text, number" step="nombre" value={productData.descripcion} onChange={(e) => setProductData({...productData, descripcion: e.target.value})} required />
-                </div>
-
-
-                </div>
-                <div className="field-col">
-                    <label>Precio Unitario ($)</label>
-                    <input type="number" step="0.01" value={productData.precio} onChange={(e) => setProductData({...productData, precio: e.target.value})} required />
-                </div>
-                <div className="field-col">
-                    <label>Impuesto (%)</label>
-                    <input type="number" value={productData.impuesto_porcentaje} onChange={(e) => setProductData({...productData, impuesto_porcentaje: e.target.value})} />
-                </div>
+        <div className="form-container">
+            <form className="card" onSubmit={handleSubmit}>
+                <h2 className="module-title">{isEditing ? 'Editar Producto' : 'Registrar Producto'}</h2>
+                {error && <div className="error-banner">⚠️ {error}</div>}
                 
+                <div className="section-group">
+                    <div className="field-col">
+                        <label>Código</label>
+                        <input type="text" value={productData.codigo} onChange={(e) => setProductData({...productData, codigo: e.target.value})} required />
+                    </div>
+                    <div className="field-col">
+                        <label>Nombre</label>
+                        <input type="text" value={productData.nombre} onChange={(e) => setProductData({...productData, nombre: e.target.value})} required />
+                    </div>
+                </div>
 
+                <div className="section-group">
+                    <div className="field-col full-width">
+                        <label>Descripción</label>
+                        <textarea value={productData.descripcion} onChange={(e) => setProductData({...productData, descripcion: e.target.value})} required />
+                    </div>
+                </div>
 
-            </div>
-            <div className="final-buttons-group">
-                <button type="submit" className="btn btn-success" disabled={loading}>{loading ? '...' : 'Guardar'}</button>
-                <button type="button" className="btn btn-danger" onClick={() => window.close()}>Cancelar</button>
-            </div>
-        </form>
+                <div className="section-group">
+                    <div className="field-col">
+                        <label>Precio Unitario ($)</label>
+                        <input type="number" step="0.01" value={productData.precio} onChange={(e) => setProductData({...productData, precio: e.target.value})} required />
+                    </div>
+                    <div className="field-col">
+                        <label>Impuesto (%)</label>
+                        <input type="number" value={productData.impuesto_porcentaje} onChange={(e) => setProductData({...productData, impuesto_porcentaje: e.target.value})} />
+                    </div>
+                </div>
+
+                <div className="btn-group">
+                    <button type="button" className="btn btn-secondary" onClick={() => window.close()}>Cancelar</button>
+                    <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? 'Guardando...' : 'Guardar Producto'}</button>
+                </div>
+            </form>
+        </div>
     ); 
 };
 

@@ -175,4 +175,32 @@ clienteController.deleteCliente = async (req, res) => {
     }
 };
 
+// ----------------------------------------------------
+// 7. BUSCAR CLIENTES POR COINCIDENCIA (CORREGIDO - Con Email)
+// ----------------------------------------------------
+clienteController.searchClientes = async (req, res) => {
+    const { term } = req.query; 
+    if (!term) return res.status(200).json([]);
+
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const query = `
+            SELECT id, identificacion, nombre_razon_social, email, telefono, direccion 
+            FROM clientes 
+            WHERE identificacion LIKE ? OR nombre_razon_social LIKE ?
+            LIMIT 10
+        `;
+        const searchTerm = `%${term}%`;
+        const [rows] = await connection.execute(query, [searchTerm, searchTerm]);
+        
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error("Error en búsqueda parcial de clientes:", error);
+        res.status(500).json({ message: 'Error en el servidor.' });
+    } finally {
+        if (connection) connection.release();
+    }
+};
 export default clienteController;
+

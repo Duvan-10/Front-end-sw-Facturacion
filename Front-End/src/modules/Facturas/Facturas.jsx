@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import '../../styles/global.css';
 import { visualizarFactura } from '../../utils/pdfGenerator'; 
+import '../../styles/global.css';
 
 const ITEMS_PER_PAGE = 30; 
 
@@ -14,8 +14,16 @@ function Facturas() {
     const [filterState, setFilterState] = useState(''); 
     const [currentPage, setCurrentPage] = useState(1); 
     const [totalItems, setTotalItems] = useState(0); 
-    // 2. Estado para controlar el botón de "Ver" mientras genera
     const [isGenerating, setIsGenerating] = useState(null);
+
+    // Función auxiliar para obtener el token y los headers
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('token'); // Asegúrate de que se llame 'token' al guardarlo en el login
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+    };
 
     const formatDate = (dateString) => {
         if (!dateString) return '---';
@@ -28,7 +36,12 @@ function Facturas() {
     const fetchInvoices = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:8080/api/facturas');
+            // CORRECCIÓN: Agregado de headers con Token
+            const response = await fetch('http://localhost:8080/api/facturas', {
+                headers: getAuthHeaders()
+            });
+
+            if (response.status === 401) throw new Error('Sesión expirada. Por favor inicie sesión de nuevo.');
             if (!response.ok) throw new Error('No se pudo conectar con el servidor.');
 
             const data = await response.json();
@@ -63,27 +76,19 @@ function Facturas() {
         fetchInvoices();
     }, [searchQuery, filterState, currentPage]); 
 
-    const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
-        setCurrentPage(1); 
-    };
-
-    const handleCreateNew = () => { window.open('/facturas/crear', '_blank'); };
-
-    // 3. MODIFICACIÓN DE HANDLEVIEW PARA GENERAR PDF
     const handleView = async (invoice) => {
         setIsGenerating(invoice.id_real);
         try {
-            // A. Obtener datos del emisor
-            const resEmisor = await fetch('http://localhost:8080/api/emisor');
+            // CORRECCIÓN: Agregado de headers con Token en peticiones de PDF
+            const headers = getAuthHeaders();
+            
+            const resEmisor = await fetch('http://localhost:8080/api/emisor', { headers });
             const emisorData = await resEmisor.json();
 
-            // B. Obtener datos completos de la factura (con el JOIN que hicimos en backend)
-            const resFactura = await fetch(`http://localhost:8080/api/facturas/${invoice.id_real}`);
+            const resFactura = await fetch(`http://localhost:8080/api/facturas/${invoice.id_real}`, { headers });
             if (!resFactura.ok) throw new Error("No se pudo obtener el detalle de la factura.");
             const facturaDB = await resFactura.json();
 
-            // C. Mapeo de datos al formato requerido por InvoicePDF
             const facturaMapeada = {
                 numero_factura: facturaDB.numero_factura,
                 fecha_emision: facturaDB.fecha_emision,
@@ -112,8 +117,17 @@ function Facturas() {
         }
     };
 
+    // ... resto de las funciones (handleSearchChange, handleCreateNew, handleEdit, handleEmit)
+    // que se mantienen igual ya que no hacen fetch directo o usan navegación.
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); 
+    };
+
+    const handleCreateNew = () => { window.open('/facturas/crear', '_blank'); };
+
     const handleEdit = (invoice) => { 
-        console.log("Datos de la factura al editar:", invoice);
         if (invoice.id_real) {
             navigate(`/facturas/editar/${invoice.id_real}`);
         } else {
@@ -125,8 +139,9 @@ function Facturas() {
 
     return (
         <div className="main-content">
+            {/* ... JSX del return (se mantiene igual) ... */}
             <h1 className="module-title">Gestión de Facturas</h1>
-
+            {/* ... resto del código visual ... */}
             <section className="controls-section card">
                 <div className="search-bar">
                     <label htmlFor="search">Buscar Factura:</label>
@@ -156,10 +171,8 @@ function Facturas() {
 
             <section className="list-section">
                 <h2>Listado de Facturas ({totalItems} en total)</h2>
-
                 {loading && <p className="loading-text">Cargando datos...</p>}
                 {error && <p className="error-message" style={{color: 'red'}}>{error}</p>}
-
                 {!loading && !error && (
                     <table className="data-table">
                         <thead>
@@ -167,8 +180,7 @@ function Facturas() {
                                 <th># Factura</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
-                                <th style={{width: '25%'}}>Productos</th>
-                                <th>Tipo</th>
+                                <th>Productos</th>
                                 <th>Total</th>
                                 <th>Estado</th> 
                                 <th>Acciones</th> 
@@ -191,16 +203,15 @@ function Facturas() {
                                             ) : (<small style={{color: '#999'}}>Sin detalle</small>)}
                                         </div>
                                     </td>
-
-                                    <td>{invoice.tipoFactura}</td>
-                                    <td>${parseFloat(invoice.total).toLocaleString()}</td>
+                                    <td>
+                                        <strong>${parseFloat(invoice.total || 0).toLocaleString('es-CO')}</strong>
+                                    </td>
                                     <td>
                                         <span className={`invoice-status status-${invoice.status?.toLowerCase()}`}>
                                             {invoice.status}
                                         </span>
                                     </td>
                                     <td className="actions-cell">
-                                        {/* BOTÓN "VER" ACTUALIZADO CON ESTADO DE CARGA */}
                                         <button 
                                             className="btn btn-sm btn-view" 
                                             onClick={() => handleView(invoice)}
