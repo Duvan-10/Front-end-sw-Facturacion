@@ -31,6 +31,7 @@ app.use('/api/clientes', clienteRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api', perfilRoutes);
 app.use('/api/facturas', facturaRoutes);
+app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => res.status(204).end());
 
 
 app.get('/', (req, res) => {

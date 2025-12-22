@@ -6,6 +6,10 @@ import authMiddleware from '../middleware/auth.middleware.js';
 const router = express.Router();
 
 // --- VALIDACIÓN DE FUNCIONES ---
+
+
+
+
 // Esto imprimirá en tu consola qué funciones están llegando vacías
 const check = (name, fn) => {
     if (typeof fn !== 'function') {
@@ -14,6 +18,8 @@ const check = (name, fn) => {
     }
     return fn;
 };
+
+
 
 // --- RUTAS DE BÚSQUEDA ---
 router.get('/proximo-numero', authMiddleware, check('getNextNumber', invoiceController.getNextNumber));
