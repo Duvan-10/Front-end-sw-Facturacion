@@ -2,8 +2,11 @@
 
 import express from 'express';
 import db from '../config/db.config.js';
+import invoiceController from '../controllers/invoice.controller.js';
 
 const router = express.Router();
+ 
+
 
 // PRUEBA DE ACCESO DIRECTO
 router.get('/proximo-numero', async (req, res) => {
@@ -20,7 +23,9 @@ router.get('/proximo-numero', async (req, res) => {
     }
 });
 
-// ... resto de tus rutas (POST, etc.)
+//BUSCAR PRODUCTOS
+router.get('/buscar-productos', invoiceController.searchProducts);
+
 /**
  * RUTA EXISTENTE: Guardar Factura
  */

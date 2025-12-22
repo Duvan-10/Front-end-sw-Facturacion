@@ -92,9 +92,86 @@ const [cliente, setCliente] = useState({ nombre: '', correo: '', telefono: '', d
         setCliente({ nombre: '', correo: '', telefono: '', direccion: '' });
     }
 };
-    return {
-        numeroFactura, fechaEmision, setFechaEmision,
-        identificacion, seleccionarCliente,
-        cliente, sugerencias
+    
+
+{/*******************LOGICA PRODUCTOS********************/}
+
+// --- ESTADOS PRODUCTOS ---
+const [productosFactura, setProductosFactura] = useState([
+    { codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0 }
+]);
+const [sugerenciasProd, setSugerenciasProd] = useState([]);
+
+// --- ESTA ES LA FUNCIÓN QUE TU HTML NECESITA ---
+const handleInputChange = (index, campo, valor) => {
+    const nuevosProductos = [...productosFactura];
+    
+    // Actualizamos el valor del campo que cambió (codigo o cantidad)
+    nuevosProductos[index][campo] = valor;
+
+    // Si el usuario está escribiendo en el código, buscamos si ya existe en nuestras sugerencias
+    if (campo === 'codigo') {
+        const encontrado = sugerenciasProd.find(p => 
+            String(p.codigo) === String(valor) || String(p.nombre) === String(valor)
+        );
+
+        if (encontrado) {
+            nuevosProductos[index].producto_id = encontrado.id;
+            nuevosProductos[index].codigo = encontrado.codigo;
+            nuevosProductos[index].detalle = encontrado.nombre;
+            nuevosProductos[index].vUnitario = encontrado.precio;
+        }
+    }
+
+    // SIEMPRE recalculamos el total de la fila (vTotal)
+    const cant = parseFloat(nuevosProductos[index].cantidad) || 0;
+    const precio = parseFloat(nuevosProductos[index].vUnitario) || 0;
+    nuevosProductos[index].vTotal = cant * precio;
+
+    setProductosFactura(nuevosProductos);
+};
+
+// --- FASE 1: BUSCAR EN BACKEND ---
+const buscarProductos = async (termino) => {
+    if (!termino || termino.length < 1) return;
+    try {
+        const token = sessionStorage.getItem('authToken'); // Usamos el mismo que en clientes
+        const res = await fetch(`http://localhost:8080/api/facturas/buscar-productos?q=${termino}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+            const datos = await res.json();
+            setSugerenciasProd(datos);
+        }
+    } catch (error) {
+        console.error("Error buscando productos", error);
+    }
+};
+
+// --- FASE 2: AÑADIR ---
+const agregarFilaProducto = () => {
+    setProductosFactura([...productosFactura, { codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0 }]);
+};
+
+// --- FASE 3: ELIMINAR ---
+const eliminarFilaProducto = (index) => {
+    if (productosFactura.length > 1) {
+        setProductosFactura(productosFactura.filter((_, i) => i !== index));
+    }
+};
+
+return {
+        numeroFactura, 
+        fechaEmision, 
+        identificacion, 
+        seleccionarCliente, 
+        cliente, 
+        sugerencias,
+        productosFactura,
+        sugerenciasProd,
+        buscarProductos,
+        agregarFilaProducto,
+        eliminarFilaProducto,
+        handleInputChange 
     };
 };

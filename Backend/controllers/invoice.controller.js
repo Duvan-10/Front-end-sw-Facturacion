@@ -99,10 +99,12 @@ const invoiceController = {
         const [rows] = await db.query("SELECT MAX(id) AS lastId FROM facturas");
         res.json({ numero_factura: `FAC-${((rows[0].lastId || 0) + 1).toString().padStart(4, '0')}` });
     },
+ 
 
+    //BUSCAR PRODUCTOS
     searchProducts: async (req, res) => {
-        const [rows] = await db.query("SELECT id, codigo, nombre, precio FROM productos WHERE codigo LIKE ? OR nombre LIKE ? LIMIT 10", [`%${req.query.term}%`, `%${req.query.term}%`]);
-        res.json(rows);
-    }
-};
+    const searchTerm = req.query.q || ''; 
+    const [rows] = await db.query("SELECT id, codigo, nombre, precio FROM productos WHERE codigo LIKE ? OR nombre LIKE ? LIMIT 10", [`%${searchTerm}%`, `%${searchTerm}%`]);
+    res.json(rows);}
+}
 export default invoiceController;

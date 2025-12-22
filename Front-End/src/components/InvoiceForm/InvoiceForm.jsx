@@ -10,8 +10,15 @@
      const InvoiceForm = () =>{
      const navigate = useNavigate(); 
 
-       //Declaracion N°FAC-FECHA y FECHA-------Declaracion DATOS CLIENTE
-       const { numeroFactura, fechaEmision,    identificacion, seleccionarCliente, cliente, sugerencias } = useInvoiceLogic();
+    //Declaracion N°FAC-FECHA y FECHA-------Declaracion DATOS CLIENTE-------------Declaracion Productos//
+    const { numeroFactura, fechaEmision,
+    identificacion, seleccionarCliente, cliente, sugerencias,
+    productosFactura, 
+    handleInputChange, 
+    agregarFilaProducto, 
+    eliminarFilaProducto,
+    buscarProductos,
+    sugerenciasProd,} = useInvoiceLogic();
 
          return (
 
@@ -116,66 +123,76 @@
                  
 
                  {/*********************DETALLES DEL PRODUCTO*********************************** */}
+<h2 className="section-title">3. Detalle de Productos</h2>
 
+<div className="product-grid product-header">
+    <span>Código</span>
+    <span>Cant.</span>
+    <span>Detalle</span>
+    <span>V.Unitario</span>
+    <span>V.Total</span>
+    <span></span>
+</div>
 
-                 <h2 className="section-title">3. Detalle de Productos</h2>
+{/* Renderizado dinámico de filas */}
+{productosFactura.map((prod, index) => (
+    <div className="product-grid product-row" key={index}>
 
-                    <div className="product-grid product-header"></div>
-                    <span>Código</span>
-                    <span>Cant.</span>
-                    <span>Detalle</span>
-                    <span>V.Unitario</span>
-                    <span>V.Total</span>
-                    <span></span>
-                   
+<input 
+    type="text" 
+    placeholder="Cód." 
+    list="lista-productos"
+    value={prod.codigo}
+    onChange={(e) => {
+        const val = e.target.value;
+        handleInputChange(index, 'codigo', val); // Actualiza estado y busca localmente
+        buscarProductos(val); // Trae nuevas opciones del backend
+    }}
+/>
 
-                        {productosFactura.map((prod, index) => (
-                   <div className="product-grid product-row" key={index}>
-                       {/* INPUT CÓDIGO CON AUTOCOMPLETADO */}
-                       <input 
-                       type="text" 
-                       placeholder="Cód." 
-                      list="lista-productos"
-                       value={prod.codigo}
-                       onChange={(e) => {seleccionarProducto(e.target.value, index); buscarProductos(e.target.value, index);}}/>
-        
-                      <input 
-                      type="number" 
-                      value={prod.cantidad} 
-                      onChange={(e) => {
-                       const nuevos = [...productosFactura];
-                       nuevos[index].cantidad = e.target.value;
-                       nuevos[index].vTotal = nuevos[index].vUnitario * e.target.value;
-                       setProductosFactura(nuevos);}}/>
+        <input 
+            type="number" 
+            value={prod.cantidad}
+            onChange={(e) => handleInputChange(index, 'cantidad', e.target.value)}
+        />
+        <input 
+            type="text" 
+            readOnly 
+            value={prod.detalle} 
+            placeholder="Detalle"
+        />
+        <input 
+            type="number" 
+            readOnly 
+            value={prod.vUnitario} 
+        />
+        <input 
+            type="text" 
+            disabled 
+            value={prod.vTotal.toFixed(2)} 
+        />
+        <button 
+            type="button" 
+            className="delete-product"
+            onClick={() => eliminarFilaProducto(index)}
+        >
+            🗑
+        </button>
+    </div>
+))}
 
-                       <input type="text" value={prod.detalle} readOnly placeholder="Detalle del producto" />
-        
-                      <input type="number" value={prod.vUnitario} readOnly />
-        
-                      <input type="text" disabled value={prod.vTotal.toFixed(2)} />
-
-                      <button 
-                       type="button" 
-                       className="delete-product" 
-                       onClick={() => eliminarFilaProducto(index)}>
-                        🗑
-                      </button>
-
-                   </div>
-                  ))}
-
-{/* DATALIST COMPARTIDO */}
+{/* Datalist para el autocompletado */}
 <datalist id="lista-productos">
     {sugerenciasProd.map((p) => (
-        <option key={p.id} value={p.codigo_producto}>
-            {p.nombre_producto} - ${p.precio_venta}
+        <option key={p.id} value={p.codigo}>
+            {p.nombre} - ${p.precio}
         </option>
     ))}
 </datalist>
 
 <button 
     type="button" 
-    className="btn btn-primary btn-sm" 
+    className="btn btn-primary btn-sm"
     onClick={agregarFilaProducto}
 >
     + Añadir Producto
