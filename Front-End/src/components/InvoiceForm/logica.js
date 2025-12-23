@@ -149,14 +149,17 @@ export const useInvoiceLogic = () => {
         }
 
         const facturaData = {
+            status: pagoEstado === 'Si' ? 'Pagada' : 'Pendiente',
+            pago: pagoEstado,
             numero_factura: numeroFactura,
-            fecha: fechaEmision,
+            fecha_creacion: fechaEmision,
             cliente_id: cliente?.id,
             productos: productosFactura,
             subtotal: subtotal,
             iva_total: valorIva,
             total_final: totalFinal,
-            pago: pagoEstado
+           
+            
         };
 
         try {

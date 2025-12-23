@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
 
         // INSERTAR ENCABEZADO
         const [resultFactura] = await connection.query(
-            `INSERT INTO facturas (numero_factura, cliente_id, tipo_pago, status, total, fecha_creacion) 
+            `INSERT INTO facturas (numero_factura, cliente_id, pago, status, total, fecha_creacion) 
              VALUES (?, ?, ?, ?, ?, ?)`, 
             [numeroFactura, cliente_id, tipo_pago, estadoFinal, total, fecha_emision]
         );
