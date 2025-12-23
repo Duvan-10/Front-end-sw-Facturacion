@@ -140,49 +140,52 @@ export const useInvoiceLogic = () => {
     const totalFinal = subtotal + valorIva;
 
     // --- FUNCIÓN GUARDAR ---
-    const handleSubmit = async (e) => {
-        if (e) e.preventDefault();
+// --- FUNCIÓN GUARDAR (CORREGIDA Y SINCRONIZADA) ---
+const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
 
-        if (pagoEstado === 'Default') {
-            alert("⚠️ Por favor, seleccione si la factura está pagada (Si / No).");
-            return;
-        }
+    if (pagoEstado === 'Default') {
+        alert("⚠️ Por favor, seleccione si la factura está pagada (Si / No).");
+        return;
+    }
 
-        const facturaData = {
-            status: pagoEstado === 'Si' ? 'Pagada' : 'Pendiente',
-            pago: pagoEstado,
-            numero_factura: numeroFactura,
-            fecha_creacion: fechaEmision,
-            cliente_id: cliente?.id,
-            productos: productosFactura,
-            subtotal: subtotal,
-            iva_total: valorIva,
-            total_final: totalFinal,
-           
-            
-        };
-
-        try {
-            const token = sessionStorage.getItem('authToken');
-            const response = await fetch('http://localhost:8080/api/facturas', { // Ajustada la URL a tu puerto 8080
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(facturaData),
-            });
-
-            if (response.ok) {
-                navigate('/home/facturas');
-            } else {
-                const errorData = await response.json();
-                console.error("Error del servidor:", errorData.error);
-            }
-        } catch (error) {
-            console.error("Error de conexión:", error);
-        }
+    // Estructuramos el objeto EXACTAMENTE como lo espera el Backend corregido
+    const facturaData = {
+    cliente_id: cliente?.id,
+    pago: pagoEstado,
+    fecha: fechaEmision,   
+    subtotal: subtotal,    
+    iva: valorIva,         
+    total: totalFinal,  
+    productos: productosFactura
     };
+
+    try {
+        const token = sessionStorage.getItem('authToken');
+        const response = await fetch('http://localhost:8080/api/facturas', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(facturaData),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert("✅ Factura guardada con éxito");
+            navigate('/home/facturas');
+        } else {
+            // Si el backend falla, ahora nos dirá exactamente por qué
+            console.error("Error del servidor:", result.error);
+            alert("❌ Error al guardar: " + result.error);
+        }
+    } catch (error) {
+        console.error("Error de conexión:", error);
+        alert("❌ No se pudo conectar con el servidor");
+    }
+};
 
     return {
         pagoEstado,
