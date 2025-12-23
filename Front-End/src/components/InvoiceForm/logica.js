@@ -1,43 +1,28 @@
 import { useState, useEffect } from 'react';
-
-
-
-
+import { useNavigate } from 'react-router-dom'; // Asegúrate de importar navigate
 
 export const useInvoiceLogic = () => {
+    const navigate = useNavigate();
 
-    {/*****----PAGO--SI---NO----***********/}
-      const [pagoEstado, setPagoEstado] = useState('Default');
+    // --- ESTADOS PAGO ---
+    const [pagoEstado, setPagoEstado] = useState('Default');
 
-     const handleSubmit = async (e) => {
-     e.preventDefault();
-
-     // VALIDACIÓN DE PAGO
-     if (pagoEstado === 'Default') {
-        alert("⚠️ Por favor, seleccione si la factura está pagada (Si / No) antes de continuar.");
-        return;} // Esto detiene la ejecución y no envía nada al servidor
-
-      // Si pasa la validación, procedemos con el envío...
-     console.log("Enviando factura...");
-    
-     const datosFactura = {
-        pago: pagoEstado, 
-        cliente_id: cliente.id,
-        productos: productosFactura,
-        subtotal,
-        iva,
-        total: totalGeneral};
-    
-        };
-
-
-{/*****LOGICA---NUMERO--DE---FACTURA-----FECHA***********/}
-   
-   //ESTADO PARA NUMERO DE FACTURA - FECHA
+    // --- ESTADOS NÚMERO DE FACTURA Y FECHA ---
     const [numeroFactura, setNumeroFactura] = useState('Cargando...');
     const [fechaEmision, setFechaEmision] = useState(new Date().toISOString().split('T')[0]);
 
-    //FUNCION FIJAR #FACTURA-FECHA
+    // --- ESTADOS CLIENTE ---
+    const [identificacion, setIdentificacion] = useState('');
+    const [sugerencias, setSugerencias] = useState([]);
+    const [cliente, setCliente] = useState({ id: '', nombre: '', correo: '', telefono: '', direccion: '' });
+
+    // --- ESTADOS PRODUCTOS ---
+    const [productosFactura, setProductosFactura] = useState([
+        { codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0, ivaPorcentaje: 0 }
+    ]);
+    const [sugerenciasProd, setSugerenciasProd] = useState([]);
+
+    // --- EFECTO: OBTENER NÚMERO DE FACTURA ---
     useEffect(() => {
         const obtenerDatos = async () => {
             try {
@@ -57,28 +42,18 @@ export const useInvoiceLogic = () => {
         obtenerDatos();
     }, []);
 
-
-
-{/****************LOGICA CLIENTES**************************/}
-// ESTADOS PARA CLIENTE
-const [identificacion, setIdentificacion] = useState('');
-const [sugerencias, setSugerencias] = useState([]); // Lista de clientes encontrados
-const [cliente, setCliente] = useState({ nombre: '', correo: '', telefono: '', direccion: '' });
-
-    // FUNCION buscar mientras escribe
-
+    // --- EFECTO: BUSCAR CLIENTES ---
     useEffect(() => {
         const buscarCoincidencias = async () => {
-            if (identificacion.length > 2) { // Solo busca si hay más de 2 caracteres
+            if (identificacion.length > 2) {
                 try {
                     const token = sessionStorage.getItem('authToken');
-                    // Buscamos por coincidencia parcial (ej: /api/clientes/buscar?q=123)
                     const res = await fetch(`http://localhost:8080/api/clientes?search=${identificacion}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (res.ok) {
                         const data = await res.json();
-                        setSugerencias(data); // Guardamos la lista de posibles clientes
+                        setSugerencias(data);
                     }
                 } catch (err) {
                     console.error("Error en autocompletado:", err);
@@ -87,133 +62,144 @@ const [cliente, setCliente] = useState({ nombre: '', correo: '', telefono: '', d
                 setSugerencias([]);
             }
         };
-
-        const timeoutId = setTimeout(buscarCoincidencias, 300); // Debounce para no saturar el server
+        const timeoutId = setTimeout(buscarCoincidencias, 300);
         return () => clearTimeout(timeoutId);
     }, [identificacion]);
 
-
-
-         // Función para cuando el usuario SELECCIONA un cliente
-         const seleccionarCliente = (e) => {
-         const valorIngresado = e.target.value;
-         setIdentificacion(valorIngresado);
-
-          // --- LOG PARA DEPURAR ---
-          console.log("Sugerencias actuales:", sugerencias);
-          console.log("Buscando ID:", valorIngresado);
-
-          // Buscamos si el valor ingresado coincide con alguna sugerencia
-         const encontrado = sugerencias.find(c => String(c.identificacion) === String(valorIngresado));
-         
-         if (encontrado) {
-         console.log("¡Cliente encontrado! Datos:", encontrado); // Veremos qué nombres de campos trae
-         // Si lo encuentra, llenamos el objeto cliente
-           setCliente({
-            nombre: encontrado.nombre_razon_social,
-            correo: encontrado.email,
-            telefono: encontrado.telefono || '',
-            direccion: encontrado.direccion || ''
-        });
-    } else {
-        // Si borra el ID, limpiamos los campos
-        setCliente({ nombre: '', correo: '', telefono: '', direccion: '' });
-    }
-};
-    
-
-{/*******************LOGICA PRODUCTOS********************/}
-
-// --- ESTADOS PRODUCTOS ---
-const [productosFactura, setProductosFactura] = useState([
-    { codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0 }
-]);
-const [sugerenciasProd, setSugerenciasProd] = useState([]);
-
-// --- ESTA ES LA FUNCIÓN QUE TU HTML NECESITA ---
-const handleInputChange = (index, campo, valor) => {
-const nuevosProductos = [...productosFactura];
-nuevosProductos[index][campo] = valor;
-
-    // Si el usuario está escribiendo en el código, buscamos si ya existe en nuestras sugerencias
-    if (campo === 'codigo') {
-        const encontrado = sugerenciasProd.find(p => String(p.codigo) === String(valor));
+    const seleccionarCliente = (e) => {
+        const valorIngresado = e.target.value;
+        setIdentificacion(valorIngresado);
+        const encontrado = sugerencias.find(c => String(c.identificacion) === String(valorIngresado));
+        
         if (encontrado) {
-            nuevosProductos[index].producto_id = encontrado.id;
-            nuevosProductos[index].detalle = `${encontrado.nombre} - ${encontrado.descripcion || ''}`;
-            nuevosProductos[index].vUnitario = encontrado.precio;
-            nuevosProductos[index].ivaPorcentaje = encontrado.impuesto_porcentaje || 0;
+            setCliente({
+                id: encontrado.id,
+                nombre: encontrado.nombre_razon_social,
+                correo: encontrado.email,
+                telefono: encontrado.telefono || '',
+                direccion: encontrado.direccion || ''
+            });
+        } else {
+            setCliente({ id: '', nombre: '', correo: '', telefono: '', direccion: '' });
         }
-    }
+    };
 
-    // Recalcular fila
-    const cant = parseFloat(nuevosProductos[index].cantidad) || 0;
-    const precio = parseFloat(nuevosProductos[index].vUnitario) || 0;
-    nuevosProductos[index].vTotal = cant * precio;
+    // --- LÓGICA PRODUCTOS ---
+    const handleInputChange = (index, campo, valor) => {
+        const nuevosProductos = [...productosFactura];
+        nuevosProductos[index][campo] = valor;
 
-    setProductosFactura(nuevosProductos);
-};
-
-// --- FASE 1: BUSCAR EN BACKEND ---
-const buscarProductos = async (termino) => {
-    if (!termino || termino.length < 1) return;
-    try {
-        const token = sessionStorage.getItem('authToken'); // Usamos el mismo que en clientes
-        const res = await fetch(`http://localhost:8080/api/facturas/buscar-productos?q=${termino}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.ok) {
-            const datos = await res.json();
-            setSugerenciasProd(datos);
+        if (campo === 'codigo') {
+            const encontrado = sugerenciasProd.find(p => String(p.codigo) === String(valor));
+            if (encontrado) {
+                nuevosProductos[index].producto_id = encontrado.id;
+                nuevosProductos[index].detalle = `${encontrado.nombre} - ${encontrado.descripcion || ''}`;
+                nuevosProductos[index].vUnitario = encontrado.precio;
+                nuevosProductos[index].ivaPorcentaje = encontrado.impuesto_porcentaje || 0;
+            }
         }
-    } catch (error) {
-        console.error("Error buscando productos", error);
-    }
-};
 
-// --- FASE 2: AÑADIR ---
-const agregarFilaProducto = () => {
-    setProductosFactura([...productosFactura, { codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0 }]);
-};
+        const cant = parseFloat(nuevosProductos[index].cantidad) || 0;
+        const precio = parseFloat(nuevosProductos[index].vUnitario) || 0;
+        nuevosProductos[index].vTotal = cant * precio;
+        setProductosFactura(nuevosProductos);
+    };
 
-// --- FASE 3: ELIMINAR ---
-const eliminarFilaProducto = (index) => {
-    if (productosFactura.length > 1) {
-        setProductosFactura(productosFactura.filter((_, i) => i !== index));
-    }
-};
+    const buscarProductos = async (termino) => {
+        if (!termino || termino.length < 1) return;
+        try {
+            const token = sessionStorage.getItem('authToken');
+            const res = await fetch(`http://localhost:8080/api/facturas/buscar-productos?q=${termino}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const datos = await res.json();
+                setSugerenciasProd(datos);
+            }
+        } catch (error) {
+            console.error("Error buscando productos", error);
+        }
+    };
 
+    const agregarFilaProducto = () => {
+        setProductosFactura([...productosFactura, { codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0, ivaPorcentaje: 0 }]);
+    };
 
-// --- CÁLCULOS DE TOTALES ---
-const subtotal = productosFactura.reduce((acc, prod) => acc + (parseFloat(prod.vTotal) || 0), 0);
+    const eliminarFilaProducto = (index) => {
+        if (productosFactura.length > 1) {
+            setProductosFactura(productosFactura.filter((_, i) => i !== index));
+        }
+    };
 
-// Calculamos el IVA sumando el impuesto de cada fila
-const valorIva = productosFactura.reduce((acc, prod) => {
-    const impuesto = (parseFloat(prod.vTotal) || 0) * ((parseFloat(prod.ivaPorcentaje) || 0) / 100);
-    return acc + impuesto;
-}, 0);
+    // --- CÁLCULOS DE TOTALES ---
+    const subtotal = productosFactura.reduce((acc, prod) => acc + (parseFloat(prod.vTotal) || 0), 0);
+    const valorIva = productosFactura.reduce((acc, prod) => {
+        const impuesto = (parseFloat(prod.vTotal) || 0) * ((parseFloat(prod.ivaPorcentaje) || 0) / 100);
+        return acc + impuesto;
+    }, 0);
+    const totalFinal = subtotal + valorIva;
 
-const totalFinal = subtotal + valorIva;
+    // --- FUNCIÓN GUARDAR ---
+    const handleSubmit = async (e) => {
+        if (e) e.preventDefault();
 
-// --- EL RETURN UNIFICADO ---
-return {
-    pagoEstado,
-    setPagoEstado,
-    numeroFactura, 
-    fechaEmision, 
-    setFechaEmision,
-    identificacion, 
-    seleccionarCliente, 
-    cliente, 
-    sugerencias,
-    productosFactura,
-    sugerenciasProd,
-    buscarProductos,
-    agregarFilaProducto,
-    eliminarFilaProducto,
-    handleInputChange,
-    subtotal, 
-    iva: valorIva, 
-    totalGeneral: totalFinal };
+        if (pagoEstado === 'Default') {
+            alert("⚠️ Por favor, seleccione si la factura está pagada (Si / No).");
+            return;
+        }
 
+        const facturaData = {
+            numero_factura: numeroFactura,
+            fecha: fechaEmision,
+            cliente_id: cliente?.id,
+            productos: productosFactura,
+            subtotal: subtotal,
+            iva_total: valorIva,
+            total_final: totalFinal,
+            pago: pagoEstado
+        };
+
+        try {
+            const token = sessionStorage.getItem('authToken');
+            const response = await fetch('http://localhost:8080/api/facturas', { // Ajustada la URL a tu puerto 8080
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(facturaData),
+            });
+
+            if (response.ok) {
+                navigate('/home/facturas');
+            } else {
+                const errorData = await response.json();
+                console.error("Error del servidor:", errorData.error);
+            }
+        } catch (error) {
+            console.error("Error de conexión:", error);
+        }
+    };
+
+    return {
+        pagoEstado,
+        setPagoEstado,
+        numeroFactura,
+        fechaEmision,
+        setFechaEmision,
+        identificacion,
+        seleccionarCliente,
+        cliente,
+        sugerencias,
+        productosFactura,
+        sugerenciasProd,
+        buscarProductos,
+        agregarFilaProducto,
+        eliminarFilaProducto,
+        handleInputChange,
+        handleSubmit,
+        subtotal,
+        iva: valorIva,
+        totalGeneral: totalFinal
+    };
 };

@@ -4,22 +4,20 @@
  import '../styles1.css';
 
 
-    
+  //------------Funcion Formulario-------------//
+  const InvoiceForm = () =>{
+  const navigate = useNavigate(); 
 
-    //------------Funcion Formulario-------------//
-     const InvoiceForm = () =>{
-     const navigate = useNavigate(); 
-
-    //Declaracion N°FAC-FECHA y FECHA-------Declaracion DATOS CLIENTE------Declaracion Productos-------Totales//
-    const { pagoEstado, setPagoEstado,numeroFactura, fechaEmision, identificacion, seleccionarCliente, cliente, sugerencias,
-    productosFactura, handleInputChange, agregarFilaProducto, eliminarFilaProducto,
-    buscarProductos, sugerenciasProd,subtotal, iva, totalGeneral } = useInvoiceLogic();
+  //Declaracion N°FAC-FECHA y FECHA-------Declaracion DATOS CLIENTE------Declaracion Productos-------Totales//
+  const { pagoEstado, setPagoEstado, numeroFactura,  fechaEmision, setFechaEmision,identificacion, seleccionarCliente, cliente, 
+  sugerencias,productosFactura,  handleInputChange, agregarFilaProducto, eliminarFilaProducto,buscarProductos, 
+  sugerenciasProd, subtotal, iva, totalGeneral,handleSubmit } = useInvoiceLogic();
 
          return (
 
           //************FORMULARIO CREACION FACTURA ELECTRONICA********************//
 
-            <form className="app-form card">
+            <form className="app-form card" onSubmit={handleSubmit}>
 
                  <h2 className="module-title"> Registrar Nueva Factura</h2>
 
@@ -213,9 +211,19 @@
 
                 <div className="final-buttons-group"></div>
 
-                <button type="submit" className="btn btn-success">Crear Factura</button>
-                <button type="button"className="btn btn-danger"onClick={() => navigate('/home/facturas')}>Cancelar</button>
+                <div className="final-buttons-group">
+
+                 <button 
+                 type="submit" 
+                 className="btn btn-success"
+                 onClick={handleSubmit}
+                 disabled={pagoEstado === 'Default'} // Bloqueo visual: no permite clic si está en Default
+                 title={pagoEstado === 'Default' ? "Seleccione el estado de pago para continuar" : ""}>Crear Factura</button>
                 
+                
+                 <button type="button"className="btn btn-danger"onClick={() => navigate('/home/facturas')}>Cancelar</button>
+
+                </div>
 
             </form>
         );
