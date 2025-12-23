@@ -104,7 +104,7 @@ const invoiceController = {
     //BUSCAR PRODUCTOS
     searchProducts: async (req, res) => {
     const searchTerm = req.query.q || ''; 
-    const [rows] = await db.query("SELECT id, codigo, nombre, precio FROM productos WHERE codigo LIKE ? OR nombre LIKE ? LIMIT 10", [`%${searchTerm}%`, `%${searchTerm}%`]);
+    const [rows] = await db.query("SELECT id, codigo, nombre, descripcion, precio, impuesto_porcentaje FROM productos WHERE codigo LIKE ? OR nombre LIKE ? LIMIT 10", [`%${searchTerm}%`, `%${searchTerm}%`]);
     res.json(rows);}
 }
 export default invoiceController;

@@ -104,26 +104,21 @@ const [sugerenciasProd, setSugerenciasProd] = useState([]);
 
 // --- ESTA ES LA FUNCIÓN QUE TU HTML NECESITA ---
 const handleInputChange = (index, campo, valor) => {
-    const nuevosProductos = [...productosFactura];
-    
-    // Actualizamos el valor del campo que cambió (codigo o cantidad)
-    nuevosProductos[index][campo] = valor;
+const nuevosProductos = [...productosFactura];
+nuevosProductos[index][campo] = valor;
 
     // Si el usuario está escribiendo en el código, buscamos si ya existe en nuestras sugerencias
     if (campo === 'codigo') {
-        const encontrado = sugerenciasProd.find(p => 
-            String(p.codigo) === String(valor) || String(p.nombre) === String(valor)
-        );
-
+        const encontrado = sugerenciasProd.find(p => String(p.codigo) === String(valor));
         if (encontrado) {
             nuevosProductos[index].producto_id = encontrado.id;
-            nuevosProductos[index].codigo = encontrado.codigo;
-            nuevosProductos[index].detalle = encontrado.nombre;
+            nuevosProductos[index].detalle = `${encontrado.nombre} - ${encontrado.descripcion || ''}`;
             nuevosProductos[index].vUnitario = encontrado.precio;
+            nuevosProductos[index].ivaPorcentaje = encontrado.impuesto_porcentaje || 0;
         }
     }
 
-    // SIEMPRE recalculamos el total de la fila (vTotal)
+    // Recalcular fila
     const cant = parseFloat(nuevosProductos[index].cantidad) || 0;
     const precio = parseFloat(nuevosProductos[index].vUnitario) || 0;
     nuevosProductos[index].vTotal = cant * precio;
@@ -160,18 +155,36 @@ const eliminarFilaProducto = (index) => {
     }
 };
 
+
+// --- CÁLCULOS AUTOMÁTICOS DE TOTALES ---
+// --- CÁLCULOS DE TOTALES ---
+const subtotal = productosFactura.reduce((acc, prod) => acc + (parseFloat(prod.vTotal) || 0), 0);
+
+// Calculamos el IVA sumando el impuesto de cada fila
+const valorIva = productosFactura.reduce((acc, prod) => {
+    const impuesto = (parseFloat(prod.vTotal) || 0) * ((parseFloat(prod.ivaPorcentaje) || 0) / 100);
+    return acc + impuesto;
+}, 0);
+
+const totalFinal = subtotal + valorIva;
+
+// --- EL RETURN UNIFICADO ---
 return {
-        numeroFactura, 
-        fechaEmision, 
-        identificacion, 
-        seleccionarCliente, 
-        cliente, 
-        sugerencias,
-        productosFactura,
-        sugerenciasProd,
-        buscarProductos,
-        agregarFilaProducto,
-        eliminarFilaProducto,
-        handleInputChange 
-    };
+    numeroFactura, 
+    fechaEmision, 
+    setFechaEmision,
+    identificacion, 
+    seleccionarCliente, 
+    cliente, 
+    sugerencias,
+    productosFactura,
+    sugerenciasProd,
+    buscarProductos,
+    agregarFilaProducto,
+    eliminarFilaProducto,
+    handleInputChange,
+    subtotal, 
+    iva: valorIva, 
+    totalGeneral: totalFinal };
+    
 };
