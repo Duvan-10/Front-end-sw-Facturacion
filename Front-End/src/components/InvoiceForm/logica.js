@@ -1,9 +1,37 @@
 import { useState, useEffect } from 'react';
 
 
-{/*****LOGICA---NUMERO--DE---FACTURA-----FECHA***********/}
+
+
 
 export const useInvoiceLogic = () => {
+
+    {/*****----PAGO--SI---NO----***********/}
+      const [pagoEstado, setPagoEstado] = useState('Default');
+
+     const handleSubmit = async (e) => {
+     e.preventDefault();
+
+     // VALIDACIÓN DE PAGO
+     if (pagoEstado === 'Default') {
+        alert("⚠️ Por favor, seleccione si la factura está pagada (Si / No) antes de continuar.");
+        return;} // Esto detiene la ejecución y no envía nada al servidor
+
+      // Si pasa la validación, procedemos con el envío...
+     console.log("Enviando factura...");
+    
+     const datosFactura = {
+        pago: pagoEstado, 
+        cliente_id: cliente.id,
+        productos: productosFactura,
+        subtotal,
+        iva,
+        total: totalGeneral};
+    
+        };
+
+
+{/*****LOGICA---NUMERO--DE---FACTURA-----FECHA***********/}
    
    //ESTADO PARA NUMERO DE FACTURA - FECHA
     const [numeroFactura, setNumeroFactura] = useState('Cargando...');
@@ -156,7 +184,6 @@ const eliminarFilaProducto = (index) => {
 };
 
 
-// --- CÁLCULOS AUTOMÁTICOS DE TOTALES ---
 // --- CÁLCULOS DE TOTALES ---
 const subtotal = productosFactura.reduce((acc, prod) => acc + (parseFloat(prod.vTotal) || 0), 0);
 
@@ -170,6 +197,8 @@ const totalFinal = subtotal + valorIva;
 
 // --- EL RETURN UNIFICADO ---
 return {
+    pagoEstado,
+    setPagoEstado,
     numeroFactura, 
     fechaEmision, 
     setFechaEmision,
@@ -186,5 +215,5 @@ return {
     subtotal, 
     iva: valorIva, 
     totalGeneral: totalFinal };
-    
+
 };

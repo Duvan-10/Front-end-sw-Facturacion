@@ -11,11 +11,9 @@
      const navigate = useNavigate(); 
 
     //Declaracion N°FAC-FECHA y FECHA-------Declaracion DATOS CLIENTE------Declaracion Productos-------Totales//
-    const { 
-    numeroFactura, fechaEmision, identificacion, seleccionarCliente, cliente, sugerencias,
+    const { pagoEstado, setPagoEstado,numeroFactura, fechaEmision, identificacion, seleccionarCliente, cliente, sugerencias,
     productosFactura, handleInputChange, agregarFilaProducto, eliminarFilaProducto,
-    buscarProductos, sugerenciasProd,
-    subtotal, iva, totalGeneral } = useInvoiceLogic();
+    buscarProductos, sugerenciasProd,subtotal, iva, totalGeneral } = useInvoiceLogic();
 
          return (
 
@@ -25,31 +23,40 @@
 
                  <h2 className="module-title"> Registrar Nueva Factura</h2>
 
-               
 
-                {/********************SELECCION PAGO*******************************************/}
-         
-                 <div className="section-group header-fields"></div>
-                
-                
-                 <div className="pago"></div>
 
+                {/******************** SELECCION PAGO CON LÓGICA *******************/}
+                  <div className="section-group header-fields">
+                  <div className="pago">
                   <label>PAGO:</label>
 
-
                   <label className="selected-Default">
-                  <input type="radio" name="pagoEstado" /> Dfault
-                 </label>
 
-                  <label className="selected-si">
-                  <input type="radio" name="pagoEstado" /> Si
-                  </label>
+                  <input 
+                  type="radio" 
+                  name="pagoEstado" 
+                  value="Default"
+                  checked={pagoEstado === 'Default'}
+                  onChange={(e) => setPagoEstado(e.target.value)}/> Default</label>
 
-                  <label className="selected-no">
-                  <input type="radio" name="pagoEstado" /> No
-                   </label>
-            
-            
+                 <label className="selected-si">
+                 <input 
+                 type="radio" 
+                 name="pagoEstado" 
+                 value="Si"
+                 checked={pagoEstado === 'Si'}
+                 onChange={(e) => setPagoEstado(e.target.value)}/> Si</label>
+
+                 <label className="selected-no">
+                 <input 
+                 type="radio" 
+                 name="pagoEstado" 
+                 value="No"
+                 checked={pagoEstado === 'No'}
+                 onChange={(e) => setPagoEstado(e.target.value)}/> No</label>
+                </div>
+                </div>
+                
                 
 
                 {/*********************** N°FACTURA Y FECHA*****************************/}
