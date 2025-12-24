@@ -221,10 +221,18 @@
             })}
         </span>
 
-        <button 
-            type="button" 
-            className="delete-product"
-            onClick={() => eliminarFilaProducto(index)}>❎</button>
+            {index > 0 ? (
+            <button 
+                type="button" 
+                className="delete-product"
+                onClick={() => eliminarFilaProducto(index)}
+            >
+                ❎
+            </button>
+        ) : (
+            /* Espacio vacío para mantener la alineación del grid en la primera fila */
+            <div style={{ width: '32px' }}></div> 
+        )}
     </div>
 ))}
 

@@ -122,9 +122,12 @@ if (campo === 'codigo') {
         const encontrado = sugerenciasProd.find(p => String(p.codigo) === String(valor));
         
         if (encontrado) {
+            // --- AJUSTE AQUÍ: Nombre + Guion + Descripción ---
+            const descripcion = encontrado.descripcion ? ` - ${encontrado.descripcion}` : "";
+    
             // SI EXISTE: Llenamos los datos
             nuevosProductos[index].producto_id = encontrado.id;
-            nuevosProductos[index].detalle = `${encontrado.nombre}`;
+            nuevosProductos[index].detalle = `${encontrado.nombre}${descripcion}`;
             nuevosProductos[index].vUnitario = encontrado.precio;
             nuevosProductos[index].ivaPorcentaje = encontrado.impuesto_porcentaje || 0;
         } else {
@@ -140,7 +143,7 @@ if (campo === 'codigo') {
         const cant = parseFloat(nuevosProductos[index].cantidad) || 0;
         const precio = parseFloat(nuevosProductos[index].vUnitario) || 0;
         nuevosProductos[index].vTotal = cant * precio;
-        
+
         setProductosFactura(nuevosProductos);
     };
 

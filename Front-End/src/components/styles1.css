@@ -149,17 +149,6 @@ gap: 20px;
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 
-/* ------------------------------------------------------- */
-/* GRUPO DE BOTONES FINALES (Guardar/Cerrar) */
-/* ------------------------------------------------------- */
-.final-buttons-group { /* 🟢 Clase genérica para botones 🟢 */
-    display: flex; 
-    justify-content: center; /* Centra los botones horizontalmente */
-    gap: 30px; 
-    margin-top: 30px; 
-    padding-top: 20px;
-    border-top: 1px solid hsl(0, 0%, 93%);
-}
 
 /* ------------------------------------------------------- */
 /* TIPOS DE FACTURA (Radio Buttons) */
@@ -198,13 +187,14 @@ gap: 20px;
     gap: 10px;
     align-items: center;
     margin-bottom: 8px;
+    
 }
 
 /* Estilo para los títulos (Encabezado) */
 .product-header {
     font-weight: bold;
-    color: rgb(88, 90, 88); 
-    border-bottom: 2px solid hsl(0, 0%, 93%);
+    color: #e3ebe3; 
+    border-bottom: 2px solid lab(75.46% -55.48 64.77);
     padding-bottom: 8px;
     font-size: 14px;
     text-transform: uppercase;
@@ -222,16 +212,17 @@ gap: 20px;
 .product-row input {
     width: 100%;
     padding: 8px;
-    border: 1px solid hwb(0 13% 87%);
+    border: 1px solid lch(79.87% 95.92 135.03);
     border-radius: 4px;
     background-color: oklch(90.28% 0.00394 106.88);
-    color:hsl(0, 0%, 20%) 
+    color:lab(21.25% 0 0) 
 }
 
 /* Alineación de números dentro de los inputs */
 .product-row input[type="number"],
-.product-row input[disabled] {
-    text-align: right;
+.product-row input[disabled] {   
+ text-align: right;
+    
 }
 
 .delete-product {
@@ -247,6 +238,14 @@ gap: 20px;
     transform: scale(1.2);
 }
 
+.v-total{
+width: 100%;
+    padding: 8px;
+    border: 1px solid lch(79.87% 95.92 135.03);
+    border-radius: 4px;
+    background-color: #88e690;
+    color:lch(2.74% 0 296.81) 
+}
 /* --------------------------------------------------- */
 /* ALINEACIÓN Y TAMAÑOS ESPECÍFICOS DE COLUMNAS */
 /* --------------------------------------------------- */
@@ -275,4 +274,16 @@ gap: 20px;
 .col-delete {
     width: 60px;
     text-align: center; 
+}
+
+/* ------------------------------------------------------- */
+/* GRUPO DE BOTONES FINALES (Guardar/Cerrar) */
+/* ------------------------------------------------------- */
+.final-buttons-group { /* 🟢 Clase genérica para botones 🟢 */
+    display: flex; 
+    justify-content: center; /* Centra los botones horizontalmente */
+    gap: 30px; 
+    margin-top: 30px; 
+    padding-top: 20px;
+    border-top: 1px solid hsl(0, 0%, 93%);
 }
