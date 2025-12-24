@@ -185,6 +185,16 @@ if (campo === 'codigo') {
 
 
 // --- FUNCIÓN GUARDAR //
+// 1. Mueve limpiarFormulario fuera o antes del handleSubmit para que sea una función independiente
+const limpiarFormulario = () => {
+    setPagoEstado('Default');
+    setIdentificacion('');
+    setCliente({ id: '', nombre: '', correo: '', telefono: '', direccion: '' });
+    setProductosFactura([
+        { codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0, ivaPorcentaje: 0 }
+    ]);
+};
+
 const handleSubmit = async (e) => {
     if (e) e.preventDefault();
 
@@ -193,16 +203,14 @@ const handleSubmit = async (e) => {
         return;
     }
 
+    // --- CORRECCIÓN: Definir la variable que faltaba ---
+    const fechaHoraActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
     const facturaData = {
         cliente_id: cliente?.id,
-        cliente_detalles: {
-        nombre: cliente.nombre,
-        correo: cliente.correo,
-        telefono: cliente.telefono,
-        direccion: cliente.direccion
-        },
+        cliente_detalles: {  nombre: cliente.nombre,correo: cliente.correo,telefono: cliente.telefono,direccion: cliente.direccion},
         pago: pagoEstado,
-        fecha: fechaEmision,
+        fecha: fechaHoraActual, // Ahora sí tiene valor
         subtotal: subtotal,
         iva: valorIva,
         total: totalFinal,
@@ -220,21 +228,21 @@ const handleSubmit = async (e) => {
             body: JSON.stringify(facturaData),
         });
 
+        // Verificamos si hay contenido antes de hacer .json() para evitar errores
         const result = await response.json();
 
         if (response.ok) {
             alert("✅ Factura guardada con éxito");
-            navigate('/home/facturas');
+            limpiarFormulario();
         } else {
             console.error("Error del servidor:", result.error);
-            alert("❌ Error al guardar: " + result.error);
+            alert("❌ Error al guardar: " + (result.error || "Error desconocido"));
         }
     } catch (error) {
         console.error("Error de conexión:", error);
         alert("❌ No se pudo conectar con el servidor");
     }
 };
-
 // --- RETORNO 
 return {
     pagoEstado,

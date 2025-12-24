@@ -273,24 +273,31 @@
                <label>Total</label>
                {/* Cambia totalFinal por totalGeneral aquí abajo */}
                <span>${totalGeneral ? totalGeneral.toFixed(2) : "0.00"}</span></div>
+
+
+
              
-                {/***********BOTONES**------- CREAR-----CANCELAR----***********/}
-
-                <div className="final-buttons-group"></div>
-
-                <div className="final-buttons-group">
-
-                 <button 
-                 type="submit" 
-                 className="btn btn-success"
-                 onClick={handleSubmit}
-                 disabled={pagoEstado === 'Default'} // Bloqueo visual: no permite clic si está en Default
-                 title={pagoEstado === 'Default' ? "Seleccione el estado de pago para continuar" : ""}>Crear Factura</button>
-                
-                
-                 <button type="button"className="btn btn-danger"onClick={() => navigate('/home/facturas')}>Cancelar</button>
-
-                </div>
+      {/*********** BOTONES CREAR - CANCELAR ***********/}
+      
+       <div className="final-buttons-group">
+         <button 
+        type="submit" // El type="submit" ya activa el onSubmit del <form> automáticamente
+        className="btn btn-success"
+        // Quitamos el onClick de aquí, el control lo lleva el formulario
+        disabled={pagoEstado === 'Default'} 
+        style={{ cursor: pagoEstado === 'Default' ? 'not-allowed' : 'pointer' }}
+    >
+        Crear Factura
+    </button>
+    
+    <button 
+        type="button" 
+        className="btn btn-danger" 
+        onClick={() => navigate('/home/facturas')}
+    >
+        Cancelar
+    </button>
+</div>
 
             </form>
         );

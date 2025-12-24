@@ -32,14 +32,14 @@ router.get('/buscar-productos', invoiceController.searchProducts);
 // En Backend/routes/facturas.routes.js
 
 router.post('/', async (req, res) => {
-    // 1. EXTRAER TODAS LAS VARIABLES (Aquí faltaba 'iva' y 'subtotal')
+    // 1. EXTRAER con los nombres exactos que vienen del Frontend
     const { 
         cliente_id, 
         pago,
         fecha, 
         subtotal, 
-        iva, 
-        total, 
+        iva,      // Asegúrate que en logica.js se llame 'iva'
+        total,    // Asegúrate que en logica.js se llame 'total'
         productos
     } = req.body;
 
@@ -48,24 +48,26 @@ router.post('/', async (req, res) => {
     try {
         await connection.beginTransaction();
 
+        // Determinar estado
         const estadoFinal = (pago === 'Si') ? 'Pagada' : 'Pendiente';
 
+        // Generar número de factura
         const [rows] = await connection.query('SELECT IFNULL(MAX(id), 0) + 1 as nextId FROM facturas');
         const proximoId = rows[0].nextId;
         const numeroFactura = `FAC-${String(proximoId).padStart(4, '0')}`;
 
-        // 2. INSERTAR ENCABEZADO (Usando las variables extraídas arriba)
-            const [resultFactura] = await connection.query(
-        `INSERT INTO facturas (numero_factura, cliente_id, fecha_emision, subtotal, iva, total, estado) 
-         VALUES (?, ?, ?, ?, ?, ?, ?)`, 
-        [numeroFactura, cliente_id, fecha, subtotal, iva, total, estadoFinal]
-    );
-    
+        // 2. INSERTAR ENCABEZADO
+        // Nota: Asegúrate que la columna se llame fecha_emision en tu DB
+        const [resultFactura] = await connection.query(
+            `INSERT INTO facturas (numero_factura, cliente_id, fecha_emision, subtotal, iva, total, estado) 
+             VALUES (?, ?, ?, ?, ?, ?, ?)`, 
+            [numeroFactura, cliente_id, fecha, subtotal, iva, total, estadoFinal]
+        );
 
         const facturaId = resultFactura.insertId;
-        
 
-        // 4. INSERT DETALLES (Ajustado a los nombres del array de productos)
+        // 3. INSERT DETALLES
+        // IMPORTANTE: Mapeamos los nombres prod.vUnitario y prod.vTotal que vienen del front
         const queriesDetalles = productos.map(prod => {
             return connection.query(
                 `INSERT INTO factura_detalles (factura_id, producto_id, cantidad, precio_unitario, subtotal, total) 
@@ -75,8 +77,8 @@ router.post('/', async (req, res) => {
                     prod.producto_id, 
                     prod.cantidad, 
                     prod.vUnitario, 
-                    prod.vTotal, 
-                    prod.vTotal // Puedes ajustar esto si manejas IVA por línea
+                    prod.vTotal, // subtotal de la línea
+                    prod.vTotal  // total de la línea
                 ]
             );
         });
@@ -87,11 +89,11 @@ router.post('/', async (req, res) => {
         res.json({ success: true, message: "Factura guardada!", id: facturaId });
 
     } catch (error) {
-        await connection.rollback();
+        if (connection) await connection.rollback();
         console.error("Error detallado en Backend:", error);
-        res.status(500).json({ error: error.message }); // Para ver el error real en el frontend
+        res.status(500).json({ error: "Error interno: " + error.message });
     } finally {
-        connection.release();
+        if (connection) connection.release();
     }
 });
 
