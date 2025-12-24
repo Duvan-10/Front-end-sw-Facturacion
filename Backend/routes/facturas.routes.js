@@ -35,12 +35,12 @@ router.post('/', async (req, res) => {
     // 1. EXTRAER TODAS LAS VARIABLES (Aquí faltaba 'iva' y 'subtotal')
     const { 
         cliente_id, 
-        pago, 
+        pago,
         fecha, 
         subtotal, 
-        iva,      // <--- Asegúrate de que esté aquí
+        iva, 
         total, 
-        productos 
+        productos
     } = req.body;
 
     const connection = await db.getConnection();
@@ -55,13 +55,15 @@ router.post('/', async (req, res) => {
         const numeroFactura = `FAC-${String(proximoId).padStart(4, '0')}`;
 
         // 2. INSERTAR ENCABEZADO (Usando las variables extraídas arriba)
-        const [resultFactura] = await connection.query(
-            `INSERT INTO facturas (numero_factura, cliente_id, pago, fecha_emision, subtotal, iva, total, estado) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, 
-            [numeroFactura, cliente_id, pago, fecha, subtotal, iva, total, estadoFinal]
-        );
+            const [resultFactura] = await connection.query(
+        `INSERT INTO facturas (numero_factura, cliente_id, fecha_emision, subtotal, iva, total, estado) 
+         VALUES (?, ?, ?, ?, ?, ?, ?)`, 
+        [numeroFactura, cliente_id, fecha, subtotal, iva, total, estadoFinal]
+    );
+    
 
         const facturaId = resultFactura.insertId;
+        
 
         // 4. INSERT DETALLES (Ajustado a los nombres del array de productos)
         const queriesDetalles = productos.map(prod => {

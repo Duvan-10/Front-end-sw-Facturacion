@@ -66,23 +66,29 @@ export const useInvoiceLogic = () => {
         return () => clearTimeout(timeoutId);
     }, [identificacion]);
 
-    const seleccionarCliente = (e) => {
-        const valorIngresado = e.target.value;
-        setIdentificacion(valorIngresado);
-        const encontrado = sugerencias.find(c => String(c.identificacion) === String(valorIngresado));
-        
-        if (encontrado) {
-            setCliente({
-                id: encontrado.id,
-                nombre: encontrado.nombre_razon_social,
-                correo: encontrado.email,
-                telefono: encontrado.telefono || '',
-                direccion: encontrado.direccion || ''
-            });
-        } else {
-            setCliente({ id: '', nombre: '', correo: '', telefono: '', direccion: '' });
-        }
-    };
+   
+     const seleccionarCliente = (e) => {
+     const valorIngresado = e.target.value;
+     setIdentificacion(valorIngresado);
+
+     // Buscamos si el valor coincide con el nombre O con la identificación
+     const encontrado = sugerencias.find(c => 
+        String(c.identificacion) === String(valorIngresado) || 
+        String(c.nombre_razon_social).toLowerCase() === String(valorIngresado).toLowerCase());
+     
+       if (encontrado) {
+        // Si lo encuentra, actualizamos los campos y dejamos la identificación en el input
+         setIdentificacion(encontrado.identificacion); 
+        setCliente({
+            id: encontrado.id,
+            nombre: encontrado.nombre_razon_social,
+            correo: encontrado.email,
+            telefono: encontrado.telefono || '',
+            direccion: encontrado.direccion || ''
+        });} 
+
+    else {setCliente({ id: '', nombre: '', correo: '', telefono: '', direccion: '' });}
+};
 
     // --- LÓGICA PRODUCTOS ---
     const handleInputChange = (index, campo, valor) => {
@@ -153,10 +159,10 @@ const handleSubmit = async (e) => {
     const facturaData = {
     cliente_id: cliente?.id,
     pago: pagoEstado,
-    fecha: fechaEmision,   
-    subtotal: subtotal,    
-    iva: valorIva,         
-    total: totalFinal,  
+    fecha: fechaEmision,
+    subtotal: subtotal,
+    iva: valorIva,
+    total: totalFinal,
     productos: productosFactura
     };
 

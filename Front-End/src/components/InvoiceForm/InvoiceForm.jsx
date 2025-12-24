@@ -94,8 +94,12 @@
   
 
                   <datalist id="clientes-sugerencias">
-                  {sugerencias.map((c) => (<option key={c.id} value={c.identificacion}>{c.nombre}</option>))}
+                  {sugerencias.map((c) => (
+                  <option key={c.id} value={c.nombre_razon_social} // Al ser el value, es lo que se verá primero
+                  label={c.identificacion} /> // La cédula aparece como un subtítulo gris al lado
+                  ))}
                   </datalist>
+
                   
 
                   <div className="field-col">
