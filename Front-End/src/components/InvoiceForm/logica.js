@@ -117,19 +117,30 @@ const handleClienteChange = (e) => {
         const nuevosProductos = [...productosFactura];
         nuevosProductos[index][campo] = valor;
 
-        if (campo === 'codigo') {
-            const encontrado = sugerenciasProd.find(p => String(p.codigo) === String(valor));
-            if (encontrado) {
-                nuevosProductos[index].producto_id = encontrado.id;
-                nuevosProductos[index].detalle = `${encontrado.nombre} - ${encontrado.descripcion || ''}`;
-                nuevosProductos[index].vUnitario = encontrado.precio;
-                nuevosProductos[index].ivaPorcentaje = encontrado.impuesto_porcentaje || 0;
-            }
+if (campo === 'codigo') {
+        // Buscamos si el código existe en nuestras sugerencias
+        const encontrado = sugerenciasProd.find(p => String(p.codigo) === String(valor));
+        
+        if (encontrado) {
+            // SI EXISTE: Llenamos los datos
+            nuevosProductos[index].producto_id = encontrado.id;
+            nuevosProductos[index].detalle = `${encontrado.nombre}`;
+            nuevosProductos[index].vUnitario = encontrado.precio;
+            nuevosProductos[index].ivaPorcentaje = encontrado.impuesto_porcentaje || 0;
+        } else {
+            // NO EXISTE (o el usuario borró el código): Limpiamos los campos relacionados
+            nuevosProductos[index].producto_id = null;
+            nuevosProductos[index].detalle = '';
+            nuevosProductos[index].vUnitario = 0;
+            nuevosProductos[index].vTotal = 0;
+            nuevosProductos[index].ivaPorcentaje = 0;
         }
+    }
 
         const cant = parseFloat(nuevosProductos[index].cantidad) || 0;
         const precio = parseFloat(nuevosProductos[index].vUnitario) || 0;
         nuevosProductos[index].vTotal = cant * precio;
+        
         setProductosFactura(nuevosProductos);
     };
 

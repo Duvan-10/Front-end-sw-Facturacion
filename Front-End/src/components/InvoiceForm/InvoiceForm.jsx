@@ -161,67 +161,89 @@
 </div>
                  
 
-                 {/*********************DETALLES DEL PRODUCTO*********************************** */}
 
-                 <h2 className="section-title">3. Detalle de Productos</h2>
+{/********************* DETALLES DEL PRODUCTO *********************************** */}
+ <h2 className="section-title">3. Detalle de Productos</h2>
+{/* Encabezado de la cuadrícula */}
+<div className="product-grid product-header">
+    <span>Código</span>
+    <span>Cant.</span>
+    <span>Detalle</span>
+    <span>V.Unitario</span>
+    <span>V.Total</span>
+    <span></span>
+</div>
 
-                 <div className="product-grid product-header">
-                 <span>Código</span>
-                 <span>Cant.</span>
-                 <span>Detalle</span>
-                  <span>V.Unitario</span>
-                  <span>V.Total</span>
-                 <span></span>
-                 </div>
+{/* Renderizado dinámico de filas */}
+{productosFactura.map((prod, index) => (
+    <div className="product-grid product-row" key={index}>
+        
+        {/* Código: EDITABLE y con Vínculo al Datalist */}
+        <input 
+            type="text" 
+            value={prod.codigo} 
+            list="lista-productos" // ESTA LÍNEA activa el autocompletado
+            onChange={(e) => {
+                handleInputChange(index, 'codigo', e.target.value);
+                buscarProductos(e.target.value); // Busca en el backend mientras escribes
+            }} 
+            placeholder="Cód."
+        />
 
-                 {/* Renderizado dinámico de filas */}
-                {productosFactura.map((prod, index) => (
-                  <div className="product-grid product-row" key={index}>
+        {/* Cantidad: EDITABLE */}
+        <input 
+            type="number" 
+            value={prod.cantidad} 
+            min="1"
+            onChange={(e) => handleInputChange(index, 'cantidad', e.target.value)} 
+        />
 
-                 <input 
-                 type="text" 
-                 placeholder="Cód." 
-                 list="lista-productos"
-                 value={prod.codigo}
-                 onChange={(e) => {
-                 const val = e.target.value;
-                  handleInputChange(index, 'codigo', val); 
-                 buscarProductos(val); }}/> 
+        {/* Detalle: EDITABLE */}
+        <input 
+            type="text" 
+            value={prod.detalle} 
+            onChange={(e) => handleInputChange(index, 'detalle', e.target.value)} 
+        />
 
-                 <input 
-                 type="number" 
-                 value={prod.cantidad}
-                  onChange={(e) => handleInputChange(index, 'cantidad', e.target.value)}/>
-                 <input 
-                 type="text" 
-                  readOnly 
-                 value={prod.detalle} 
-                 placeholder="Detalle"/>     
-                 <input 
-                 type="number" 
-                  readOnly 
-                 value={prod.vUnitario}  />
-                 <input 
-                  type="text" 
-                 disabled 
-                  value={prod.vTotal.toFixed(2)}  />
+        {/* V. Unitario: BLOQUEADO */}
+        <input 
+            type="number" 
+            value={prod.vUnitario} 
+            readOnly 
+            style={{ backgroundColor: '#f5f5f5', color: '#666' }}
+        />
+        
+        <span className="v-total">
+            {(Number(prod.vTotal) || 0).toLocaleString('es-CO', { 
+                style: 'currency', 
+                currency: 'COP',
+                minimumFractionDigits: 0 
+            })}
+        </span>
 
-                 <button 
-                 type="button" 
-                 className="delete-product"
-                 onClick={() => eliminarFilaProducto(index)}>🗑</button>
-                 </div>))}
+        <button 
+            type="button" 
+            className="delete-product"
+            onClick={() => eliminarFilaProducto(index)}>❎</button>
+    </div>
+))}
 
-                 {/* Datalist para el autocompletado */}
-                 <datalist id="lista-productos">
-                 {sugerenciasProd.map((p) => (
-                 <option key={p.id} value={p.codigo}>{p.nombre} - ${p.precio}</option>))}</datalist>
+<button 
+    type="button" 
+    className="btn btn-primary btn-sm"
+    onClick={agregarFilaProducto}
+>
+    + Añadir Producto
+</button>
 
-                 <button 
-                 type="button" 
-                  className="btn btn-primary btn-sm"
-                 onClick={agregarFilaProducto}>+ Añadir Producto</button>
-
+{/* DATALIST: Debe estar FUERA del map y el ID debe ser 'lista-productos' */}
+<datalist id="lista-productos">
+    {sugerenciasProd.map((p) => (
+        <option key={p.id} value={p.codigo}>
+            {p.nombre} - ${p.precio}
+        </option>
+    ))}
+</datalist>
                   
                 {/*******************TOTALES************************/}
 
