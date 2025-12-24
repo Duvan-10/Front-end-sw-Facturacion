@@ -22,6 +22,9 @@ export const useInvoiceLogic = () => {
     ]);
     const [sugerenciasProd, setSugerenciasProd] = useState([]);
 
+
+    //-----------------------------FUNCIONES---------------------------//
+
     // --- EFECTO: OBTENER NÚMERO DE FACTURA ---
     useEffect(() => {
         const obtenerDatos = async () => {
@@ -67,28 +70,47 @@ export const useInvoiceLogic = () => {
     }, [identificacion]);
 
    
-     const seleccionarCliente = (e) => {
-     const valorIngresado = e.target.value;
-     setIdentificacion(valorIngresado);
+    const seleccionarCliente = (e) => {
+    const valorIngresado = e.target.value;
+    
+    // 1. Actualizamos lo que el usuario ve en el input mientras escribe
+    setIdentificacion(valorIngresado);
 
-     // Buscamos si el valor coincide con el nombre O con la identificación
-     const encontrado = sugerencias.find(c => 
-        String(c.identificacion) === String(valorIngresado) || 
-        String(c.nombre_razon_social).toLowerCase() === String(valorIngresado).toLowerCase());
-     
-       if (encontrado) {
-        // Si lo encuentra, actualizamos los campos y dejamos la identificación en el input
-         setIdentificacion(encontrado.identificacion); 
+    // 2. Buscamos al cliente en el array de sugerencias
+    // Buscamos coincidencia exacta con el NOMBRE o con la IDENTIFICACIÓN
+    const encontrado = sugerencias.find(c => 
+        c.nombre_razon_social === valorIngresado || 
+        String(c.identificacion) === String(valorIngresado)
+    );
+
+    if (encontrado) {
+        // IMPORTANTE: Si quieres que al seleccionar el nombre, el input cambie 
+        // automáticamente a la cédula, deja esta línea:
+        setIdentificacion(encontrado.identificacion); 
+
+        // Llenamos el resto del objeto cliente
         setCliente({
             id: encontrado.id,
             nombre: encontrado.nombre_razon_social,
             correo: encontrado.email,
-            telefono: encontrado.telefono || '',
-            direccion: encontrado.direccion || ''
-        });} 
-
-    else {setCliente({ id: '', nombre: '', correo: '', telefono: '', direccion: '' });}
+            telefono: encontrado.telefono,
+            direccion: encontrado.direccion
+        });
+    } else {
+        // Si no hay coincidencia, limpiamos los datos del cliente
+        setCliente({ id: '', nombre: '', correo: '', telefono: '', direccion: '' });
+    }
 };
+
+// Nueva función para permitir la edición manual de los campos del cliente
+const handleClienteChange = (e) => {
+    const { name, value } = e.target;
+    setCliente(prev => ({
+        ...prev,
+        [name]: value // Actualiza el campo específico (nombre, correo, telefono, direccion)
+    }));
+};
+
 
     // --- LÓGICA PRODUCTOS ---
     const handleInputChange = (index, campo, valor) => {
@@ -145,8 +167,10 @@ export const useInvoiceLogic = () => {
     }, 0);
     const totalFinal = subtotal + valorIva;
 
-    // --- FUNCIÓN GUARDAR ---
-// --- FUNCIÓN GUARDAR (CORREGIDA Y SINCRONIZADA) ---
+
+
+
+// --- FUNCIÓN GUARDAR //
 const handleSubmit = async (e) => {
     if (e) e.preventDefault();
 
@@ -155,15 +179,20 @@ const handleSubmit = async (e) => {
         return;
     }
 
-    // Estructuramos el objeto EXACTAMENTE como lo espera el Backend corregido
     const facturaData = {
-    cliente_id: cliente?.id,
-    pago: pagoEstado,
-    fecha: fechaEmision,
-    subtotal: subtotal,
-    iva: valorIva,
-    total: totalFinal,
-    productos: productosFactura
+        cliente_id: cliente?.id,
+        cliente_detalles: {
+        nombre: cliente.nombre,
+        correo: cliente.correo,
+        telefono: cliente.telefono,
+        direccion: cliente.direccion
+        },
+        pago: pagoEstado,
+        fecha: fechaEmision,
+        subtotal: subtotal,
+        iva: valorIva,
+        total: totalFinal,
+        productos: productosFactura
     };
 
     try {
@@ -183,7 +212,6 @@ const handleSubmit = async (e) => {
             alert("✅ Factura guardada con éxito");
             navigate('/home/facturas');
         } else {
-            // Si el backend falla, ahora nos dirá exactamente por qué
             console.error("Error del servidor:", result.error);
             alert("❌ Error al guardar: " + result.error);
         }
@@ -193,25 +221,30 @@ const handleSubmit = async (e) => {
     }
 };
 
-    return {
-        pagoEstado,
-        setPagoEstado,
-        numeroFactura,
-        fechaEmision,
-        setFechaEmision,
-        identificacion,
-        seleccionarCliente,
-        cliente,
-        sugerencias,
-        productosFactura,
-        sugerenciasProd,
-        buscarProductos,
-        agregarFilaProducto,
-        eliminarFilaProducto,
-        handleInputChange,
-        handleSubmit,
-        subtotal,
-        iva: valorIva,
-        totalGeneral: totalFinal
-    };
+// --- RETORNO 
+return {
+    pagoEstado,
+    setPagoEstado,
+    numeroFactura,
+    fechaEmision,
+    setFechaEmision,
+    identificacion,
+    setIdentificacion, 
+    seleccionarCliente,
+    handleClienteChange, 
+    cliente,
+    sugerencias,
+    productosFactura,
+    setProductosFactura, 
+    sugerenciasProd,
+    buscarProductos,
+    agregarFilaProducto,
+    eliminarFilaProducto,
+    handleInputChange,
+    handleSubmit,
+    subtotal,
+    iva: valorIva,
+    totalGeneral: totalFinal
 };
+
+}

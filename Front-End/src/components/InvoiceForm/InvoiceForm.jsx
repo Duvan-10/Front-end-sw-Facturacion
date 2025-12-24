@@ -5,15 +5,39 @@
 
 
   //------------Funcion Formulario-------------//
-  const InvoiceForm = () =>{
-  const navigate = useNavigate(); 
+ 
 
   //Declaracion N°FAC-FECHA y FECHA-------Declaracion DATOS CLIENTE------Declaracion Productos-------Totales//
-  const { pagoEstado, setPagoEstado, numeroFactura,  fechaEmision, setFechaEmision,identificacion, seleccionarCliente, cliente, 
-  sugerencias,productosFactura,  handleInputChange, agregarFilaProducto, eliminarFilaProducto,buscarProductos, 
-  sugerenciasProd, subtotal, iva, totalGeneral,handleSubmit } = useInvoiceLogic();
+  //------------Funcion Formulario-------------//
+ const InvoiceForm = () => {
+  const navigate = useNavigate(); 
 
-         return (
+  const { 
+    pagoEstado, 
+    setPagoEstado, 
+    numeroFactura, 
+    fechaEmision, 
+    setFechaEmision,
+    identificacion, 
+    seleccionarCliente, 
+    handleClienteChange, 
+    cliente, 
+    sugerencias,
+    productosFactura, 
+    handleInputChange, 
+    agregarFilaProducto, 
+    eliminarFilaProducto,
+    buscarProductos, 
+    sugerenciasProd, 
+    subtotal, 
+    iva, 
+    totalGeneral,
+    handleSubmit 
+  } = useInvoiceLogic();
+
+        
+  
+  return (
 
           //************FORMULARIO CREACION FACTURA ELECTRONICA********************//
 
@@ -74,58 +98,67 @@
         
            
 
-                {/******************** DATOS DEL CLIENTE*********************************** */}
-            
-                 <h2 className="section-title">2. Datos del Cliente</h2>
+                {/* ******************** DATOS DEL CLIENTE *********************************** */}
+<h2 className="section-title">2. Datos del Cliente</h2>
 
-                 <div className="section-group client-data"></div>
+<div className="section-group client-data">
+    <div className="field-col">
+        <label>NIT/CC (Búsqueda)</label>
+        <input 
+            type="text" 
+            value={identificacion}
+            onChange={seleccionarCliente} 
+            list="clientes-sugerencias" 
+            placeholder="Escribe NIT o Nombre..."
+        />
+        <datalist id="clientes-sugerencias">
+            {sugerencias.map((c) => (
+                <option 
+                    key={c.id} 
+                    value={c.nombre_razon_social} 
+                    label={c.identificacion} 
+                />
+            ))}
+        </datalist>
+    </div>
 
+    {/* CAMPOS EDITABLES */}
+    <div className="field-col">
+        <label>Nombre o Razón Social</label>
+        <input 
+            name="nombre" 
+            value={cliente.nombre} 
+            onChange={handleClienteChange} 
+        />
+    </div>
 
-                 <div className="field-col"></div>
+    <div className="field-col">
+        <label>Correo</label>
+        <input 
+            name="correo" 
+            value={cliente.correo} 
+            onChange={handleClienteChange} 
+        />
+    </div>
 
-                  <label>NIT/CC</label>
+    <div className="field-col">
+        <label>Teléfono</label>
+        <input 
+            name="telefono" 
+            value={cliente.telefono} 
+            onChange={handleClienteChange} 
+        />
+    </div>
 
-                  <input 
-                  type="text" 
-                  value={identificacion}
-                  onChange={seleccionarCliente} // Importante: que sea onChange
-                  list="clientes-sugerencias" 
-                  placeholder="Escribe NIT o Nombre..."/>
-  
-
-                  <datalist id="clientes-sugerencias">
-                  {sugerencias.map((c) => (
-                  <option key={c.id} value={c.nombre_razon_social} // Al ser el value, es lo que se verá primero
-                  label={c.identificacion} /> // La cédula aparece como un subtítulo gris al lado
-                  ))}
-                  </datalist>
-
-                  
-
-                  <div className="field-col">
-                  <label>Razón Social / Nombre</label>
-                  <input type="text" value={cliente.nombre} readOnly />
-                  </div>
-
-
-                  <div className="field-col">
-                  <label>Teléfono</label>
-                  <input type="text" value={cliente.telefono} readOnly/>
-                  </div>
-
-
-                  <div className="field-col">
-                  <label>Correo</label>
-                  <input type="text"value={cliente.correo} readOnly />
-                  </div>
-
-
-                  <div className="field-col">
-                  <label>Dirección</label>
-                  <input type="text"value={cliente.direccion} readOnly />
-                  </div>
-
-
+    <div className="field-col">
+        <label>Dirección</label>
+        <input 
+            name="direccion" 
+            value={cliente.direccion} 
+            onChange={handleClienteChange} 
+        />
+    </div>
+</div>
                  
 
                  {/*********************DETALLES DEL PRODUCTO*********************************** */}
