@@ -39,8 +39,10 @@ clienteController.getClienteByIdentificacion = async (req, res) => {
 clienteController.createCliente = async (req, res) => {
     const { tipo_identificacion, identificacion, nombre_razon_social, email, telefono, direccion } = req.body;
     
-    if (!tipo_identificacion || !identificacion || !nombre_razon_social) {
-        return res.status(400).json({ message: 'El tipo de identificación, la identificación y el nombre son campos obligatorios.' });
+   if (!identificacion || !nombre_razon_social || !telefono) {
+        return res.status(400).json({ 
+            message: "Identificación, Nombre y Teléfono son campos obligatorios." 
+        });
     }
 
     let connection;

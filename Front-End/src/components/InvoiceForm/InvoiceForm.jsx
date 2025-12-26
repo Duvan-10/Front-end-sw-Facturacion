@@ -102,25 +102,27 @@
 <h2 className="section-title">2. Datos del Cliente</h2>
 
 <div className="section-group client-data">
-    <div className="field-col">
-        <label>NIT/CC (Búsqueda)</label>
-        <input 
-            type="text" 
-            value={identificacion}
-            onChange={seleccionarCliente} 
-            list="clientes-sugerencias" 
-            placeholder="Escribe NIT o Nombre..."
-        />
-        <datalist id="clientes-sugerencias">
-            {sugerencias.map((c) => (
-                <option 
-                    key={c.id} 
-                    value={c.nombre_razon_social} 
-                    label={c.identificacion} 
-                />
-            ))}
-        </datalist>
-    </div>
+    {/* Cambia esta sección en tu JSX */}
+<div className="field-col">
+    <label>NIT/CC (Búsqueda)</label>
+    <input 
+        type="text" 
+        value={identificacion}
+        onChange={seleccionarCliente} 
+        list="clientes-sugerencias" 
+        placeholder="Escribe NIT o Nombre..."
+    />
+    <datalist id="clientes-sugerencias">
+        {sugerencias.map((c) => (
+            <option 
+                key={c.id} 
+                value={c.identificacion} // CAMBIADO: Ahora el valor es la ID
+            >
+                {c.nombre_razon_social} {/* El nombre aparece como texto de ayuda */}
+            </option>
+        ))}
+    </datalist>
+</div>
 
     {/* CAMPOS EDITABLES */}
     <div className="field-col">

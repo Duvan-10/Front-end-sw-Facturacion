@@ -11,7 +11,7 @@ import clienteRoutes from './routes/cliente.routes.js';
 import productoRoutes from './routes/producto.routes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js'; 
 import perfilRoutes from './routes/perfil.routes.js';
-import facturaRoutes from './routes/facturas.routes.js';
+
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,7 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api', perfilRoutes);
-app.use('/api/facturas', facturaRoutes);
+app.use('/api/facturas', invoiceRoutes);
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => res.status(204).end());
 
 
