@@ -30,18 +30,41 @@ router.get('/buscar-productos', invoiceController.searchProducts);
 // En Backend/routes/facturas.routes.js
 
     router.post('/', async (req, res) => {
-    const { pago } = req.body; 
-    // --- CAPA DE SEGURIDAD: Validación del Estado de Pago ---
+    const { pago, clientes_id, productos } = req.body; 
+
+    // --- CAPA DE SEGURIDAD
+
+    // --- SEGURIDAD 1: Pago-
     if (!pago || pago === 'Default') {
-    // Este es el mensaje que el usuario verá en el alert del frontend
-    return res.status(400).json({
-    error: "⚠️ Debe especificar si fue la Factura fue pagada (Si o No) para procesar el registro." 
-    });
+        return res.status(400).json({ error: "🚫 Error: Debe especificar el estado de pago." });
+    }
+
+    // --- SEGURIDAD 2: Cliente inexistente o inválido ---
+    if (!cliente_id) {
+        return res.status(400).json({ error: "🚫 Error de Seguridad: ID de cliente no proporcionado o inválido." });
     }
 
     const connection = await db.getConnection();
 
     try {
+        // VALIDACIÓN: ¿Existe el cliente en la BD?
+        const [clienteExiste] = await connection.query(
+            'SELECT id FROM clientes WHERE id = ?', 
+            [cliente_id]
+        );
+
+        if (clienteExiste.length === 0) {
+            connection.release(); // Importante liberar antes de retornar
+            return res.status(404).json({ 
+                error: "🚫 Alerta de Seguridad: El cliente seleccionado no existe en nuestra base de datos. Operación rechazada." 
+            });
+        }
+
+        // Si pasó las validaciones, procedemos con la factura...
+        await connection.beginTransaction();
+
+
+
         await connection.beginTransaction();
 
         // Determinar estado

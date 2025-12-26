@@ -212,15 +212,14 @@ const handleSubmit = async (e) => {
         const token = sessionStorage.getItem('authToken');
         const response = await fetch('http://localhost:8080/api/facturas', {
         method: 'POST',
-        headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(facturaData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(facturaData)
         });
 
         // Verificamos si hay contenido antes de hacer .json() para evitar errores
         const result = await response.json();
+        // Extraemos el JSON con el mensaje de error
+        const data = await response.json();
 
         if (response.ok) {
             alert("✅ Factura guardada con éxito");
@@ -228,13 +227,13 @@ const handleSubmit = async (e) => {
             
         // Aquí es donde el mensaje "⚠️ Seguridad: ..." del backend aparecerá en tu pantalla
         } else {
-        console.error("Error de validación:", result.error);
-        alert(result.error);
+         // AQUÍ es donde capturamos el mensaje que definiste en el Backend
+          alert("Error del Servidor: " + (data.error || "Ocurrió un error inesperado"));
         }
 
        } catch (error) {
         console.error("Error de conexión:", error);
-        alert("❌ No se pudo conectar con el servidor");
+        alert("❌ El Cliente no existe, Desea Crearlo?");
     }
 };
 
