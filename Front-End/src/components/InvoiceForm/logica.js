@@ -210,7 +210,6 @@ const handleSubmit = async (e) => {
         cliente_id: cliente?.id,
         cliente_detalles: {  nombre: cliente.nombre,correo: cliente.correo,telefono: cliente.telefono,direccion: cliente.direccion},
         pago: pagoEstado,
-        fecha: fechaHoraActual, // Ahora sí tiene valor
         subtotal: subtotal,
         iva: valorIva,
         total: totalFinal,

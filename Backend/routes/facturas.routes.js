@@ -36,7 +36,6 @@ router.post('/', async (req, res) => {
     const { 
         cliente_id, 
         pago,
-        fecha, 
         subtotal, 
         iva,      // Asegúrate que en logica.js se llame 'iva'
         total,    // Asegúrate que en logica.js se llame 'total'
@@ -57,11 +56,16 @@ router.post('/', async (req, res) => {
         const numeroFactura = `FAC-${String(proximoId).padStart(4, '0')}`;
 
         // 2. INSERTAR ENCABEZADO
-        // Nota: Asegúrate que la columna se llame fecha_emision en tu DB
         const [resultFactura] = await connection.query(
-            `INSERT INTO facturas (numero_factura, cliente_id, fecha_emision, subtotal, iva, total, estado) 
-             VALUES (?, ?, ?, ?, ?, ?, ?)`, 
-            [numeroFactura, cliente_id, fecha, subtotal, iva, total, estadoFinal]
+         `INSERT INTO facturas (numero_factura, cliente_id, fecha_emision, subtotal, iva, total, estado) 
+         VALUES (?, ?, NOW(), ?, ?, ?, ?)`, 
+        [
+        numeroFactura, 
+        cliente_id, 
+        subtotal, 
+        iva, 
+        total, 
+        estadoFinal]
         );
 
         const facturaId = resultFactura.insertId;
