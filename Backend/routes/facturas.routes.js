@@ -26,21 +26,18 @@ router.get('/proximo-numero', async (req, res) => {
 //BUSCAR PRODUCTOS
 router.get('/buscar-productos', invoiceController.searchProducts);
 
-
-/**RUTA EXISTENTE: Guardar Factura*/
  
 // En Backend/routes/facturas.routes.js
 
-router.post('/', async (req, res) => {
-    // 1. EXTRAER con los nombres exactos que vienen del Frontend
-    const { 
-        cliente_id, 
-        pago,
-        subtotal, 
-        iva,      // Asegúrate que en logica.js se llame 'iva'
-        total,    // Asegúrate que en logica.js se llame 'total'
-        productos
-    } = req.body;
+    router.post('/', async (req, res) => {
+    const { pago } = req.body; 
+    // --- CAPA DE SEGURIDAD: Validación del Estado de Pago ---
+    if (!pago || pago === 'Default') {
+    // Este es el mensaje que el usuario verá en el alert del frontend
+    return res.status(400).json({
+    error: "⚠️ Debe especificar si fue la Factura fue pagada (Si o No) para procesar el registro." 
+    });
+    }
 
     const connection = await db.getConnection();
 

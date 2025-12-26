@@ -198,15 +198,7 @@ const limpiarFormulario = () => {
 const handleSubmit = async (e) => {
     if (e) e.preventDefault();
 
-    if (pagoEstado === 'Default') {
-        alert("⚠️ Por favor, seleccione si la factura está pagada (Si / No).");
-        return;
-    }
-
-    // --- CORRECCIÓN: Definir la variable que faltaba ---
-    const fechaHoraActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-    const facturaData = {
+        const facturaData = {
         cliente_id: cliente?.id,
         cliente_detalles: {  nombre: cliente.nombre,correo: cliente.correo,telefono: cliente.telefono,direccion: cliente.direccion},
         pago: pagoEstado,
@@ -216,15 +208,15 @@ const handleSubmit = async (e) => {
         productos: productosFactura
     };
 
-    try {
+         try {
         const token = sessionStorage.getItem('authToken');
         const response = await fetch('http://localhost:8080/api/facturas', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(facturaData),
+        method: 'POST',
+        headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(facturaData),
         });
 
         // Verificamos si hay contenido antes de hacer .json() para evitar errores
@@ -233,15 +225,20 @@ const handleSubmit = async (e) => {
         if (response.ok) {
             alert("✅ Factura guardada con éxito");
             limpiarFormulario();
+            
+        // Aquí es donde el mensaje "⚠️ Seguridad: ..." del backend aparecerá en tu pantalla
         } else {
-            console.error("Error del servidor:", result.error);
-            alert("❌ Error al guardar: " + (result.error || "Error desconocido"));
+        console.error("Error de validación:", result.error);
+        alert(result.error);
         }
-    } catch (error) {
+
+       } catch (error) {
         console.error("Error de conexión:", error);
         alert("❌ No se pudo conectar con el servidor");
     }
 };
+
+
 // --- RETORNO 
 return {
     pagoEstado,
