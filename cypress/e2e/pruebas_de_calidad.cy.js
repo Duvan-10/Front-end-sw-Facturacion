@@ -69,6 +69,6 @@ describe('Auditoría de Integridad: Validación de Cronología Exacta', () => {
 
     cy.wait(2000);
     
-    cy.log('🚀 Auditoría de cronología completada. La factura está anclada al tiempo real.');
+    cy.log('🚀 Auditoríaa de cronología completada. La factura está anclada al tiempo real.');
   });
 });
