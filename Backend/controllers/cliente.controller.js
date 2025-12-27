@@ -33,16 +33,39 @@ clienteController.getClienteByIdentificacion = async (req, res) => {
     }
 };
 
+
+
+
+
 // ----------------------------------------------------
-// 2. CREAR NUEVO CLIENTE (POST /api/clientes)
+// 2. CREAR NUEVO CLIENTE (Priorizando hora de la PC)
 // ----------------------------------------------------
 clienteController.createCliente = async (req, res) => {
-    const { tipo_identificacion, identificacion, nombre_razon_social, email, telefono, direccion } = req.body;
-    
-   if (!identificacion || !nombre_razon_social || !telefono) {
+    // 1. Extraemos fecha_creacion enviada desde el frontend
+    const { tipo_identificacion, identificacion, nombre_razon_social, email, telefono, direccion, fecha_creacion } = req.body;
+
+    if (!identificacion || !nombre_razon_social || !telefono) {
         return res.status(400).json({ 
             message: "Identificación, Nombre y Teléfono son campos obligatorios." 
         });
+    }
+
+// 2. LOGICA DE HORA: 
+    let fechaFinal;
+    if (fecha_creacion) {
+        // Usamos la que viene de la PC tal cual (Asegúrate que el frontend envíe YYYY-MM-DD HH:mm:ss)
+        fechaFinal = fecha_creacion; 
+    } else {
+        // Backup: Si falla el frontend, generamos la hora local manualmente
+        const ahora = new Date();
+        const anio = ahora.getFullYear();
+        const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+        const dia = String(ahora.getDate()).padStart(2, '0');
+        const horas = String(ahora.getHours()).padStart(2, '0');
+        const minutos = String(ahora.getMinutes()).padStart(2, '0');
+        const segundos = String(ahora.getSeconds()).padStart(2, '0');
+        
+        fechaFinal = `${anio}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
     }
 
     let connection;
@@ -50,10 +73,18 @@ clienteController.createCliente = async (req, res) => {
         connection = await pool.getConnection();
 
         const query = `
-            INSERT INTO clientes (tipo_identificacion, identificacion, nombre_razon_social, email, telefono, direccion)
-            VALUES (?, ?, ?, ?, ?, ?);
+            INSERT INTO clientes (tipo_identificacion, identificacion, nombre_razon_social, email, telefono, direccion, fecha_creacion)
+            VALUES (?, ?, ?, ?, ?, ?, ?);
         `;
-        const values = [tipo_identificacion, identificacion, nombre_razon_social, email || null, telefono || null, direccion || null];
+        const values = [
+            tipo_identificacion, 
+            identificacion, 
+            nombre_razon_social, 
+            email || null, 
+            telefono || null, 
+            direccion || null,
+            fechaFinal // <--- Aquí va la hora de la PC
+        ];
         
         const [result] = await connection.execute(query, values);
         
@@ -72,11 +103,13 @@ clienteController.createCliente = async (req, res) => {
             return res.status(409).json({ message: `Ya existe un cliente con la identificación ${identificacion}.` });
         }
         console.error("Error al crear cliente:", error);
-        res.status(500).json({ message: 'Error interno del servidor al crear el cliente.' });
+        res.status(500).json({ message: 'Error interno del servidor.' });
     } finally {
         if (connection) connection.release();
     }
 };
+
+
 
 // ----------------------------------------------------
 // 3. OBTENER TODOS LOS CLIENTES (GET /api/clientes)
