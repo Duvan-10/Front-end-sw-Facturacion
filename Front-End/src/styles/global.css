@@ -1,229 +1,165 @@
-/* ================================================= */
-/* 🧩 ESTILOS GLOBALES DE LA APLICACIÓN (global.css) */
-/* PROPÓSITO: Establecer la apariencia base, tipografía, y estilos de componentes de layout/lista. */
-/* ================================================= */
-
-/* --- 1. ESTILOS BASE Y TIPOGRAFÍA --- */
-body {
-    /* Elimina el margen por defecto del navegador. */
-    margin: 0;
-    /* Define la fuente principal de la aplicación. */
-    font-family: 'Inter', sans-serif;
-    /* Color de fondo principal (oscuro). */
-    background-color: #22c722; 
-    /* Color de texto principal (blanco). */
-    color: lab(93.12% 0.34 0.11); 
-    /* Espaciado entre líneas de texto. */
-    line-height: 1.6;
-}
-h1, h2, h3 {
-    /* Color de acento para todos los títulos (Verde). */
-    color: lch(68.76% 93.57 135.86); 
-    /* Elimina el margen superior por defecto de los encabezados. */
-    margin-top: 0;
+/* --- CONTENEDOR PRINCIPAL Y TITULOS --- */
+.main-content {
+    padding: 2rem;
+    max-width: 1300px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
-/* --- 2. -----CABECERAS Y NAVEGACIÓN (Layout.jsx) --- */
-
-.app-header {
-    /* Espaciado interno del encabezado superior. (PFEps - Software de Facturación Electrónica)*/
-    padding: 20px;
-    /* Color de fondo del encabezado. (PFEps - Software de Facturación Electrónica)*/ 
-    background-color: oklab(34.852% 0.01489 0.00478); 
-    /* Centra el texto del encabezado. (PFEps - Software de Facturación Electrónica)*/
-    text-align: center;
-    /* Tamaño de fuente grande para el título. */
-    font-size: em;
-    /* Texto en negrita. */
-    font-weight: bold;
+.module-title {
+    font-size: 2rem;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    padding-left: 15px;
 }
-.navbar {
-    /* Habilita el layout flexible. */
+
+/* --- SECCIÓN DE FILTROS Y CONTROLES --- */
+.controls-section.card {
     display: flex;
-    /* Distribuye el espacio entre los elementos. */
-    justify-content: space-between; 
-    /* Alinea verticalmente los elementos al centro. */
-    align-items: rieth; 
-    /* Espaciado interno superior/inferior y lateral. */
-    padding: 10px 20px; 
-    /* Color de fondo de la barra de navegación (Inicio,Facturas,Clientes...... */
-    background-color: hsl(0, 6%, 10%); 
-    /* Línea verde de acento en la parte inferior. */
-    border-bottom: 3px solid lab(70.1% -71.21 69.05); 
-}
-.navbar-center-container {
-    /* Permite que este contenedor tome el espacio restante para centrar los links. */
-    flex-grow: 0; 
-    /* Centra el texto (los links) horizontalmente. */
-    text-align: center ; 
-}
-.navbar-links {
-    /* Elimina los puntos de la lista. */
-    list-style: none;
-    /* Elimina padding y margen por defecto de la lista. */
-    padding: 0;
-    margin: 0;
-    /* Muestra los elementos en línea. */
-    display: inline-flex; 
-    /* Espacio entre cada link. */
-    gap: 1px; 
-}
-.nav-link {
-    /* Color de texto blanco. */
-    color: lab(45.47% 64.54 45.38);
-    /* Elimina la decoración de texto (subrayado). */
-    text-decoration: none;
-    /* Padding interno. */
-    padding: 5px 10px;
-    /* Suaviza la transición de color y borde al pasar el mouse. */
-    transition: color 0.2s, border-bottom 0.2s;
-}
-.nav-link:hover {
-    /* Cambia el color al verde de acento en hover. */
-    color: #00c853;
-    /* Muestra una línea verde en la parte inferior en hover. */
-    border-bottom: 2px solid #00c853;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-end;
+    background: lch(12.85% 0.5 19.2);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 1px solid hwb(125 4% 11%);
 }
 
-/* --- 3. SECCIONES GENÉRICAS Y CONTENIDO --- */
-.main-content { padding: 20px; }
-.form-section, .list-section {
-    /* Padding interno de la sección. */
-    padding: 20px;
-    /* Margen inferior para separar secciones. */
-    margin-bottom: 20px;
-}
-.card {
-    /* Fondo gris oscuro para las tarjetas o contenedores principales. */
-    background-color: #2c2c2c; 
-    /* Esquinas redondeadas. */
-    border-radius: 8px;
-    /* Sombra sutil para dar profundidad. */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    /* Padding interno. */
-    padding: 20px;
-}
-
-/* --- 5. ESTILOS DE BOTONES --- */
-.btn {
-    /* Color de fondo por defecto (Verde de acento). */
-    background-color: #00c853; 
-    /* Color de texto blanco. */
-    color: #fff;
-    /* Elimina el borde. */
-    border: none;
-    /* Padding interno para tamaño. */
-    padding: 10px 15px; 
-    /* Esquinas redondeadas. */
-    border-radius: 5px;
-    /* Cambia el cursor para indicar que es clickeable. */
-    cursor: pointer;
-    /* Texto en negrita. */
-    font-weight: bold;
-    /* Suaviza el cambio de color y opacidad. */
-    transition: background-color 0.2s, opacity 0.2s;
-}
-.btn:hover:not(:disabled) { background-color: #00b44a; }
-.btn:disabled {
-    /* Reduce la opacidad para indicar deshabilitado. */
-    opacity: 0.6;
-    /* Muestra cursor de no permitido. */
-    cursor: not-allowed;
-}
-/* Sobrescribe el color base para botones de uso específico. */
-.btn-primary { background-color: #007bff; }
-.btn-edit { background-color: #007bff; }
-.btn-success { background-color: #28a745; }
-.btn-danger, .btn-logout { background-color: lab(3.46% 0.62 0.22); } /* Rojo */
-.btn-secondary { background-color: #6c757d; } /* Gris secundario */
-
-/* --- 6. LAYOUT MODULAR DE CONTROLES (Para Listas) --- */
-.controls-section {
-    /* Habilita layout flexible para alinear botones y búsquedas. */
-    display: flex;
-    /* Espacio entre los elementos de control. */
-    gap: 20px; 
-    /* Alinea verticalmente los elementos al final (útil para inputs con labels). */
-    align-items: flex-end; 
-    /* Padding superior e inferior. */
-    padding: 20px 0; 
-}
 .search-bar {
-    /* Permite que la barra de búsqueda ocupe el espacio restante. */
-    flex-grow: 1;
-    /* Organiza label e input verticalmente. */
-    display: flex;
-    flex-direction: column; 
+    flex: 1;
+    min-width: 250px;
 }
-.search-bar input { width: 100%; }
 
-/* --- 7. ESTILOS DE TABLA Y EDICIÓN EN LÍNEA --- */
-.data-table {
-    /* Ancho completo. */
+.search-bar label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: lab(91.06% -6.64 3.73);
+    margin-bottom: 0.5rem;
+}
+
+.search-input, .select-filter {
     width: 100%;
-    /* Colapsa los bordes de la tabla. */
-    border-collapse: collapse;
-    /* Margen superior. */
-    margin-top: 20px;
-    /* Fondo oscuro de la tabla. */
-    background-color: #2c2c2c; 
-    /* Esquinas redondeadas. */
+    padding: 0.6rem 1rem;
+    border: 1px solid #cbd5e1;
     border-radius: 8px;
-    /* Oculta contenido que se desborda (bordes redondeados). */
-    overflow: hidden; 
+    transition: all 0.2s;
 }
-th, td {
-    /* Espaciado interno de las celdas. */
-    padding: 10px;
-    /* Alineación de texto central. */
+
+.search-input:focus, .select-filter:focus {
+    outline: none;
+    border-color: hwb(221 14% 8%);
+    box-shadow: 0 0 0 3px #d5d6d6;
+}
+
+/* --- TABLA DE DATOS --- */
+.list-section {
+    background: lch(12.99% 1.22 163.39);
+    border-radius: 12px;
+    border: 1px solid lab(72% -69.11 57.17);
+    overflow: hidden;
+}
+
+.list-section h2 {
+    padding: 1.2rem;
+    font-size: 1.1rem;
+    color: lab(71.29% -65.07 44.42);
+    border-bottom: 1px solid #e2e8f0;
+    margin: 0;
+    background: #f8fafc;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.data-table thead {
+    background-color: #f1f5f9;
+}
+
+.data-table th {
+    padding: 1rem;
     text-align: center;
-    /* Divisor inferior de celdas. */
-    border-bottom: 1px solid #444;
+    font-weight: 600;
+    color: hsl(214, 14%, 78%);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
 }
-th {
-    /* Fondo más oscuro para el encabezado. */
-    background-color: #1e1e1e; 
-    /* Color verde de acento para el texto del encabezado. */
-    color: #00c853; 
-    /* Texto en negrita. */
-    font-weight: bold;
+
+.data-table td {
+    padding: 1rem;
+    border-bottom: 1px solid hwb(133 8% 12%);
+    color: hsl(215, 24%, 90%);
+    vertical-align: middle;
 }
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tr:hover {
+    background-color: lab(0% 0 0);
+}
+
+/* --- BADGES Y ESTADOS --- */
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+   /* background: #e2e8f0;-----desactivado*/
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.invoice-status {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-pagada { background: #dcfce7; color: #15803d; }
+.status-pendiente { background: #fef9c3; color: #a16207; }
+
+/* --- BOTONES DE ACCIÓN --- */
 .actions-cell {
-    /* Evita que los botones se envuelvan en varias líneas. */
-    white-space: nowrap; 
-    /* Usa flexbox para alinear botones. */
     display: flex;
-    /* Espacio entre los botones. */
-    gap: 5px; 
-    /* Centra los botones horizontal y verticalmente. */
-    justify-content: center;
-    align-items: center; 
-}
-.inline-edit-input {
-    /* Ancho completo del contenedor de la celda. */
-    width: 100%; 
-    /* Padding interno. */
-    padding: 5px 8px; 
-    /* Incluye padding y borde en el ancho total. */
-    box-sizing: border-box;
-    /* Fondo oscuro del input. */
-    background-color: #444; 
-    /* Color de texto blanco. */
-    color: #fff;
-    /* Tamaño de fuente ligeramente más pequeño. */
-    font-size: 0.9em;
-}
-.editing-row {
-    /* Fondo más claro para la fila que se está editando. */
-    background-color: #333;
+    gap: 8px;
 }
 
-/* --- 8. PAGINACIÓN Y MENSAJES --- */
-.pagination-controls {
-    /* Usa flexbox para alinear elementos de paginación. */
-    display: flex;
-    /* Centra el grupo de controles. */
-    justify-content: center;
-    align-items: center;
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.2s;
+}
 
+.btn-edit { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+.btn-edit:hover { background: #2563eb; color: #fff; }
+
+.btn-view { background: #f8fafc; color: #475569; border-color: #cbd5e1; }
+.btn-view:hover { background: #475569; color: #fff; }
+
+/* --- OTROS --- */
+.product-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 2px;
+    font-size: 0.8rem;
+    
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

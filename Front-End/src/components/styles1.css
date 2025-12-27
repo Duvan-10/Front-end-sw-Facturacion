@@ -2,10 +2,11 @@
 /* ESTILOS GLOBALES Y LAYOUT DE PESTAÑAS/FORMULARIOS */
 /* ======================================================= */
 body {
-    background-color: #f4f7f6;
+    background-color: lab(96.29% -1.17 0.12);
     font-family: 'Arial', sans-serif;
-    margin: 0;
+    margin: auto;
     padding: 20px;
+    color: lab(92.85% 0.67 0.23);
 }
 
 /* 🟢 CLASE MAESTRA PARA TODOS LOS FORMULARIOS (Clientes, Productos, Facturas) 🟢 */
@@ -14,18 +15,45 @@ body {
     max-width: 1200px; /* Ancho máximo para formularios grandes como Facturas */
     margin: 0 auto;
     padding: 30px;
-    background: #fff;
+    background: hwb(0 7% 93%);
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .module-title {
     /* Estilos de títulos generales */
-    color: #333; /* Color más oscuro para visibilidad */
-    border-bottom: 2px solid #ddd;
+    color: hwb(136 7% 38%); /* Color más oscuro para visibilidad */
+    border-bottom: 2px solid lab(82.27% -4.55 4.01);
     padding-bottom: 15px;
     margin-bottom: 25px;
     text-align: left;
+}
+
+/*--------------------------------------------------------*/
+/* Estilo para Eleccion de Pago--------------------------*/
+/*--------------------------------------------------------*/
+/* Estilo base para las etiquetas */
+
+
+/* Solo el título "PAGO:" */
+.pago{
+font-weight: bold;
+color: hsl(109, 14%, 84%); 
+display: flex;
+gap: 20px;
+}
+
+
+.selected-si {
+  
+  color: #16a34a; /* Verde */
+  font-weight: bold;
+}
+
+.selected-no {
+ 
+  color: #dc2626; /* Rojo */
+  font-weight: bold;
 }
 
 /* ------------------------------------------------------- */
@@ -52,25 +80,51 @@ body {
 
 /* Estilos de la ETIQUETA */
 .field-col label {
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: bold;
-    color: #444; 
-    font-size: 14px; 
+    color: oklch(81.708% 0.00524 146.354); 
+    font-size: 15px; 
+    
+}
+
+.input-especial {
+  /* 1. Lo convertimos en bloque para que ignore el alineado de texto del padre */
+  display: block !important;
+
+  /* 2. Forzamos márgenes: cero a la izquierda, automático a la derecha */
+  margin-left: 0 !important;
+  margin-right: auto !important;
+
+  /* 3. Reducimos el ancho (Si es 100% nunca verás que se mueve) */
+  width: 700px !important;
+
+  /* 4. Alineación del texto interior */
+  text-align: center !important;
+  padding-right: 100px;
+  
+  /* 5. Si el padre es Flexbox, esto lo mueve al inicio */
+  align-self: flex-start !important;
 }
 
 /* Estilos del INPUT, SELECT, y TEXTAREA dentro de ese grupo */
 .field-col input, 
+
 .field-col select,
-.field-col textarea { /* 🟢 Añadido textarea para Productos/Clientes 🟢 */
+
+.field-col textarea { 
     width: 100%; 
     padding: 10px; 
-    border: 1px solid #ccc; 
+    border: 1px solid hsl(0, 0%, 80%); 
     border-radius: 4px; 
     box-sizing: border-box; /* ESENCIAL para el layout */
-    background-color: #fff;
-    color: #333;
+    background-color: hwb(0 100% 0%);
+    color: hsl(0, 0%, 20%);
     transition: border-color 0.3s, box-shadow 0.3s;
     font-size: 16px; /* Asegura buena legibilidad */
+    text-align: left;
+
+
+
 }
 
 /* Estilo para TEXTAREAS específicas (ej: Descripción) */
@@ -95,17 +149,6 @@ body {
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 
-/* ------------------------------------------------------- */
-/* GRUPO DE BOTONES FINALES (Guardar/Cerrar) */
-/* ------------------------------------------------------- */
-.final-buttons-group { /* 🟢 Clase genérica para botones 🟢 */
-    display: flex; 
-    justify-content: center; /* Centra los botones horizontalmente */
-    gap: 30px; 
-    margin-top: 30px; 
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-}
 
 /* ------------------------------------------------------- */
 /* TIPOS DE FACTURA (Radio Buttons) */
@@ -123,57 +166,86 @@ body {
     align-items: center; 
     gap: 5px;
     cursor: pointer;
-    color: #555;
+    color: oklch(88.859% 0.00877 16.689);
 }
 
 /* ======================================================= */
-/* SECCIÓN DE TABLA DE PRODUCTOS (Detalle de Factura) */
+/* CORRECCIÓN DE ALINEACIÓN: GRID DE PRODUCTOS */
 /* ======================================================= */
-/* Mantenemos esta sección ya que es exclusiva de InvoiceForm */
 
-.product-table-container {
-    margin-top: 30px;
-    overflow-x: auto; 
+/* Definimos exactamente el ancho de cada una de las 6 columnas */
+.product-grid {
+    display: grid;
+    /* Col 1 (Code): 120px 
+       Col 2 (Cant): 80px
+       Col 3 (Detalle): el resto del espacio (1fr)
+       Col 4 (V.Unit): 150px
+       Col 5 (V.Total): 150px
+       Col 6 (Acción): 50px
+    */
+    grid-template-columns: 120px 80px 1fr 150px 150px 50px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+    
 }
 
-.product-table {
-    width: 100%; 
-    border-collapse: collapse; 
-    margin-bottom: 20px;
-    min-width: 800px; /* Mínimo ancho para la tabla si no cabe en la vista */
-}
-
-/* Estilos de encabezados y celdas */
-.product-table th {
-    background-color: #007bff; 
-    color: white; 
-    padding: 12px 10px; 
-    text-align: left; 
-    border-bottom: 2px solid #ddd;
+/* Estilo para los títulos (Encabezado) */
+.product-header {
     font-weight: bold;
-    white-space: nowrap; 
-}
-
-.product-table td {
-    padding: 8px 10px;
-    border-bottom: 1px solid #eee;
-    vertical-align: middle; 
-}
-
-.product-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9; 
-}
-
-/* Estilos para los INPUTS dentro de la tabla */
-.product-table input {
-    width: 100%; 
-    padding: 8px; 
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; 
+    color: #e3ebe3; 
+    border-bottom: 2px solid lab(75.46% -55.48 64.77);
+    padding-bottom: 8px;
     font-size: 14px;
+    text-transform: uppercase;
+    text-align: center;
 }
 
+/* Alineación de texto para los títulos de valores numéricos */
+.product-header span:nth-child(2), /* Cant. */
+.product-header span:nth-child(4), /* V.Unit */
+.product-header span:nth-child(5)  /* V.Total */ {
+    text-align: center;
+}
+
+/* Estilo para la fila de inputs */
+.product-row input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid lch(79.87% 95.92 135.03);
+    border-radius: 4px;
+    background-color: oklch(90.28% 0.00394 106.88);
+    color:lab(21.25% 0 0) 
+}
+
+/* Alineación de números dentro de los inputs */
+.product-row input[type="number"],
+.product-row input[disabled] {   
+ text-align: right;
+    
+}
+
+.delete-product {
+    background: none;
+    border: none;
+    color: hsl(0, 100%, 48%);
+    cursor: pointer;
+    font-size: 30px;
+    transition: transform 0.2s;
+}
+
+.delete-product:hover {
+    transform: scale(1.2);
+}
+
+.v-total{
+width: 100%;
+    padding: 8px;
+    border: 1px solid lch(79.87% 95.92 135.03);
+    border-radius: 4px;
+    background-color: #88e690;
+    color:lch(2.74% 0 296.81) 
+}
 /* --------------------------------------------------- */
 /* ALINEACIÓN Y TAMAÑOS ESPECÍFICOS DE COLUMNAS */
 /* --------------------------------------------------- */
@@ -202,4 +274,16 @@ body {
 .col-delete {
     width: 60px;
     text-align: center; 
+}
+
+/* ------------------------------------------------------- */
+/* GRUPO DE BOTONES FINALES (Guardar/Cerrar) */
+/* ------------------------------------------------------- */
+.final-buttons-group { /* 🟢 Clase genérica para botones 🟢 */
+    display: flex; 
+    justify-content: center; /* Centra los botones horizontalmente */
+    gap: 30px; 
+    margin-top: 30px; 
+    padding-top: 20px;
+    border-top: 1px solid hsl(0, 0%, 93%);
 }
