@@ -75,11 +75,12 @@ export const useInvoiceLogic = () => {
         }
     };
 
-    // --- 4. VALIDACIÓN POR CAMPO (CASCADA: VACÍO + FORMATO) ---
+   // --- 4. VALIDACIÓN POR CAMPO (CASCADA: VACÍO + FORMATO) ---
     const validarDatosCliente = () => {
-        const regexSoloNumeros = /^[0-9]+$/;
-        const regexSoloLetras = /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/;
-        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const regexSoloNumeros = /^[0-9]+$/;
+    const regexSoloLetras = /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s.]+$/; 
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         // 1. VALIDAR IDENTIFICACIÓN (NIT/CC)
         if (!identificacion || !identificacion.trim()) { 
