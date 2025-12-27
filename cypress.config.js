@@ -9,7 +9,7 @@ baseUrl: 'http://localhost:5173',
     },
     browsers: [
       {
-        name: 'chrome',
+        name: 'chromee',
         family: 'chromium',
         channel: 'stable',
         displayName: 'Chrome',
