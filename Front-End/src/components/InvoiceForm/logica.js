@@ -7,7 +7,12 @@ export const useInvoiceLogic = () => {
     // --- ESTADOS ---
     const [pagoEstado, setPagoEstado] = useState('Default');
     const [numeroFactura, setNumeroFactura] = useState('Cargando...');
-    const [fechaEmision, setFechaEmision] = useState(new Date().toISOString().split('T')[0]);
+    const [fechaEmision, setFechaEmision] = useState(() => {const ahora = new Date();
+
+    return ahora.getFullYear() + "-" + 
+    String(ahora.getMonth() + 1).padStart(2, '0') + "-" + 
+    String(ahora.getDate()).padStart(2, '0');
+});
     const [identificacion, setIdentificacion] = useState('');
     const [sugerencias, setSugerencias] = useState([]);
     const [cliente, setCliente] = useState({ id: '', nombre: '', correo: '', telefono: '', direccion: '' });
@@ -212,17 +217,20 @@ export const useInvoiceLogic = () => {
             }
         }
 
-        // 4. Preparar datos de la factura (Hora exacta y Totales)
-        const ahora = new Date();
-        const horas = String(ahora.getHours()).padStart(2, '0');
-        const minutos = String(ahora.getMinutes()).padStart(2, '0');
-        const segundos = String(ahora.getSeconds()).padStart(2, '0');
-        const fechaFormateada = `${fechaEmision} ${horas}:${minutos}:${segundos}`;
+        // --- 4. Preparar datos de la factura (Sincronía total con PC) ---
+            const ahora = new Date();
+            const horas = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            const segundos = String(ahora.getSeconds()).padStart(2, '0');
 
-        // Recalculamos aquí mismo para asegurar que los valores existan
-        const subtotalCalc = productosFactura.reduce((acc, p) => acc + (parseFloat(p.vTotal) || 0), 0);
-        const ivaCalc = productosFactura.reduce((acc, p) => acc + ((parseFloat(p.vTotal) || 0) * ((parseFloat(p.ivaPorcentaje) || 0) / 100)), 0);
+            // Usamos la fechaEmision (que ya corregimos arriba) + la hora actual de la PC
+            const fechaFinalFactura = `${fechaEmision} ${horas}:${minutos}:${segundos}`;
 
+           // Recalculamos totales para el envío
+           const subtotalCalc = productosFactura.reduce((acc, p) => acc + (parseFloat(p.vTotal) || 0), 0);
+           const ivaCalc = productosFactura.reduce((acc, p) => acc + ((parseFloat(p.vTotal) || 0) * ((parseFloat(p.ivaPorcentaje) || 0) / 100)), 0);
+        
+        
         // 5. Enviar Factura
         try {
             const response = await fetch('http://localhost:8080/api/facturas', {
@@ -231,7 +239,7 @@ export const useInvoiceLogic = () => {
                 body: JSON.stringify({
                     cliente_id: clienteIdActual,
                     pago: pagoEstado,
-                    fecha_emision: fechaFormateada,
+                    fecha_emision: fechaFinalFactura,
                     subtotal: subtotalCalc,
                     iva: ivaCalc,
                     total: subtotalCalc + ivaCalc,

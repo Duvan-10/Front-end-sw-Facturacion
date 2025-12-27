@@ -65,55 +65,71 @@ function ClienteForm() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
+   const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-        const token = getAuthToken();
-        if (!token) {
-            navigate('/');
-            return;
+    const token = getAuthToken();
+    if (!token) {
+        navigate('/');
+        return;
+    }
+
+    // --- NUEVA LÓGICA: CAPTURA DE HORA LOCAL DE LA PC ---
+    const ahora = new Date();
+    const fechaLocalPC = ahora.getFullYear() + "-" +
+        String(ahora.getMonth() + 1).padStart(2, '0') + "-" +
+        String(ahora.getDate()).padStart(2, '0') + " " +
+        String(ahora.getHours()).padStart(2, '0') + ":" +
+        String(ahora.getMinutes()).padStart(2, '0') + ":" +
+        String(ahora.getSeconds()).padStart(2, '0');
+
+    // Si es un nuevo registro (POST), incluimos la fecha de la PC
+    // Si es edición (PUT), usualmente no queremos sobreescribir la fecha de creación original
+    const datosParaEnviar = isEdit 
+        ? formData 
+        : { ...formData, fecha_creacion: fechaLocalPC };
+
+    const method = isEdit ? 'PUT' : 'POST';
+    const url = isEdit ? `${apiBaseUrl}/${id}` : apiBaseUrl;
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            // Enviamos datosParaEnviar en lugar de formData
+            body: JSON.stringify(datosParaEnviar) 
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                sessionStorage.removeItem('authToken');
+                navigate('/');
+                return;
+            }
+            throw new Error(result.message || "Error en la operación");
         }
 
-        const method = isEdit ? 'PUT' : 'POST';
-        const url = isEdit ? `${apiBaseUrl}/${id}` : apiBaseUrl;
-
-        try {
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    sessionStorage.removeItem('authToken');
-                    navigate('/');
-                    return;
-                }
-                throw new Error(result.message || "Error en la operación");
-            }
-
-            alert("✅ Operación exitosa");
-            if (window.opener) {
-                window.opener.postMessage('listUpdated', '*');
-                window.close();
-            } else {
-                navigate('/home/clientes'); 
-            }
-
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+        alert("✅ Operación exitosa");
+        if (window.opener) {
+            window.opener.postMessage('listUpdated', '*');
+            window.close();
+        } else {
+            navigate('/home/clientes'); 
         }
-    };
+
+    } catch (err) {
+        setError(err.message);
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div className="app-form card">
