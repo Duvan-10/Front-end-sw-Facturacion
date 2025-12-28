@@ -4,26 +4,23 @@ import { useNavigate } from 'react-router-dom';
 export const useInvoiceLogic = () => {
     const navigate = useNavigate();
 
-    // --- ESTADOS ---
+    // ==========================================
+    // 1. ESTADO DE PAGO
+    // ==========================================
     const [pagoEstado, setPagoEstado] = useState('Default');
+
+
+    // ==========================================
+    // 2. NUMERO FACTURA Y FECHA
+    // ==========================================
     const [numeroFactura, setNumeroFactura] = useState('Cargando...');
-    const [fechaEmision, setFechaEmision] = useState(() => {const ahora = new Date();
+    const [fechaEmision, setFechaEmision] = useState(() => {
+        const ahora = new Date();
+        return ahora.getFullYear() + "-" + 
+               String(ahora.getMonth() + 1).padStart(2, '0') + "-" + 
+               String(ahora.getDate()).padStart(2, '0');
+    });
 
-    return ahora.getFullYear() + "-" + 
-    String(ahora.getMonth() + 1).padStart(2, '0') + "-" + 
-    String(ahora.getDate()).padStart(2, '0');
-});
-    const [identificacion, setIdentificacion] = useState('');
-    const [sugerencias, setSugerencias] = useState([]);
-    const [cliente, setCliente] = useState({ id: '', nombre: '', correo: '', telefono: '', direccion: '' });
-    
-    // ESTADO PRODUCTOS
-    const [productosFactura, setProductosFactura] = useState([
-        { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0, ivaPorcentaje: 0 }
-    ]);
-    const [sugerenciasProd, setSugerenciasProd] = useState([]);
-
-    // --- 1. OBTENER PRÓXIMO NÚMERO ---
     const obtenerProximoNumero = async () => {
         try {
             const token = sessionStorage.getItem('authToken');
@@ -39,7 +36,15 @@ export const useInvoiceLogic = () => {
 
     useEffect(() => { obtenerProximoNumero(); }, []);
 
-    // --- 2. AUTOCOMPLETADO DE CLIENTES ---
+
+    // ==========================================
+    // 3. DETALLES CLIENTE (Búsqueda, Selección, Registro)
+    // ==========================================
+    const [identificacion, setIdentificacion] = useState('');
+    const [sugerencias, setSugerencias] = useState([]);
+    const [cliente, setCliente] = useState({ id: '', nombre: '', correo: '', telefono: '', direccion: '' });
+
+    // Autocompletado
     useEffect(() => {
         const buscarCoincidencias = async () => {
             if (identificacion.length > 2) {
@@ -56,16 +61,14 @@ export const useInvoiceLogic = () => {
         return () => clearTimeout(timeoutId);
     }, [identificacion]);
 
-    // --- 3. SELECCIÓN DE CLIENTE (CORREGIDO: No fija nombre en identificación) ---
+    // Selección de cliente sugerido
     const seleccionarCliente = (e) => {
         const valorIngresado = e.target.value;
         setIdentificacion(valorIngresado);
-
         const encontrado = sugerencias.find(c => 
             String(c.identificacion) === String(valorIngresado) || 
             c.nombre_razon_social === valorIngresado
         );
-
         if (encontrado) {
             setIdentificacion(encontrado.identificacion); 
             setCliente({
@@ -80,56 +83,64 @@ export const useInvoiceLogic = () => {
         }
     };
 
-   // --- 4. VALIDACIÓN POR CAMPO (CASCADA: VACÍO + FORMATO) ---
+    // Validación de datos
     const validarDatosCliente = () => {
+        const regexSoloNumeros = /^[0-9]+$/;
+        const regexSoloLetras = /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s.]+$/; 
+        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    const regexSoloNumeros = /^[0-9]+$/;
-    const regexSoloLetras = /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s.]+$/; 
-    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!identificacion?.trim() || !regexSoloNumeros.test(identificacion)) { 
+            alert("⚠️ Identificación obligatoria y numérica."); return false; 
+        }
+        if (!cliente.nombre?.trim() || !regexSoloLetras.test(cliente.nombre)) { 
+            alert("⚠️ Nombre obligatorio (solo letras)."); return false; 
+        }
+        if (!cliente.telefono?.trim() || !regexSoloNumeros.test(cliente.telefono) || cliente.telefono.length < 7) { 
+            alert("⚠️ Teléfono obligatorio (mín. 7 dígitos)."); return false; 
+        }
+        if (cliente.correo?.trim() && !regexEmail.test(cliente.correo)) {
+            alert("⚠️ Formato de correo incorrecto."); return false;
+        }
+        return true;
+    };
 
-        // 1. VALIDAR IDENTIFICACIÓN (NIT/CC)
-        if (!identificacion || !identificacion.trim()) { 
-            alert("⚠️ El campo 'Identificación' es obligatorio."); 
-            return false; 
-        }
-        if (!regexSoloNumeros.test(identificacion)) { 
-            alert("⚠️ La identificación debe contener únicamente números."); 
-            return false; 
-        }
-
-        // 2. VALIDAR NOMBRE O RAZÓN SOCIAL
-        if (!cliente.nombre || !cliente.nombre.trim()) { 
-            alert("⚠️ El campo 'Nombre o Razón Social' es obligatorio."); 
-            return false; 
-        }
-        if (!regexSoloLetras.test(cliente.nombre)) { 
-            alert("⚠️ El nombre solo debe contener letras y espacios."); 
-            return false; 
-        }
-
-        // 3. VALIDAR TELÉFONO
-        if (!cliente.telefono || !cliente.telefono.trim()) { 
-            alert("⚠️ El campo 'Teléfono' es obligatorio."); 
-            return false; 
-        }
-        if (!regexSoloNumeros.test(cliente.telefono) || cliente.telefono.length < 7) { 
-            alert("⚠️ El teléfono debe ser numérico y tener al menos 7 dígitos."); 
-            return false; 
-        }
-
-        // 4. VALIDAR CORREO (Solo si el usuario escribió algo)
-        if (cliente.correo && cliente.correo.trim() !== "") {
-            if (!regexEmail.test(cliente.correo)) {
-                alert("⚠️ El formato del correo electrónico es incorrecto.");
-                return false;
+    // Registro rápido de cliente nuevo
+    const registrarClienteRapido = async (token) => {
+        try {
+            const res = await fetch('http://localhost:8080/api/clientes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({
+                    tipo_identificacion: 'Cédula',
+                    identificacion: identificacion.trim(),
+                    nombre_razon_social: cliente.nombre.trim(),
+                    email: cliente.correo?.trim() || null,
+                    telefono: cliente.telefono.trim(),
+                    direccion: cliente.direccion?.trim() || 'Sin dirección'
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setCliente(prev => ({ ...prev, id: data.cliente.id }));
+                return data.cliente.id;
             }
+            alert("❌ Error al registrar cliente: " + data.message);
+            return null;
+        } catch (err) { 
+            alert("❌ Error de conexión al registrar cliente.");
+            return null; 
         }
-
-        return true; // Si llega aquí, todo está perfecto
     };
 
 
-    // --- 5. LÓGICA DE PRODUCTOS (INTACTA) ---
+    // ==========================================
+    // 4. DETALLES PRODUCTO
+    // ==========================================
+    const [productosFactura, setProductosFactura] = useState([
+        { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0, ivaPorcentaje: 0 }
+    ]);
+    const [sugerenciasProd, setSugerenciasProd] = useState([]);
+
     const buscarProductos = async (t) => {
         if (!t) return;
         try {
@@ -161,77 +172,39 @@ export const useInvoiceLogic = () => {
         setProductosFactura(nuevos);
     };
 
-// --- 6. REGISTRO Y GUARDADO ---
-    const registrarClienteRapido = async (token) => {
-        try {
-            const res = await fetch('http://localhost:8080/api/clientes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({
-                    tipo_identificacion: 'Cédula',
-                    identificacion: identificacion.trim(),
-                    nombre_razon_social: cliente.nombre.trim(),
-                    email: cliente.correo?.trim() || null,
-                    telefono: cliente.telefono.trim(),
-                    direccion: cliente.direccion?.trim() || 'Sin dirección'
-                })
-            });
-            
-            const data = await res.json();
-            
-            if (res.ok) {
-                // Si el backend responde bien, actualizamos el ID y retornamos
-                setCliente(prev => ({ ...prev, id: data.cliente.id }));
-                return data.cliente.id;
-            } else {
-                alert("❌ Error al registrar cliente: " + (data.message || "Error desconocido"));
-                return null;
-            }
-        } catch (err) { 
-            console.error("Error en registrarClienteRapido:", err);
-            alert("❌ No se pudo conectar con el servidor para registrar al cliente.");
-            return null; 
-        }
-    };
 
+    // ==========================================
+    // 5. VALORES (Cálculos de Totales)
+    // ==========================================
+    const subtotal = productosFactura.reduce((acc, p) => acc + (parseFloat(p.vTotal) || 0), 0);
+    const iva = productosFactura.reduce((acc, p) => acc + ((parseFloat(p.vTotal) || 0) * ((parseFloat(p.ivaPorcentaje) || 0) / 100)), 0);
+    const totalGeneral = subtotal + iva;
+
+
+    // ==========================================
+    // 6. BOTONES CREAR FACTURA Y CANCELAR
+    // ==========================================
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
         
-        // 1. Validar Pago
         if (pagoEstado === 'Default') return alert("⚠️ Seleccione el estado de pago.");
-
-        // 2. Validar campos obligatorios (Cascada)
         if (!validarDatosCliente()) return; 
 
         const token = sessionStorage.getItem('authToken');
         let clienteIdActual = cliente.id;
 
-        // 3. Registro de cliente nuevo
         if (!clienteIdActual) {
             if (window.confirm("¿El cliente no existe, deseas registrarlo con estos datos?")) {
                 clienteIdActual = await registrarClienteRapido(token);
-                // Si clienteIdActual es null, significa que falló el registro, detenemos todo.
                 if (!clienteIdActual) return; 
-            } else {
-                return; // El usuario canceló
-            }
+            } else return;
         }
 
-        // --- 4. Preparar datos de la factura (Sincronía total con PC) ---
-            const ahora = new Date();
-            const horas = String(ahora.getHours()).padStart(2, '0');
-            const minutos = String(ahora.getMinutes()).padStart(2, '0');
-            const segundos = String(ahora.getSeconds()).padStart(2, '0');
+        // Preparar fecha con hora exacta de la PC
+        const ahora = new Date();
+        const horaExacta = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}:${String(ahora.getSeconds()).padStart(2, '0')}`;
+        const fechaFinalFactura = `${fechaEmision} ${horaExacta}`;
 
-            // Usamos la fechaEmision (que ya corregimos arriba) + la hora actual de la PC
-            const fechaFinalFactura = `${fechaEmision} ${horas}:${minutos}:${segundos}`;
-
-           // Recalculamos totales para el envío
-           const subtotalCalc = productosFactura.reduce((acc, p) => acc + (parseFloat(p.vTotal) || 0), 0);
-           const ivaCalc = productosFactura.reduce((acc, p) => acc + ((parseFloat(p.vTotal) || 0) * ((parseFloat(p.ivaPorcentaje) || 0) / 100)), 0);
-        
-        
-        // 5. Enviar Factura
         try {
             const response = await fetch('http://localhost:8080/api/facturas', {
                 method: 'POST',
@@ -240,9 +213,9 @@ export const useInvoiceLogic = () => {
                     cliente_id: clienteIdActual,
                     pago: pagoEstado,
                     fecha_emision: fechaFinalFactura,
-                    subtotal: subtotalCalc,
-                    iva: ivaCalc,
-                    total: subtotalCalc + ivaCalc,
+                    subtotal: subtotal,
+                    iva: iva,
+                    total: totalGeneral,
                     productos: productosFactura.filter(p => p.producto_id !== null)
                 })
             });
@@ -252,24 +225,27 @@ export const useInvoiceLogic = () => {
                 window.location.reload();
             } else {
                 const errorData = await response.json();
-                alert("❌ Error al guardar factura: " + (errorData.message || "Consulte al administrador"));
+                alert("❌ Error: " + (errorData.message || "No se pudo guardar"));
             }
-        } catch (err) { 
-            console.error("Error en handleSubmit:", err);
-            alert("❌ Error de conexión al intentar guardar la factura."); 
-        }
+        } catch (err) { alert("❌ Error de conexión"); }
     };
     
+    // Retorno unificado para el componente
     return {
-        pagoEstado, setPagoEstado, numeroFactura, fechaEmision, setFechaEmision,
-        identificacion, setIdentificacion, seleccionarCliente,
+        // Estado Pago
+        pagoEstado, setPagoEstado,
+        // Numero/Fecha
+        numeroFactura, fechaEmision, setFechaEmision,
+        // Cliente
+        identificacion, setIdentificacion, seleccionarCliente, cliente, sugerencias,
         handleClienteChange: (e) => setCliente(prev => ({ ...prev, [e.target.name]: e.target.value })),
-        cliente, sugerencias, productosFactura, sugerenciasProd, buscarProductos,
+        // Productos
+        productosFactura, sugerenciasProd, buscarProductos, handleInputChange,
         agregarFilaProducto: () => setProductosFactura([...productosFactura, { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0, ivaPorcentaje: 0 }]),
         eliminarFilaProducto: (i) => { if (productosFactura.length > 1) setProductosFactura(productosFactura.filter((_, idx) => idx !== i)) },
-        handleInputChange, handleSubmit,
-        subtotal: productosFactura.reduce((acc, p) => acc + (parseFloat(p.vTotal) || 0), 0),
-        iva: productosFactura.reduce((acc, p) => acc + ((parseFloat(p.vTotal) || 0) * ((parseFloat(p.ivaPorcentaje) || 0) / 100)), 0),
-        totalGeneral: productosFactura.reduce((acc, p) => acc + (parseFloat(p.vTotal) || 0), 0) + productosFactura.reduce((acc, p) => acc + ((parseFloat(p.vTotal) || 0) * ((parseFloat(p.ivaPorcentaje) || 0) / 100)), 0)
+        // Valores
+        subtotal, iva, totalGeneral,
+        // Acciones Finales
+        handleSubmit
     };
 };

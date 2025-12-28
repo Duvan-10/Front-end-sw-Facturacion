@@ -3,11 +3,7 @@
  import { useInvoiceLogic } from './logica.js';
  import '../styles1.css';
 
-
-  //------------Funcion Formulario-------------//
  
-
-  //Declaracion N°FAC-FECHA y FECHA-------Declaracion DATOS CLIENTE------Declaracion Productos-------Totales//
   //------------Funcion Formulario-------------//
  const InvoiceForm = () => {
   const navigate = useNavigate(); 
@@ -45,11 +41,27 @@
 
                  <h2 className="module-title"> Registrar Nueva Factura</h2>
 
-
+ {/*********************** N°FACTURA Y FECHA*****************************/}
+    
+             <div className='Subtitulo'>
+                
+                <div className='Numero-Fecha'>
+                
+                 <label className='Numero'>
+                 <input type="text" value={numeroFactura} readOnly /> Número de Factura</label>
+                 
+                 <label className='Fecha'>
+                 <input type="date" value={fechaEmision} onChange={(e) => setFechaEmision(e.target.value)} /> Fecha</label>
+                 
+                 
+                </div>
+           
 
                 {/******************** SELECCION PAGO CON LÓGICA *******************/}
-                  <div className="section-group header-fields">
-                  <div className="pago">
+                  
+
+                <div className="pago">
+
                   <label>PAGO:</label>
 
                   <label className="selected-Default">
@@ -60,6 +72,7 @@
                   value="Default"
                   checked={pagoEstado === 'Default'}
                   onChange={(e) => setPagoEstado(e.target.value)}/> Default</label>
+
 
                  <label className="selected-si">
                  <input 
@@ -76,35 +89,43 @@
                  value="No"
                  checked={pagoEstado === 'No'}
                  onChange={(e) => setPagoEstado(e.target.value)}/> No</label>
+                
                 </div>
-                </div>
+                
+            </div>
                 
                 
 
-                {/*********************** N°FACTURA Y FECHA*****************************/}
-       
-                 <div className='Numero-Fecha'></div>
-               
-                  <div className="field-col">
-                  <label>Número de Factura</label>
-                 <input type="text" value={numeroFactura} readOnly />
-                 </div>
-
-
-                 <div className="field-col">
-                 <label htmlFor="fecha-emision">Fecha</label>
-                 <input type="date" value={fechaEmision} onChange={(e) => setFechaEmision(e.target.value)} />
-                 </div>
-        
-           
 
                 {/* ******************** DATOS DEL CLIENTE *********************************** */}
+
 <h2 className="section-title">2. Datos del Cliente</h2>
 
-<div className="section-group client-data">
-    {/* Cambia esta sección en tu JSX */}
-<div className="field-col">
-    <label>NIT/CC (Búsqueda)</label>
+
+
+<div className="section-group">
+
+
+<div className="client-data input">
+
+        <label>Tipo Doc.</label>
+
+        <select 
+            name="tipo_identificacion" 
+            value={cliente.tipo_identificacion} 
+            onChange={handleClienteChange}
+            
+            className="form-select">
+
+    <option value="C.C.">C.C.</option>
+            <option value="NIT">NIT</option>
+            <option value="C.E.">C.E.</option>
+        </select>
+    </div>
+
+
+<div className="client-data input">
+    <label>NIT/CC</label>
     <input 
         type="text" 
         value={identificacion}
@@ -125,8 +146,8 @@
 </div>
 
     {/* CAMPOS EDITABLES */}
-    <div className="field-col">
-        <label>Nombre o Razón Social</label>
+    <div className="client-data input">
+        <label>Nombre - Razón Social</label>
         <input 
             name="nombre" 
             value={cliente.nombre} 
@@ -134,7 +155,7 @@
         />
     </div>
 
-    <div className="field-col">
+    <div className="client-data input">
         <label>Correo</label>
         <input 
             name="correo" 
@@ -143,7 +164,7 @@
         />
     </div>
 
-    <div className="field-col">
+    <div className="client-data input">
         <label>Teléfono</label>
         <input 
             name="telefono" 
@@ -152,7 +173,7 @@
         />
     </div>
 
-    <div className="field-col">
+    <div className="client-data input">
         <label>Dirección</label>
         <input 
             name="direccion" 
@@ -176,75 +197,49 @@
     <span></span>
 </div>
 
-{/* Renderizado dinámico de filas */}
 {productosFactura.map((prod, index) => (
     <div className="product-grid product-row" key={index}>
+        {/* ... tus otros inputs (Código, Cant, Detalle, V.Unit) ... */}
         
-        {/* Código: EDITABLE y con Vínculo al Datalist */}
-        <input 
-            type="text" 
-            value={prod.codigo} 
-            list="lista-productos" // ESTA LÍNEA activa el autocompletado
-            onChange={(e) => {
-                handleInputChange(index, 'codigo', e.target.value);
-                buscarProductos(e.target.value); // Busca en el backend mientras escribes
-            }} 
-            placeholder="Cód."
-        />
+        <input type="text" value={prod.codigo} />
+        <input type="number" value={prod.cantidad} />
+        <input type="text" value={prod.detalle}  />
+        <input type="number" value={prod.vUnitario} readOnly />
 
-        {/* Cantidad: EDITABLE */}
-        <input 
-            type="number" 
-            value={prod.cantidad} 
-            min="1"
-            onChange={(e) => handleInputChange(index, 'cantidad', e.target.value)} 
-        />
-
-        {/* Detalle: EDITABLE */}
-        <input 
-            type="text" 
-            value={prod.detalle} 
-            onChange={(e) => handleInputChange(index, 'detalle', e.target.value)} 
-        />
-
-        {/* V. Unitario: BLOQUEADO */}
-        <input 
-            type="number" 
-            value={prod.vUnitario} 
-            readOnly 
-            style={{ backgroundColor: '#f5f5f5', color: '#666' }}
-        />
-        
+        {/* Columna V.Total */}
         <span className="v-total">
-            {(Number(prod.vTotal) || 0).toLocaleString('es-CO', { 
-                style: 'currency', 
-                currency: 'COP',
-                minimumFractionDigits: 0 
-            })}
+            {prod.vTotal.toLocaleString('es-CO')}
         </span>
 
-            {index > 0 ? (
-            <button 
-                type="button" 
-                className="delete-product"
-                onClick={() => eliminarFilaProducto(index)}
-            >
-                ❎
-            </button>
-        ) : (
-            /* Espacio vacío para mantener la alineación del grid en la primera fila */
-            <div style={{ width: '32px' }}></div> 
-        )}
+        {/* COLUMNA DE ACCIONES: Aquí van los botones juntos */}
+        <div className="action-buttons">
+            {/* Botón Añadir (siempre visible o solo en la última fila) */}
+            {index === productosFactura.length - 1 && (
+                <button 
+                    type="button" 
+                    className="btn btn-primary btn-add-inline"
+                    onClick={agregarFilaProducto}
+                    title="Añadir fila"
+                >
+                    +
+                </button>
+            )}
+
+            {/* Botón Eliminar (visible si hay más de una fila) */}
+            {index > 0 && (
+                <button 
+                    type="button" 
+                    className="delete-product"
+                    onClick={() => eliminarFilaProducto(index)}
+                    title="Eliminar fila"
+                >
+                    ✕
+                </button>
+            )}
+        </div>
     </div>
 ))}
 
-<button 
-    type="button" 
-    className="btn btn-primary btn-sm"
-    onClick={agregarFilaProducto}
->
-    + Añadir Producto
-</button>
 
 {/* DATALIST: Debe estar FUERA del map y el ID debe ser 'lista-productos' */}
 <datalist id="lista-productos">
@@ -255,17 +250,24 @@
     ))}
 </datalist>
                   
+
+                      <div className='rayita'/>
+                            
+                      
+
+
+
                 {/*******************TOTALES************************/}
 
  
-                <h2 className="section-title">4. Totales</h2>
+                <h2 className="section-totales">4. Totales</h2>
 
                 <div className="total-line">
                 <label>Subtotal</label>
                 <span>${subtotal ? subtotal.toFixed(2) : "0.00"}</span>
                </div>
 
-               <div className="total-line">
+               <div className="iva">
                 <label>IVA</label>
                {/* Cambia totalIva por iva aquí abajo */}
                <span>${iva ? iva.toFixed(2) : "0.00"}</span> 
@@ -275,8 +277,6 @@
                <label>Total</label>
                {/* Cambia totalFinal por totalGeneral aquí abajo */}
                <span>${totalGeneral ? totalGeneral.toFixed(2) : "0.00"}</span></div>
-
-
 
              
       {/*********** BOTONES CREAR - CANCELAR ***********/}
