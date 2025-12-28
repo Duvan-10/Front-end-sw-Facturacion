@@ -95,18 +95,17 @@
             </div>
                 
                 
-
-
-                {/* ******************** DATOS DEL CLIENTE *********************************** */}
+{/* ******************** DATOS DEL CLIENTE *********************************** */}
 
 <h2 className="section-title">2. Datos del Cliente</h2>
 
 
+<div className="section-group">{/*Clase Global Inputs y Label Campos Detalles Clientes*/}
 
-<div className="section-group">
 
 
-<div className="client-data input">
+
+    <div className="client-data input">
 
         <label>Tipo Doc.</label>
 
@@ -117,72 +116,84 @@
             
             className="form-select">
 
-    <option value="C.C.">C.C.</option>
+            <option value="C.C.">C.C.</option>
             <option value="NIT">NIT</option>
             <option value="C.E.">C.E.</option>
         </select>
     </div>
 
 
-<div className="client-data input">
-    <label>NIT/CC</label>
-    <input 
+    <div className="client-data input">
+       <label>NIT/CC</label>
+        <input 
         type="text" 
         value={identificacion}
         onChange={seleccionarCliente} 
         list="clientes-sugerencias" 
-        placeholder="Escribe NIT o Nombre..."
-    />
-    <datalist id="clientes-sugerencias">
-        {sugerencias.map((c) => (
+        placeholder="Escribe NIT o Nombre..."/>
+
+        <datalist id="clientes-sugerencias">
+          {sugerencias.map((c) => (
             <option 
                 key={c.id} 
-                value={c.identificacion} // CAMBIADO: Ahora el valor es la ID
-            >
+                value={c.identificacion}> // CAMBIADO: Ahora el valor es la ID
                 {c.nombre_razon_social} {/* El nombre aparece como texto de ayuda */}
             </option>
-        ))}
-    </datalist>
-</div>
+         ))}
+       </datalist>
 
-    {/* CAMPOS EDITABLES */}
+    </div>
+
+
+
+    
+
     <div className="client-data input">
         <label>Nombre - Razón Social</label>
         <input 
-            name="nombre" 
-            value={cliente.nombre} 
-            onChange={handleClienteChange} 
-        />
+        name="nombre" 
+        value={cliente.nombre} 
+        onChange={handleClienteChange} />
     </div>
 
-    <div className="client-data input">
-        <label>Correo</label>
-        <input 
-            name="correo" 
-            value={cliente.correo} 
-            onChange={handleClienteChange} 
-        />
-    </div>
+
 
     <div className="client-data input">
         <label>Teléfono</label>
         <input 
-            name="telefono" 
-            value={cliente.telefono} 
-            onChange={handleClienteChange} 
-        />
+        name="telefono" 
+        value={cliente.telefono} 
+        onChange={handleClienteChange} />
     </div>
 
+        
     <div className="client-data input">
         <label>Dirección</label>
         <input 
-            name="direccion" 
-            value={cliente.direccion} 
-            onChange={handleClienteChange} 
-        />
+        name="direccion" 
+        value={cliente.direccion} 
+        onChange={handleClienteChange} />
     </div>
+
+
+
+
+    <div className="client-data input">
+        <label>Correo</label>
+        <input 
+        name="correo" 
+        value={cliente.correo} 
+        onChange={handleClienteChange} />
+    </div>
+
+
 </div>
                  
+
+        
+
+
+
 
 
 {/********************* DETALLES DEL PRODUCTO *********************************** */}
