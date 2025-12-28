@@ -325,7 +325,7 @@ display: flex;
 
 /* Label */
 .total-line label {
-  font-weight: ;
+  font-weight: 200;
   color: hsl(135, 3%, 72%);
   font-size: 20px;
 }
