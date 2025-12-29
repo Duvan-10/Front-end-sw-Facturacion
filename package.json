@@ -9,11 +9,7 @@
     "s": "nodemon Backend/server.js",
     "start": "node Backend/server.js",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "o": "cypress open",
-    "r": "cypress run",
-    "chrome": "cypress run --browser C:/Users/Duvan/AppData/Local/Google/Chrome/Application/chrome.exe",
-    "test:e2e": "start-server-and-test dev http://localhost:5173 cy:run"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.3.1",
@@ -34,8 +30,6 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
-    "cypress": "^15.8.1",
-    "cypress-mochawesome-reporter": "^4.0.2",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",

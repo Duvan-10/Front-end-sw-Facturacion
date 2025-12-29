@@ -126,6 +126,66 @@ const invoiceController = {
         const searchTerm = req.query.q || ''; 
         const [rows] = await db.query("SELECT id, codigo, nombre, descripcion, precio, impuesto_porcentaje FROM productos WHERE codigo LIKE ? OR nombre LIKE ? LIMIT 10", [`%${searchTerm}%`, `%${searchTerm}%`]);
         res.json(rows);
+    },
+
+    // 6. ACTUALIZAR FACTURA
+    updateInvoice: async (req, res) => {
+        const connection = await db.getConnection();
+        try {
+            const { id } = req.params;
+            const { cliente_id, pago, fecha_emision, subtotal, iva, total, productos } = req.body;
+            
+            // Validar que la factura existe
+            const [facturaExistente] = await connection.query("SELECT id FROM facturas WHERE id = ?", [id]);
+            if (facturaExistente.length === 0) {
+                return res.status(404).json({ message: "Factura no encontrada" });
+            }
+
+            // Validación de cliente
+            if (!cliente_id) {
+                return res.status(400).json({ error: "CLIENTE_NO_EXISTE", message: "El cliente no está registrado." });
+            }
+
+            // Validación de estado de pago
+            if (!pago || pago === 'Default') {
+                return res.status(400).json({ 
+                    error: "PAGO_REQUERIDO", 
+                    message: "⚠️ Seguridad: Debe seleccionar si la factura está pagada (Si/No)." 
+                });
+            }
+
+            await connection.beginTransaction();
+            
+            const estadoFinal = (pago === 'Si') ? 'Pagada' : 'Pendiente';
+
+            // Actualizar factura
+            await connection.query(
+                "UPDATE facturas SET cliente_id = ?, fecha_emision = ?, subtotal = ?, iva = ?, total = ?, estado = ? WHERE id = ?",
+                [cliente_id, fecha_emision || new Date(), subtotal, iva, total, estadoFinal, id]
+            );
+
+            // Eliminar detalles antiguos
+            await connection.query("DELETE FROM factura_detalles WHERE factura_id = ?", [id]);
+
+            // Insertar nuevos detalles
+            if (productos && productos.length > 0) {
+                for (const item of productos) {
+                    await connection.query(
+                        "INSERT INTO factura_detalles (factura_id, producto_id, cantidad, precio_unitario, subtotal, total) VALUES (?,?,?,?,?,?)",
+                        [id, item.producto_id, item.cantidad, item.vUnitario, item.vTotal, item.vTotal]
+                    );
+                }
+            }
+
+            await connection.commit();
+            res.status(200).json({ success: true, message: "Factura actualizada", id: id });
+        } catch (e) { 
+            if (connection) await connection.rollback(); 
+            console.error("Error en Update:", e);
+            res.status(500).json({ error: "Error interno", message: e.message }); 
+        } finally { 
+            connection.release(); 
+        }
     }
 }
 export default invoiceController;

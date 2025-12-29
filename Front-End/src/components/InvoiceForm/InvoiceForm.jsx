@@ -41,6 +41,11 @@
 
                  <h2 className="module-title"> Registrar Nueva Factura</h2>
 
+
+
+
+                 
+
  {/*********************** N°FACTURA Y FECHA*****************************/}
     
              <div className='Subtitulo'>
@@ -191,9 +196,6 @@
                  
 
         
-
-
-
 
 
 {/********************* DETALLES DEL PRODUCTO *********************************** */}
