@@ -9,7 +9,11 @@
     "s": "nodemon Backend/server.js",
     "start": "node Backend/server.js",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "cd playwright && npx playwright test",
+    "test:e2e:headed": "cd playwright && npx playwright test --headed",
+    "test:e2e:report": "cd playwright && npx playwright show-report",
+    "test:e2e:open": "cd playwright && npx playwright test && npx playwright show-report playwright-results/html-report"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.3.1",
