@@ -141,7 +141,7 @@
           {sugerencias.map((c) => (
             <option 
                 key={c.id} 
-                value={c.identificacion}> // CAMBIADO: Ahora el valor es la ID
+                value={c.identificacion}> {/* CAMBIADO: Ahora el valor es la ID*/}
                 {c.nombre_razon_social} {/* El nombre aparece como texto de ayuda */}
             </option>
          ))}
