@@ -1,0 +1,44 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - banner [ref=e3]: PFEps - Software de Facturación Electrónica
+  - navigation [ref=e4]:
+    - list [ref=e6]:
+      - listitem [ref=e7]:
+        - link "Inicio" [ref=e8] [cursor=pointer]:
+          - /url: /home
+      - listitem [ref=e9]:
+        - link "Facturas" [ref=e10] [cursor=pointer]:
+          - /url: /home/facturas
+      - listitem [ref=e11]:
+        - link "Clientes" [ref=e12] [cursor=pointer]:
+          - /url: /home/clientes
+      - listitem [ref=e13]:
+        - link "Productos" [ref=e14] [cursor=pointer]:
+          - /url: /home/productos
+      - listitem [ref=e15]:
+        - link "Reportes" [ref=e16] [cursor=pointer]:
+          - /url: /home/reportes
+      - listitem [ref=e17]:
+        - link "Perfil" [ref=e18] [cursor=pointer]:
+          - /url: /home/perfil
+    - button "Cerrar Sesión" [ref=e19] [cursor=pointer]
+  - main [ref=e20]:
+    - generic [ref=e21]:
+      - heading "Gestión de Facturas" [level=1] [ref=e22]
+      - generic [ref=e23]:
+        - generic [ref=e24]:
+          - generic [ref=e25]: "Buscar Factura:"
+          - textbox "Buscar Factura:" [ref=e26]:
+            - /placeholder: ID o Cliente...
+        - combobox [ref=e27]:
+          - option "Todos los Estados" [selected]
+          - option "Pagada"
+          - option "Pendiente"
+        - button "Crear Nueva Factura" [active] [ref=e28] [cursor=pointer]
+      - separator [ref=e29]
+      - generic [ref=e30]:
+        - heading "Listado de Facturas (0 en total)" [level=2] [ref=e31]
+        - paragraph [ref=e32]: No se pudo conectar con el servidor.
+```
