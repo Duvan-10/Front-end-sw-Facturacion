@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "f": "vite --host --open",
+    "f:test": "vite --host",
     "build": "vite build",
     "s": "nodemon Backend/server.js",
     "start": "node Backend/server.js",

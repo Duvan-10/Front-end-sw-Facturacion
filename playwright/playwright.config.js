@@ -16,7 +16,7 @@ module.exports = defineConfig({
     }
   ],
   webServer: {
-    command: 'npm --prefix .. run f',
+    command: 'npm --prefix .. run f:test',
     port: 5173,
     timeout: 120 * 1000,
     reuseExistingServer: true
