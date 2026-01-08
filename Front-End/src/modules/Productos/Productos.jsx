@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react'; 
-import { useNavigate } from 'react-router-dom'; // Importado para manejo de sesión
+import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../../api';
 import '../../styles/global.css';
 
 function Productos() {
     const navigate = useNavigate();
-    const apiBaseUrl = 'http://localhost:8080/api/productos'; 
+    const apiBaseUrl = `${API_URL}/productos`;
     
-    // 🚨 CORRECCIÓN: Ahora lee de sessionStorage para coincidir con Login.jsx
+    // Lee el token de sessionStorage (consistente con AuthContext)
     const getAuthToken = () => {
-        return sessionStorage.getItem('authToken'); 
+        return sessionStorage.getItem('token'); 
     };
 
     const [products, setProducts] = useState([]); 
@@ -21,11 +22,11 @@ function Productos() {
     const loadProducts = async () => {
         const token = getAuthToken();
         
-        // 🚨 MEJORA: Si no hay token, redirigir al usuario al Login
+        // Si no hay token, redirigir al usuario al Login
         if (!token) {
             setError("Sesión expirada. Redirigiendo...");
             setLoading(false);
-            setTimeout(() => navigate('/'), 2000);
+            setTimeout(() => navigate('/login'), 2000);
             return;
         }
 
@@ -40,7 +41,7 @@ function Productos() {
             
             if (response.status === 401) {
                 // Si el token es inválido según el servidor, limpiar y salir
-                sessionStorage.removeItem('authToken');
+                sessionStorage.removeItem('token');
                 throw new Error("Acceso denegado. Inicia sesión nuevamente.");
             }
             

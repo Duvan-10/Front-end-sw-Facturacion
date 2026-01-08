@@ -1,0 +1,500 @@
+/*
+ * =================================================================
+ * Estilo 1 styles.css (para vistas de autenticación)
+ * FUNCIÓN: Define la apariencia visual de la tarjeta de autenticación 
+ * utilizando un diseño Dark Theme modular y la implementación del Light Mode.
+ * NOTA: Estilos separados para .auth-login y .auth-register.
+ * =================================================================
+ */
+
+/* ---------------------------------------------------- */
+/* PALETA DE COLORES MODO OSCURO (Variables por Defecto) */
+/* ---------------------------------------------------- */
+:root {
+    /* Fondo principal y tarjeta */
+    --color-background-dark: hsl(220, 10%, 8%); 
+    --color-card-dark: hsl(0, 0%, 12%); 
+    --color-input-background: #0d0d0d; 
+    
+    /* Colores primarios (texto, bordes) */
+    --color-text-light: hwb(0 88% 12%); 
+    --color-text-muted: lab(98.31% -3.36 2.05); 
+    --color-input-hover: hwb(0 15% 85%); 
+
+    /* Color de acento/Botones (Verde/Cian Brillante) */
+    --color-accent-teal: hsl(151, 100%, 45%); 
+    --color-accent-darker: #00b35b; 
+
+    /* ✅ NUEVO: Colores para errores y alertas */
+    --color-error-text: #e53e3e;        /* Rojo fuerte para mensajes de error */
+    --color-error-background: #9b2c2c;  /* Fondo/Borde oscuro para errores globales */
+    --color-warning-text: #9c5700;
+}
+
+
+
+/* ----------------------------------------------------------------- */
+/* PALETA DE COLORES MODO CLARO (Sobrescribe las variables anteriores) */
+/* ----------------------------------------------------------------- */
+html.light-mode {
+    --color-background-dark: #f0f0f0;
+    --color-card-dark: #ffffff;
+    --color-input-background: #ffffff; 
+    --color-text-light: #1f1f1f; 
+    --color-text-muted: #666666; 
+    --color-input-hover: #f0f0f0; /* Tono más claro en Light Mode */
+
+    /* ✅ NUEVO: Adaptar colores de error para Light Mode */
+    --color-error-text: #c53030;
+    --color-error-background: #f9d8d8;
+}
+
+/* =================================================================
+ * SECCIÓN 1: ESTILOS EXCLUSIVOS PARA LOGIN (.auth-login)
+ * ================================================================= */
+
+/* --- 1. ESTRUCTURA Y FONDO GENERAL (LOGIN) --- */
+.auth-login {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    padding: 0px; 
+    overflow-y: auto; 
+    background-color: var(--color-background-dark); 
+}
+
+.auth-login .auth-card {
+    width: 90%; 
+    max-width: 400px; 
+    padding: 15px; 
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+    background-color: var(--color-card-dark);
+}
+
+/* --- 2. CABECERA Y LOGO (LOGIN) --- */
+.auth-login .auth-header {
+    text-align: center;
+    margin-bottom: 5px; 
+}
+
+.auth-login .brand-logo { 
+    width: 80px;
+    height: 80px;
+    margin-bottom: 5px;
+    filter: drop-shadow(0 0 10px rgba(0, 230, 118, 0.6));
+}
+
+.auth-login .auth-header h1 {
+    font-size: 1.8em; 
+    font-weight: 700;
+    color: hsla(0, 0%, 47%, 0.63);
+    margin-top: 0;
+    margin-bottom: 5px; 
+}
+
+/* Tagline (Exclusivo Login) */
+.auth-login .tagline {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--color-text-light); 
+    margin-top: 0;
+    margin-bottom: 15px; 
+}
+
+/* --- 4. FILA DE ACCIONES Y LINKS (LOGIN) --- */
+
+.auth-login .form-row,
+.auth-login .Options-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* AJUSTE COMPRESIÓN: Reducido a 10px */
+    margin-bottom: 10px;
+    font-size: 0.85em;
+}
+
+.auth-login .checkbox,
+.auth-login .remember-me {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--color-text-light);
+}
+
+.auth-login .checkbox input[type="checkbox"],
+.auth-login .remember-me input[type="checkbox"] {
+    margin-right: 8px;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--color-text-muted);
+    background-color: var(--color-input-background);
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
+}
+
+.auth-login .checkbox input[type="checkbox"]:checked,
+.auth-login .remember-me input[type="checkbox"]:checked {
+    background-color: var(--color-accent-teal);
+    border-color: var(--color-accent-teal);
+}
+
+.auth-login .link {
+    color: var(--color-accent-teal);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.auth-login .link:hover {
+    color: var(--color-accent-darker);
+    text-decoration: underline;
+}
+
+/* --- 5. BOTONES Y ACCIONES (LOGIN) --- */
+
+.auth-login .form-actions {
+    /* AJUSTE COMPRESIÓN: Reducido a 10px */
+    margin-bottom: 10px;
+}
+
+.auth-login .btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-login .btn.primary {
+    background-color: var(--color-accent-teal);
+    color: var(--color-background-dark); 
+}
+
+.auth-login .btn.primary:hover:not(:disabled) {
+    background-color: var(--color-accent-darker);
+}
+
+.auth-login .btn:disabled {
+    background-color: #4a5568; /* Gris oscuro para el disabled */
+    color: #a0aec0; /* Texto gris claro */
+    cursor: not-allowed;
+    opacity: 1; 
+}
+
+/* --- 6. MENSAJES DE ERROR Y ALERTA (LOGIN) --- */
+
+.auth-login .help {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.75em;
+    color: var(--color-text-muted);
+}
+
+.auth-login .help.error {
+    color: var(--color-error-text); /* Rojo fuerte */
+    font-weight: 600;
+    display: block !important; 
+    margin-top: 5px; 
+    font-size: 0.8rem; /* Ligeramente más grande para que sea legible */
+    opacity: 1 !important;
+    animation: fade-in 0.3s ease-out; /* Animación sutil */
+}
+
+.auth-login .status {
+    text-align: center;
+    padding: 10px 15px;
+    margin-top: 15px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.auth-login .status.error-message {
+    background-color: #ffeaea; /* Fondo rosa claro */
+    color: #9b2c2c; /* Texto rojo oscuro */
+    border: 1px solid #f9d8d8;
+}
+
+/* =================================================================
+ * SECCIÓN 2: ESTILOS EXCLUSIVOS PARA REGISTRO (.auth-register)
+ * ================================================================= */
+
+/* --- 1. ESTRUCTURA Y FONDO GENERAL (REGISTRO) --- */
+.auth-register {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    padding: 0px; 
+    overflow-y: auto; 
+    background-color: var(--color-background-dark); 
+}
+
+.auth-register .auth-card {
+    width: 90%; 
+    max-width: 400px; 
+    padding: 15px; 
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+    background-color: var(--color-card-dark);
+}
+
+/* --- 2. CABECERA Y LOGO (REGISTRO) --- */
+.auth-register .auth-header {
+    text-align: center;
+    margin-bottom: 5px; 
+}
+
+.auth-register .brand-logo { 
+    width: 80px;
+    height: 80px;
+    margin-bottom: 5px;
+    filter: drop-shadow(0 0 10px rgba(0, 230, 118, 0.6));
+}
+
+.auth-register .auth-header h1 {
+    font-size: 1.8em; 
+    font-weight: 700;
+    color: hsla(0, 0%, 47%, 0.63);
+    margin-top: 0;
+    margin-bottom: 5px; 
+}
+
+/* Subtítulo (Exclusivo Registro) */
+.auth-register .subtitle {
+    font-size: 1em; 
+    font-weight: 400;
+    color: var(--color-text-muted); 
+    margin-top: 0;
+    margin-bottom: 10px; 
+}
+
+/* --- 3. CAMPOS DE FORMULARIO (REGISTRO) --- */
+.auth-register form {
+    text-align: left;
+}
+
+.auth-register .field {
+    margin-bottom: 12px;
+}
+
+.auth-register .field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--color-text-light);
+    font-size: 0.9em;
+}
+
+.auth-register input[type="email"],
+.auth-register input[type="password"],
+.auth-register input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--color-input-background); 
+    border: 1px solid #333333; 
+    color: var(--color-text-light);
+    border-radius: 4px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+.auth-register input:focus {
+    border-color: var(--color-accent-teal); 
+    outline: none;
+    box-shadow: 0 0 0 1px var(--color-accent-teal);
+}
+
+.auth-register input.input-error {
+    border-color: var(--color-error-text) !important;
+    box-shadow: 0 0 0 1px var(--color-error-text) !important;
+}
+
+.auth-register .label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.auth-register .link-button {
+    background: none;
+    border: none;
+    color: var(--color-accent-teal);
+    cursor: pointer;
+    font-size: 0.85em;
+    padding: 0;
+}
+
+/* --- 4. BOTONES Y ACCIONES (REGISTRO) --- */
+.auth-register .form-actions {
+    margin-bottom: 10px;
+}
+
+.auth-register .btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-register .btn.primary {
+    background-color: var(--color-accent-teal);
+    color: var(--color-background-dark); 
+}
+
+.auth-register .btn.primary:hover:not(:disabled) {
+    background-color: var(--color-accent-darker);
+}
+
+.auth-register .btn:disabled {
+    background-color: #4a5568;
+    color: #a0aec0;
+    cursor: not-allowed;
+    opacity: 1; 
+}
+
+.auth-register .btn.primary:disabled .icon-locked {
+    color: #a0aec0;
+    font-size: 1.1em;
+    margin-right: 8px; 
+    animation: shake 0.5s infinite alternate; 
+}
+
+/* --- 5. MENSAJES DE ERROR Y ALERTA (REGISTRO) --- */
+.auth-register .help {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.75em;
+    color: var(--color-text-muted);
+}
+
+.auth-register .help.error {
+    color: var(--color-error-text);
+    font-weight: 600;
+    display: block !important; 
+    margin-top: 5px; 
+    font-size: 0.8rem;
+    opacity: 1 !important;
+    animation: fade-in 0.3s ease-out;
+}
+
+.auth-register .status {
+    text-align: center;
+    padding: 10px 15px;
+    margin-top: 15px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.auth-register .status.error-message {
+    background-color: #ffeaea;
+    color: #9b2c2c;
+    border: 1px solid #f9d8d8;
+}
+
+.auth-register .status.success-message {
+    background-color: #f0fff4;
+    color: #2f855a;
+    border: 1px solid #c6f6d5;
+}
+
+/* --- 6. PIE DE FORMULARIO (REGISTRO) --- */
+.auth-register .register-wrapper {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.auth-register .register-wrapper p {
+    margin: 0;
+    color: var(--color-text-muted);
+}
+
+/* --- ANIMACIONES GLOBALES (COMPARTIDAS) --- */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shake {
+    from { transform: translateX(0); }
+    to { transform: translateX(1px); }
+}
+
+/* --- AJUSTE RESPONSIVE --- */
+@media (max-width: 450px) {
+    .auth-login, .auth-register {
+        padding: 15px;
+        align-items: center;
+    }
+
+    .auth-login .auth-card,
+    .auth-register .auth-card {
+        width: 100%; 
+        max-width: 100%;
+        padding: 20px;
+    }
+}
+
+/* ========================================================== */
+/* ESTILOS BASE PARA TODOS LOS MENSAJES DE ESTADO */
+/* ========================================================== */
+.status {
+    margin-top: 15px;
+    padding: 12px;
+    font-size: 0.95em;
+    font-weight: 500;
+    text-align: center;
+    border-radius: 4px;
+    border: 1px solid transparent; /* Base de borde transparente */
+}
+
+/* ========================================================== */
+/* ESTILOS CONDICIONALES POR TIPO */
+/* ========================================================== */
+
+/* 1. MENSAJES DE INFORMACIÓN (Ej: Onboarding, Sesión Cerrada) */
+.status.info {
+    color: var(--color-info-text, #00529B); 
+    background-color: var(--color-info-bg, #BDE5F8);
+    border-color: var(--color-info-border, #00529B);
+}
+
+/* 2. MENSAJES DE ÉXITO (Ej: Login exitoso, Registro exitoso) */
+.status.success {
+    color: var(--color-success-text, #4F8A10);
+    background-color: var(--color-success-bg, #DFF2BF);
+    border-color: var(--color-success-border, #4F8A10);
+}
+
+/* 3. MENSAJES DE ERROR (Ej: Credenciales incorrectas, Validación fallida) */
+.status.error {
+    color: var(--color-error-text, #D8000C);
+    background-color: var(--color-error-bg, #FFD2D2);
+    border-color: var(--color-error-border, #D8000C);
+    font-weight: 600; /* Mayor énfasis en errores */
+}

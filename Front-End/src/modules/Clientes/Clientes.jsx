@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react'; 
-import { useNavigate } from 'react-router-dom'; // Añadido para navegación
+import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../../api';
 import '../../styles/global.css';
 
 function Clientes() {
     const navigate = useNavigate();
     
     // URL base de la API
-    const apiBaseUrl = import.meta.env.VITE_API_URL 
-        ? `${import.meta.env.VITE_API_URL}/clientes` 
-        : 'http://localhost:8080/api/clientes';
+    const apiBaseUrl = `${API_URL}/clientes`;
     
-    // 🚨 CORRECCIÓN: Ahora lee de sessionStorage para coincidir con Login.jsx
+    // Lee el token de sessionStorage (consistente con AuthContext)
     const getAuthToken = () => {
-        return sessionStorage.getItem('authToken'); 
+        return sessionStorage.getItem('token'); 
     };
 
     // Estados principales
@@ -51,7 +50,7 @@ function Clientes() {
             });
             
             if (response.status === 401 || response.status === 403) {
-                sessionStorage.removeItem('authToken'); // Limpiar token inválido
+                sessionStorage.removeItem('token'); // Limpiar token inválido
                 throw new Error("Acceso denegado. Sesión expirada.");
             }
             if (!response.ok) throw new Error(`Error en el servidor: ${response.status}`);
@@ -64,7 +63,7 @@ function Clientes() {
             console.error("Error en API Clientes:", err);
             setError(err.message);
             if (err.message.includes("Acceso denegado")) {
-                setTimeout(() => navigate('/'), 2000);
+                setTimeout(() => navigate('/login'), 2000);
             }
         } finally {
             setLoading(false);

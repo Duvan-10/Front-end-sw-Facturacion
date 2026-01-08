@@ -1,165 +1,129 @@
-/* --- CONTENEDOR PRINCIPAL Y TITULOS --- */
-.main-content {
-    padding: 2rem;
-    max-width: 1300px;
-    margin: 0 auto;
-    animation: fadeIn 0.5s ease-in-out;
-}
+/* src/global.css */
 
-.module-title {
-    font-size: 2rem;
-    color: #1e293b;
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-    padding-left: 15px;
-}
+/*
+ * =================================================================
+ * ESTILOS GLOBALES DE APLICACIÓN
+ * Archivo: global.css
+ * FUNCIÓN: Define las variables CSS (Custom Properties) y los reseteos
+ * básicos que comparten todas las vistas (Welcome, Login, Register).
+ * =================================================================
+ */
 
-/* --- SECCIÓN DE FILTROS Y CONTROLES --- */
-.controls-section.card {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    align-items: flex-end;
-    background: lch(12.85% 0.5 19.2);
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    border: 1px solid hwb(125 4% 11%);
-}
-
-.search-bar {
-    flex: 1;
-    min-width: 250px;
-}
-
-.search-bar label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: lab(91.06% -6.64 3.73);
-    margin-bottom: 0.5rem;
-}
-
-.search-input, .select-filter {
-    width: 100%;
-    padding: 0.6rem 1rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    transition: all 0.2s;
-}
-
-.search-input:focus, .select-filter:focus {
-    outline: none;
-    border-color: hwb(221 14% 8%);
-    box-shadow: 0 0 0 3px #d5d6d6;
-}
-
-/* --- TABLA DE DATOS --- */
-.list-section {
-    background: lch(12.99% 1.22 163.39);
-    border-radius: 12px;
-    border: 1px solid lab(72% -69.11 57.17);
-    overflow: hidden;
-}
-
-.list-section h2 {
-    padding: 1.2rem;
-    font-size: 1.1rem;
-    color: lab(71.29% -65.07 44.42);
-    border-bottom: 1px solid #e2e8f0;
-    margin: 0;
-    background: #f8fafc;
-}
-
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-}
-
-.data-table thead {
-    background-color: #f1f5f9;
-}
-
-.data-table th {
-    padding: 1rem;
-    text-align: center;
-    font-weight: 600;
-    color: hsl(214, 14%, 78%);
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-}
-
-.data-table td {
-    padding: 1rem;
-    border-bottom: 1px solid hwb(133 8% 12%);
-    color: hsl(215, 24%, 90%);
-    vertical-align: middle;
-}
-
-.data-table tr:last-child td {
-    border-bottom: none;
-}
-
-.data-table tr:hover {
-    background-color: lab(0% 0 0);
-}
-
-/* --- BADGES Y ESTADOS --- */
-.badge {
-    padding: 4px 10px;
-    border-radius: 6px;
-   /* background: #e2e8f0;-----desactivado*/
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #475569;
-}
-
-.invoice-status {
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.status-pagada { background: #dcfce7; color: #15803d; }
-.status-pendiente { background: #fef9c3; color: #a16207; }
-
-/* --- BOTONES DE ACCIÓN --- */
-.actions-cell {
-    display: flex;
-    gap: 8px;
-}
-
-.btn-sm {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
-    border-radius: 6px;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: 0.2s;
-}
-
-.btn-edit { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
-.btn-edit:hover { background: #2563eb; color: #fff; }
-
-.btn-view { background: #f8fafc; color: #475569; border-color: #cbd5e1; }
-.btn-view:hover { background: #475569; color: #fff; }
-
-/* --- OTROS --- */
-.product-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    margin: 2px;
-    font-size: 0.8rem;
+/* ---------------------------------------------------- */
+/* 1. PALETA DE COLORES - MODO OSCURO (Default :root)   */
+/* ---------------------------------------------------- */
+:root {
+    /* --- BASE Y LAYOUT (Afecta a Welcome, Login, Register) --- */
+    /* Color de fondo principal de la ventana */
+    --color-background-dark: oklch(28.63% 0.00456 145.787); 
     
+    /* Color de fondo para tarjetas/contenedores centrales */
+    --color-card-dark: hwb(0 12% 88%); 
+
+    /* --- TIPOGRAFÍA GENERAL --- */
+    --color-text-light: hwb(0 89% 9%);       /* Texto principal */
+    --color-text-muted: rgb(250, 250, 250);    /* Texto secundario/subtítulos */
+
+    /* --- FORMULARIOS E INPUTS (Específico Login/Register) --- */
+    --color-input-background: oklab(31.351000000000003% -0.01049 0.00595); /* Fondo de inputs */
+    --color-input-text: hwb(0 3% 97%);         /* Texto dentro de inputs */
+    --color-input-hover: lab(15.16% 0 0);       /* Color hover genérico */
+
+    /* --- BOTONES Y ACENTOS (Welcome, Login, Register) --- */
+    --color-accent-teal: hwb(151 0% 10%);      /* Color principal (Botones, Links) */
+    --color-accent-darker: #00b35b;            /* Color hover (Oscurecido) */
+
+    /* --- ESTADOS Y FEEDBACK (Validaciones Login/Register) --- */
+    --color-error-text: #e53e3e;               /* Texto de error */
+    --color-error-background: #9b2c2c;         /* Fondos de error */
+    --color-warning-text: #9c5700;             /* Advertencias */
+
+    /* --- ESTILOS EXCLUSIVOS HOME / DASHBOARD (Modo Oscuro) --- */
+    --home-sidebar-bg: var(--color-card-dark); /* Sidebar oscuro integrado */
+    --home-main-bg: var(--color-background-dark); /* Fondo principal oscuro */
+    --home-card-bg: var(--color-card-dark);    /* Fondo de widgets/tarjetas */
+    --home-text-primary: var(--color-text-light);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* ----------------------------------------------------------------- */
+/* 2. PALETA DE COLORES - MODO CLARO (html.light-mode)               */
+/* Sobrescribe las variables anteriores cuando el tema es claro.      */
+/* ----------------------------------------------------------------- */
+html.light-mode {
+    /* --- BASE Y LAYOUT --- */
+    --color-background-dark: hsl(0, 0%, 100%); 
+    --color-card-dark: oklch(100% 0.00011 271.152); 
+
+    /* --- TIPOGRAFÍA GENERAL --- */
+    --color-text-light: oklab(0% 0 0); 
+    --color-text-muted: rgb(24, 23, 23); 
+
+    /* --- FORMULARIOS E INPUTS --- */
+    --color-input-background: hsl(0, 9%, 85%); 
+    --color-input-text: hsl(0, 100%, 1%); 
+    --color-input-hover: #f0f0f0;
+
+    /* --- BOTONES Y ACENTOS --- */
+    --color-accent-teal: oklch(26.305% 0.00232 146.108); 
+    --color-accent-darker: hsl(140, 9%, 7%);
+
+    /* --- ESTADOS Y FEEDBACK --- */
+    --color-error-text: hsl(0, 55%, 46%); 
+    --color-error-background: #f9d8d8;
+    
+/*--------------------------------------------------------------------------------------------------------------------------*/
+/* --- ESTILOS EXCLUSIVOS HOME / DASHBOARD (Modo Claro) --- */
+/* Define colores específicos para dar contraste tipo "Admin Panel" en modo claro */
+    --home-sidebar-bg: lch(100% 0.01 296.81);    /* Sidebar blanco puro para limpieza visual */
+    --home-main-bg: hwb(210 95% 2%);    /* Fondo gris muy suave (Slate-50) para diferenciar del sidebar */
+    --home-card-bg: #ffffff;        /* Tarjetas blancas sobre fondo gris */
+    --home-text-primary: hsl(210, 10%, 12%);/* Texto oscuro con tinte azulado (Slate) */
+/*-------------------------------------------------------------------------------------------------------------------------*/
+
+}
+
+/* ------------------------------------- */
+/* 3. RESETEO Y ESTILOS BASE             */
+/* ------------------------------------- */
+body, html, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box; 
+    background-color: var(--color-background-dark); 
+}
+
+/* Fuente global */
+* {
+    font-family: Arial, sans-serif;
+}
+
+/* ------------------------------------- */
+/* 4. COMPONENTE GLOBAL: SWITCH DE TEMA */
+/* ------------------------------------- */
+
+.theme-switcher-global {
+    position: fixed; 
+    top: 20px;
+    right: 20px;
+    z-index: 1000; 
+}
+
+.theme-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    color: var(--color-text-muted); 
+    background-color: var(--color-card-dark); 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); 
+}
+
+.theme-button:hover {
+    color: var(--color-accent-teal); 
+    background-color: var(--color-input-background); 
+    box-shadow: 0 4px 8px hsl(0, 0%, 9%);
 }

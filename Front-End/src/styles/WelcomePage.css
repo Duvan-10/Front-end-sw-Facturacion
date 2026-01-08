@@ -1,0 +1,112 @@
+/* ============================================== */
+/* ESTILOS EXCLUSIVOS: WelcomeOnboarding */
+/* ALINEADOS CON VARIABLES DE TEMA DE global.css */
+/* ============================================== */
+
+/* 1. Contenedor Principal */
+.onboarding-container {
+    padding: 20px;
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 2. Logo */
+.onboarding-logo {
+    width: 60%;
+    max-width: 250px; 
+    height: auto;
+    margin-bottom: 25px; 
+    transition: transform 0.3s ease;
+    border-radius: 50%;
+    
+    /* Usamos el color de acento para la sombra */
+    /* Nota: 'color-mix' no es CSS estándar. Usaremos rgba para compatibilidad, o la variable directamente. */
+    box-shadow: 0 0 20px 0px var(--color-accent-teal); /* Adaptado para usar --color-accent-teal */
+}
+
+
+/* 3. Título Principal */
+.onboarding-title {
+    font-size: 1.8em; 
+    font-weight: 800;
+    color: var(--color-accent-teal); 
+    margin-bottom: 20px;
+    line-height: 1.3;
+}
+
+/* 4. Texto / Descripción */
+.onboarding-text {
+    font-size: 1.5em;
+    font-weight: 300;
+    /* ✅ Usa la variable de texto muted/secundario */
+    color: var(--color-text-muted); 
+    margin-bottom: 35px;
+    line-height: 1.6;
+    padding: 0 15px;
+}
+
+/* 5. Botón de Registro */
+.onboarding-button-register {
+    /* ✅ Fondo con color de acento */
+    background-color: var(--color-accent-teal); 
+    /* ✅ Texto con el color de la tarjeta para garantizar contraste (Oscuro en claro, claro en oscuro) */
+    color: var(--color-card-dark); 
+    
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 15px 35px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s;
+    width: 100%; 
+    max-width: 300px; 
+    
+    /* Sombra basada en el color de acento */
+    box-shadow: 0 4px 10px var(--color-accent-teal);
+}
+
+.onboarding-button-register:hover {
+    /* NOTA: Para oscurecer/aclarar en hover, necesitarás otra variable o un color hardcoded que contraste bien. 
+       Aquí haremos un cambio simple de color. */
+    background-color: var(--color-accent-darker); 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px var(--color-accent-teal);
+}
+
+/* 6. Enlace inferior (Link Wrapper) */
+.onboarding-link-wrapper {
+    margin-top: 40px;
+    padding-top: 20px;
+    /* ✅ Borde basado en el color de tarjeta */
+    border-top: 1px solid var(--color-card-dark); 
+}
+
+.onboarding-link-wrapper .subtitle {
+    font-size: 0.9em;
+    /* ✅ Texto secundario */
+    color: var(--color-text-muted);
+}
+
+.onboarding-link-wrapper .link {
+    /* ✅ Enlace con color de acento */
+    color: var(--color-accent-teal);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* ============================================== */
+/* MEDIA QUERIES (RESPONSIVE) */
+/* ============================================== */
+@media (max-width: 480px) {
+    .onboarding-title {
+        font-size: 1.5em;
+    }
+    .onboarding-text {
+        font-size: 1.1em;
+    }
+}

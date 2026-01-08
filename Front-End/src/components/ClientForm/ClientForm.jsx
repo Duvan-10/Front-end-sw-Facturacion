@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { API_URL } from '../../api';
 import "../styles1.css"
 
 
@@ -8,9 +9,7 @@ function ClienteForm() {
     const navigate = useNavigate();
     const isEdit = Boolean(id);
 
-    const apiBaseUrl = import.meta.env.VITE_API_URL 
-        ? `${import.meta.env.VITE_API_URL}/clientes` 
-        : 'http://localhost:8080/api/clientes';
+    const apiBaseUrl = `${API_URL}/clientes`;
 
     const [formData, setFormData] = useState({
         tipo_identificacion: 'Cédula de Ciudadanía',
@@ -24,15 +23,15 @@ function ClienteForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Obtener token desde sessionStorage
-    const getAuthToken = () => sessionStorage.getItem('authToken');
+    // Obtener token desde sessionStorage (consistente con AuthContext)
+    const getAuthToken = () => sessionStorage.getItem('token');
 
     useEffect(() => {
         const token = getAuthToken();
         
-        // Redirección inmediata si no hay token (Evita 404 al usar '/')
+        // Redirección inmediata si no hay token
         if (!token) {
-            navigate('/'); 
+            navigate('/login'); 
             return;
         }
 
@@ -44,8 +43,8 @@ function ClienteForm() {
                     });
                     
                     if (response.status === 401 || response.status === 403) {
-                        sessionStorage.removeItem('authToken');
-                        navigate('/'); 
+                        sessionStorage.removeItem('token');
+                        navigate('/login'); 
                         return;
                     }
                     
@@ -72,7 +71,7 @@ function ClienteForm() {
 
     const token = getAuthToken();
     if (!token) {
-        navigate('/');
+        navigate('/login');
         return;
     }
 
