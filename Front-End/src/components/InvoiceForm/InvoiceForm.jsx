@@ -1,7 +1,7 @@
  import React from 'react';
  import { useNavigate } from 'react-router-dom';
  import { useInvoiceLogic } from './logica.js';
- import '../styles1.css';
+ import '../Froms.css';
 
  
   //------------Funcion Formulario-------------//

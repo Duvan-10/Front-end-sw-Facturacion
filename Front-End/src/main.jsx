@@ -1,15 +1,34 @@
-// Front-end/src/main.jsx
+/**
+ * ============================================================
+ * PUNTO DE ENTRADA DE REACT (FRONTEND)
+ * Archivo: main.jsx
+ * RESPONSABILIDAD:
+ *  - Montar el componente raíz App en el DOM.
+ *  - Envolver la aplicación con BrowserRouter, ThemeProvider y AuthProvider.
+ * ============================================================
+ */
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.jsx'; // 👈 1. Importa tu componente raíz
+import App from './App.jsx';
 
-// 2. Importa estilos globales si los tienes (ej. un archivo de reset o variables globales)
+// 1. Componente que maneja la navegación del navegador (el sistema de rutas).
+import { BrowserRouter } from 'react-router-dom';
+// 2. Proveedor que expone el estado de autenticación en toda la App.
+import { AuthProvider } from './context/AuthContext.jsx'; 
+// 3. Proveedor global de tema (claro/oscuro).
+import { ThemeProvider } from './context/ThemeContext.jsx';
+
 import './styles/global.css'; 
 
-// 3. Renderiza la aplicación en el 'div id="root"' del index.html
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App /> {/* 👈 Renderiza App, el cual a su vez renderiza tu Login */}
+    <BrowserRouter>
+      <ThemeProvider>
+        <AuthProvider> 
+          <App />
+        </AuthProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 );

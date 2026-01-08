@@ -1,7 +1,7 @@
 // Front-End/src/view/Home.jsx
 
 import React from 'react';
-import './styles.css' ;
+import './Home.css' ;
 
 function Home() {
 

@@ -3,7 +3,7 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import './styles.css';
+import './Layout.css';
 
 function Layout() {
     const { user, logout } = useAuth();

@@ -102,11 +102,126 @@
 /* ============================================== */
 /* MEDIA QUERIES (RESPONSIVE) */
 /* ============================================== */
-@media (max-width: 480px) {
-    .onboarding-title {
-        font-size: 1.5em;
+
+/* Tablets y pantallas medianas (481px - 768px) */
+@media (max-width: 768px) {
+    .onboarding-container {
+        padding: 30px 15px;
     }
+
+    .onboarding-logo {
+        width: 50%;
+        max-width: 200px;
+        margin-bottom: 20px;
+    }
+
+    .onboarding-title {
+        font-size: 1.6em;
+        margin-bottom: 15px;
+        padding: 0 10px;
+    }
+
     .onboarding-text {
+        font-size: 1.2em;
+        margin-bottom: 25px;
+        padding: 0 10px;
+    }
+
+    .onboarding-button-register {
+        font-size: 1em;
+        padding: 13px 30px;
+        max-width: 280px;
+    }
+}
+
+/* Móviles pequeños y medianos (320px - 480px) */
+@media (max-width: 480px) {
+    .onboarding-container {
+        padding: 20px 10px;
+        min-height: 100vh;
+        justify-content: space-evenly;
+    }
+
+    .onboarding-logo {
+        width: 45%;
+        max-width: 150px;
+        margin-bottom: 15px;
+    }
+
+    .onboarding-title {
+        font-size: 1.3em;
+        margin-bottom: 12px;
+        padding: 0 8px;
+        line-height: 1.4;
+    }
+
+    .onboarding-text {
+        font-size: 1em;
+        margin-bottom: 20px;
+        padding: 0 8px;
+        line-height: 1.5;
+    }
+
+    .onboarding-text br {
+        display: none; /* Evita saltos de línea forzados en móviles */
+    }
+
+    .onboarding-button-register {
+        font-size: 0.95em;
+        padding: 12px 25px;
+        max-width: 260px;
+    }
+
+    .onboarding-link-wrapper {
+        margin-top: 25px;
+        padding-top: 15px;
+    }
+
+    .onboarding-link-wrapper .subtitle {
+        font-size: 0.85em;
+    }
+}
+
+/* Móviles muy pequeños (max 360px) */
+@media (max-width: 360px) {
+    .onboarding-logo {
+        width: 40%;
+        max-width: 120px;
+    }
+
+    .onboarding-title {
         font-size: 1.1em;
+    }
+
+    .onboarding-text {
+        font-size: 0.9em;
+    }
+
+    .onboarding-button-register {
+        font-size: 0.9em;
+        padding: 10px 20px;
+        max-width: 240px;
+    }
+}
+
+/* Pantallas muy grandes (1200px+) */
+@media (min-width: 1200px) {
+    .onboarding-logo {
+        max-width: 280px;
+    }
+
+    .onboarding-title {
+        font-size: 2em;
+    }
+
+    .onboarding-text {
+        font-size: 1.6em;
+        max-width: 800px;
+    }
+
+    .onboarding-button-register {
+        font-size: 1.2em;
+        padding: 16px 40px;
+        max-width: 350px;
     }
 }

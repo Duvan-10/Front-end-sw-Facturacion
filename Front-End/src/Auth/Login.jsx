@@ -28,6 +28,7 @@ function Login() {
     const [rememberMe, setRememberMe] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
+    const [selectedRole, setSelectedRole] = useState('Usuario'); // Rol por defecto
 
     // ========================================================
     // 2. EFECTOS SECUNDARIOS
@@ -77,14 +78,13 @@ function Login() {
         if (setStatusMessage) setStatusMessage({ type: null, message: '' });
 
         if (!validateForm()) {
-            if (setStatusMessage) {
-                setStatusMessage({ type: 'error', message: 'Por favor, completa todos los campos.' });
-            }
+            setStatusMessage({ type: 'error', message: 'Por favor, completa todos los campos.' });
             return;
         }
 
         try {
-            const success = await login({ email, password });
+            // Se pasa el rol seleccionado a la función de login
+            const success = await login({ email, password, role: selectedRole });
             if (success) {
                 navigate('/home', { replace: true });
             }
@@ -117,7 +117,9 @@ function Login() {
                     </p>
                 )}
 
+
                 {/* Formulario de Login */}
+
                 <form onSubmit={handleSubmit}>
                     {/* Campo de Email */}
 

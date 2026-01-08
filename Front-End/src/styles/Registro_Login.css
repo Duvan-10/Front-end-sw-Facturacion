@@ -1,5 +1,6 @@
 /* =================================================================
  * ESTILOS DE AUTENTICACIÓN
+ * Archivo: styles1.css
  * NOTA: Los estilos están duplicados y separados por ámbito (Scope)
  * para permitir personalización exclusiva en Login o Registro sin conflictos.
  * ================================================================= */
@@ -57,55 +58,6 @@
     color: var(--color-text-light); 
     margin: 0 0 15px; 
 }
-
-/* --- Selector de Rol (Exclusivo Login) --- */
-.auth-login .role-selector-container {
-    margin-bottom: 20px; 
-    text-align: center;
-}
-
-.auth-login .role-selector-title {
-    color: var(--color-text-muted);
-    font-size: 0.9em; 
-    font-weight: 500; 
-    margin: 0 0 10px; 
-    text-align: center;
-}
-
-.auth-login .role-options {
-    display: flex; 
-    justify-content: center;
-    gap: 15px; 
-}
-
-.auth-login .role-option {
-    flex-grow: 1;
-    cursor: pointer;
-    padding: 10px 15px;
-    border-radius: 6px;
-    border: 1px solid #333;
-    background-color: transparent; 
-    color: var(--color-text-light);
-    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
-}
-
-.auth-login .role-option:hover {
-    background-color: var(--color-input-hover); 
-    border-color: var(--color-text-muted);
-}
-
-.auth-login .role-option.selected {
-    border-color: var(--color-accent-teal); 
-    background-color: var(--color-accent-teal); 
-    color: var(--color-background-dark); 
-    font-weight: bold;
-    box-shadow: 0 0 10px rgba(0, 230, 118, 0.4); 
-}
-
-.auth-login .role-option input[type="radio"] {
-    display: none; 
-}
-
 /* --- Inputs y Campos Login --- */
 .auth-login .field {
     margin-bottom: 15px;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../../api';
-import "../styles1.css"
+import "../Froms.css"
 
 
 const ProductForm = () => {
