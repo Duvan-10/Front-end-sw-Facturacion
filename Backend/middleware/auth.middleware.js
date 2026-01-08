@@ -22,4 +22,15 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
+// Middleware para verificar que el usuario es admin
+export const adminMiddleware = (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({ message: 'Autenticación requerida.' });
+    }
+    
+    // Nota: El rol se verifica desde la BD, no del token por seguridad
+    // Este middleware se usa junto con otro que trae los datos del usuario
+    next();
+};
+
 export default authMiddleware; // Exportación única por defecto

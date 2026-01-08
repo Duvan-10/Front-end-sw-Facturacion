@@ -1,36 +1,44 @@
 // ruta: Backend/controllers/auth.controller.js
 
-import { createUser, findUserByIdentification, findUserByEmail, bcrypt } from '../models/user.model.js';
+import { createUser, findUserByIdentification, findUserByEmail, hasUsers, bcrypt } from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 // Cargar el secreto JWT desde las variables de entorno
 const JWT_SECRET = process.env.JWT_SECRET || 'secreto_super_seguro_por_defecto'; 
 
 
-// Controlador para el REGISTRO de un nuevo usuario
+// Controlador para el REGISTRO de un nuevo usuario (SOLO PRIMER USUARIO)
 export const register = async (req, res) => {
     try {
         const { name, identification, email, password } = req.body;
 
-        // 1. CONDICIÓN: Validar que la cédula no esté en la base de datos (REQUISITO PRINCIPAL)
+        // 1. VALIDACIÓN CRÍTICA: Solo permitir registro si NO hay usuarios en el sistema
+        const usersExist = await hasUsers();
+        if (usersExist) {
+            return res.status(403).json({ 
+                message: 'El registro está deshabilitado. Solo el administrador puede crear nuevos usuarios.' 
+            });
+        }
+
+        // 2. Validar que la cédula no esté en la base de datos
         const existingUserByIdentification = await findUserByIdentification(identification);
         if (existingUserByIdentification) {
-            // Retorna un error 409 (Conflict) si la cédula ya existe
             return res.status(409).json({ message: 'La identificación (Cédula) ya está registrada.' });
         }
 
-        // Opcional: Validar que el email no esté ya registrado
+        // 3. Validar que el email no esté registrado
         const existingUserByEmail = await findUserByEmail(email);
         if (existingUserByEmail) {
             return res.status(409).json({ message: 'El correo electrónico ya está en uso.' });
         }
         
-        // 2. Guardar el nuevo usuario (la contraseña se encripta en el modelo)
-        const userId = await createUser({ name, identification, email, password });
+        // 4. Este es el primer usuario, será admin
+        const userId = await createUser({ name, identification, email, password, role: 'admin' });
 
-        // 3. Respuesta de éxito
+        // 5. Respuesta de éxito
         res.status(201).json({ 
-            message: 'Usuario registrado con éxito',
-            userId: userId
+            message: 'Usuario administrador registrado con éxito',
+            userId: userId,
+            role: 'admin'
         });
 
     } catch (error) {
@@ -68,12 +76,25 @@ export const login = async (req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                identification: user.identification
+                identification: user.identification,
+                role: user.role
             }
         });
 
     } catch (error) {
         console.error('Error en el inicio de sesión:', error);
+        res.status(500).json({ message: 'Error interno del servidor.' });
+    }
+};
+
+
+// Controlador para verificar si existen usuarios registrados
+export const checkHasUsers = async (req, res) => {
+    try {
+        const usersExist = await hasUsers();
+        res.status(200).json({ hasUsers: usersExist });
+    } catch (error) {
+        console.error('Error al verificar usuarios:', error);
         res.status(500).json({ message: 'Error interno del servidor.' });
     }
 };
