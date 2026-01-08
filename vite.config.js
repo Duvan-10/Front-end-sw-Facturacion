@@ -1,11 +1,23 @@
-// Front-end-sw-Facturacion/vite.config.js
+// vite.config.js - Configuración raíz que apunta a Front-End
 
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // 👈 CRÍTICO: Indica a Vite que la raíz del proyecto web está aquí
-  root: 'Front-end', 
-})
+  root: 'Front-End',
+  server: {
+    host: true,
+    port: 5173,
+    strictPort: false,
+    open: true,
+    cors: true,
+  },
+  build: {
+    outDir: '../dist',
+  },
+  preview: {
+    port: 5173,
+    host: true,
+  }
+});
