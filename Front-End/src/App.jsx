@@ -19,6 +19,9 @@ import ThemeSwitch from './components/ThemeSwitch';
 import ProtectedRoute from './components/ProtectedRoute';
 import { API_URL } from './api'; // Importamos la configuración local del Frontend
 
+// Importar componente protegido
+import Home from './home/home';
+
 // --- CONTEXTO GLOBAL PARA VERIFICACIÓN DE USUARIOS ---
 // Almacena el estado de si existen usuarios en el sistema
 export const SystemContext = React.createContext(null);
@@ -100,7 +103,13 @@ function App() {
                 {/* RUTAS DE AUTENTICACIÓN (Públicas) */}
                 <Route path="/login" element={<Login />} />
 
+                {/* RUTAS PROTEGIDAS (requieren autenticación) */}
+                <Route path="/home/*" element={<ProtectedRoute />}>
+                    <Route path="*" element={<Home />} />
+                </Route>
 
+                {/* RUTA POR DEFECTO - Redirige al login si no hay ruta */}
+                <Route path="*" element={<Navigate to="/login" replace />} />
 
             </Routes>
         </>
