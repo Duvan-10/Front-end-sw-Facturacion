@@ -135,3 +135,47 @@ MEJORAS SUGERIDAS:
   - Dashboard de estadísticas de recuperaciones
 
 ================================================================================
+
+================================================================================
+FECHA: 9 de Enero de 2026
+================================================================================
+
+RESUMEN GENERAL:
+Optimización crítica del servicio de correos para evitar Timeouts y reingeniería 
+completa de la interfaz del Dashboard (Home) para mejorar la experiencia de usuario 
+(UX/UI) y la adaptabilidad a diferentes dispositivos (Responsive Design).
+
+--------------------------------------------------------------------------------
+ACTIVIDADES REALIZADAS:
+--------------------------------------------------------------------------------
+
+1. SOLUCIÓN DE ERRORES EN ENVÍO DE EMAILS (BACKEND)
+- Se aumentaron los timeouts (connection, greeting, socket) a 60s en Nodemailer.
+     
+
+2. MEJORAS EN DASHBOARD Y NAVEGACIÓN (FRONTEND)
+   
+   Funcionalidad de Menú (Sidebar):
+   - Implementación de lógica para Ocultar/Fijar el menú lateral.
+   - Estado "Activo": Resaltado visual de la sección actual en el menú.
+   - Botón flotante (Toggle) para controlar el menú, posicionado dinámicamente.
+   - Mejora de UX: Ampliación del área de clic (Hit Area) en los botones del menú.
+   
+   Diseño Responsivo (Home.css):
+   - Escritorio: El menú se oculta completamente (width: 0) para maximizar espacio.
+   - Laptops (hasta 1366px): Ajuste de escala y scroll vertical para pantallas bajas.
+   - Móviles: Transformación del menú en barra superior tipo "acordeón" con botones tipo chip.
+   
+   Archivos modificados:
+   - Front-End/src/home/home.jsx
+   - Front-End/src/styles/home.css
+
+--------------------------------------------------------------------------------
+ESTADO FINAL DEL MÓDULO HOME:
+--------------------------------------------------------------------------------
+
+✅ Navegación fluida y reactiva entre módulos.
+✅ Adaptabilidad perfecta en Móviles, Tablets y Laptops.
+✅ Mayor espacio de trabajo útil al ocultar el menú.
+✅ Feedback visual claro para el usuario sobre su ubicación en el sistema.
+================================================================================
