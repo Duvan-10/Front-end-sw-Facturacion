@@ -34,6 +34,18 @@ function Login() {
     // 2. EFECTOS SECUNDARIOS
     // ========================================================
 
+    // Efecto para cargar credenciales guardadas si existe "recordarme"
+    useEffect(() => {
+        const savedEmail = localStorage.getItem('rememberedEmail');
+        const savedPassword = localStorage.getItem('rememberedPassword');
+        
+        if (savedEmail && savedPassword) {
+            setEmail(savedEmail);
+            setPassword(savedPassword);
+            setRememberMe(true);
+        }
+    }, []);
+
     // Efecto para redirigir si el usuario ya está autenticado
     useEffect(() => {
         if (isAuthenticated) {
@@ -85,7 +97,17 @@ function Login() {
         try {
             // Se pasa el rol seleccionado a la función de login
             const success = await login({ email, password, role: selectedRole });
+            
             if (success) {
+                // Guardar o limpiar credenciales según la opción "Recordarme"
+                if (rememberMe) {
+                    localStorage.setItem('rememberedEmail', email);
+                    localStorage.setItem('rememberedPassword', password);
+                } else {
+                    localStorage.removeItem('rememberedEmail');
+                    localStorage.removeItem('rememberedPassword');
+                }
+                
                 navigate('/home', { replace: true });
             }
             // El AuthContext se encarga de gestionar el mensaje de error si 'success' es false

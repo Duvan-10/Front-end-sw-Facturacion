@@ -15,6 +15,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import WelcomePage from './auth/WelcomePage';
 import Login from './auth/Login';
 import Register from './auth/Register';
+import ForgotPassword from './auth/ForgotPassword';
+import ResetPassword from './auth/ResetPassword';
 import ThemeSwitch from './components/ThemeSwitch'; 
 import ProtectedRoute from './components/ProtectedRoute';
 import { API_URL } from './api'; // Importamos la configuración local del Frontend
@@ -102,6 +104,8 @@ function App() {
 
                 {/* RUTAS DE AUTENTICACIÓN (Públicas) */}
                 <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
                 {/* RUTAS PROTEGIDAS (requieren autenticación) */}
                 <Route path="/home/*" element={<ProtectedRoute />}>
