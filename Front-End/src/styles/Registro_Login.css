@@ -1,0 +1,493 @@
+/* =================================================================
+ * ESTILOS DE AUTENTICACIÓN
+ * Archivo: styles1.css
+ * NOTA: Los estilos están duplicados y separados por ámbito (Scope)
+ * para permitir personalización exclusiva en Login o Registro sin conflictos.
+ * ================================================================= */
+
+/* =================================================================
+ * SECCIÓN 1: ESTILOS EXCLUSIVOS PARA LOGIN (.auth-login)
+ * ================================================================= */
+
+/* --- Layout Principal Login --- */
+.auth-login {
+    min-height: 85vh;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    padding: 0px;
+    overflow-y: auto; 
+    background-color: var(--color-background-dark); 
+}
+
+/* --- Tarjeta del Formulario Login --- */
+.auth-login .auth-card {
+    width: 100%;
+    max-width: 400px; 
+    min-width: 300px; 
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25); 
+    background-color: var(--color-card-dark);
+}
+
+/* --- Cabecera Login --- */
+.auth-login .auth-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.auth-login .brand-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 10px rgba(0, 230, 118, 0.6));
+}
+
+.auth-login .auth-header h1 {
+    font-size: 1.8em; 
+    font-weight: 700;
+    color: var(--color-accent-teal); 
+    margin: 0;
+}
+
+/* Tagline (Exclusivo Login) */
+.auth-login .tagline {
+    font-size: 1.1em;
+    font-weight: 600; 
+    color: var(--color-text-light); 
+    margin: 0 0 15px; 
+}
+/* --- Inputs y Campos Login --- */
+.auth-login .field {
+    margin-bottom: 15px;
+}
+
+.auth-login .field label {
+    display: block;
+    margin-bottom: 6px; 
+    font-weight: 600;
+    color: var(--color-text-light);
+    font-size: 0.9em;
+}
+
+.auth-login input[type="email"],
+.auth-login input[type="password"],
+.auth-login input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--color-input-background); 
+    border: 1px solid #333;
+    color: var(--color-input-text);
+    border-radius: 6px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+.auth-login input:focus {
+    border-color: var(--color-accent-teal); 
+    outline: none;
+    box-shadow: 0 0 0 1px var(--color-accent-teal);
+}
+
+.auth-login input.input-error {
+    border-color: var(--color-error-text) !important;
+    box-shadow: 0 0 0 1px var(--color-error-text) !important;
+}
+
+/* Autofill Fix Login */
+.auth-login input:-webkit-autofill,
+.auth-login input:-webkit-autofill:hover, 
+.auth-login input:-webkit-autofill:focus, 
+.auth-login input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--color-input-background) inset !important;
+    -webkit-text-fill-color: var(--color-input-text) !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Utilidad para label y botón mostrar (Login) */
+.auth-login .label-mostrar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+/* --- Opciones Extra Login (Recordarme / Recuperar) --- */
+.auth-login .Options-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    font-size: 1em;
+}
+
+.auth-login .remember-me {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--color-text-light);
+}
+
+.auth-login .remember-me input[type="checkbox"] {
+    margin-right: 8px;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--color-text-muted);
+    background-color: var(--color-input-background);
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    display: grid;
+    place-content: center;
+}
+
+.auth-login .remember-me input[type="checkbox"]::after {
+    content: '';
+    width: 0.65em;
+    height: 0.65em;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em var(--color-background-dark);
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+.auth-login .remember-me input[type="checkbox"]:checked {
+    background-color: var(--color-accent-teal);
+    border-color: var(--color-accent-teal);
+}
+
+.auth-login .remember-me input[type="checkbox"]:checked::after {
+    transform: scale(1.2);
+}
+
+/* --- Botones y Enlaces Login --- */
+.auth-login .link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: var(--color-accent-teal);
+    font-size: 0.9em;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.auth-login .link-button:hover {
+    color: var(--color-accent-darker);
+    text-decoration: underline;
+}
+
+.auth-login .form-actions {
+    margin-top: 20px;
+}
+
+.auth-login .btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-login .btn.primary {
+    background-color: var(--color-accent-teal);
+    color: var(--color-background-dark); 
+}
+
+.auth-login .btn.primary:hover:not(:disabled) {
+    background-color: var(--color-accent-darker);
+}
+
+.auth-login .btn:disabled {
+    background-color: #4a5568;
+    color: #a0aec0;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+/* --- Mensajes y Estados Login --- */
+.auth-login .help {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.8em;
+    color: var(--color-text-muted);
+}
+
+.auth-login .help.error {
+    color: var(--color-error-text);
+    font-weight: 600;
+}
+
+.auth-login .status {
+    text-align: center;
+    padding: 10px 15px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+    animation: fade-in 0.3s ease-out;
+}
+
+.auth-login .status.error-message {
+    background-color: hsl(0, 3%, 17%);
+    color: hsl(0, 0%, 99%);
+    border: 1px solid hsl(0, 0%, 95%);
+}
+
+/* =================================================================
+ * SECCIÓN 2: ESTILOS EXCLUSIVOS PARA REGISTRO (.auth-register)
+ * ================================================================= */
+
+/* --- Layout Principal Registro --- */
+.auth-register {
+    min-height: 90vh;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    padding: 0px;
+    overflow-y: auto; 
+    background-color: var(--color-background-dark); 
+}
+
+/* --- Tarjeta del Formulario Registro --- */
+.auth-register .auth-card {
+    width: 100%;
+    max-width: 400px; 
+    min-width: 300px; 
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25); 
+    background-color: var(--color-card-dark);
+}
+
+/* --- Cabecera Registro --- */
+.auth-register .auth-header {
+    text-align: center;
+    margin-bottom: 0px;
+}
+
+.auth-register .brand-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 0px;
+    filter: drop-shadow(0 0 10px rgba(0, 230, 118, 0.6));
+}
+
+.auth-register .auth-header h1 {
+    font-size: 1.8em; 
+    font-weight: 700;
+    color: var(--color-accent-teal); 
+    margin: 0;
+}
+
+/* Subtítulo (Exclusivo Registro) */
+.auth-register .subtitle {
+    font-size: 1em; 
+    font-weight: 400;
+    color: var(--color-text-muted);
+    margin: 0 0 15px; 
+}
+
+/* --- Inputs y Campos Registro --- */
+.auth-register .field {
+    margin-bottom: 10px;
+}
+
+.auth-register .field label {
+    display: block;
+    margin-bottom: 0px; 
+    font-weight: 600;
+    color: var(--color-text-light);
+    font-size: 0.9em;
+}
+
+.auth-register input[type="email"],
+.auth-register input[type="password"],
+.auth-register input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--color-input-background); 
+    border: 1px solid hsl(0, 0%, 20%);
+    color: var(--color-input-text);
+    border-radius: 6px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+.auth-register input:focus {
+    border-color: var(--color-accent-teal); 
+    outline: none;
+    box-shadow: 0 0 0 1px var(--color-accent-teal);
+}
+
+.auth-register input.input-error {
+    border-color: var(--color-error-text) !important;
+    box-shadow: 0 0 0 1px var(--color-error-text) !important;
+}
+
+/* Autofill Fix Registro */
+.auth-register input:-webkit-autofill,
+.auth-register input:-webkit-autofill:hover, 
+.auth-register input:-webkit-autofill:focus, 
+.auth-register input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--color-input-background) inset !important;
+    -webkit-text-fill-color: var(--color-input-text) !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Utilidad para label y botón mostrar (Registro) */
+.auth-register .label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+/* --- Botones y Enlaces Registro --- */
+.auth-register .link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: var(--color-accent-teal);
+    font-size: 0.9em;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.auth-register .link-button:hover {
+    color: var(--color-accent-darker);
+    text-decoration: underline;
+}
+
+.auth-register .form-actions {
+    margin-top: 20px;
+}
+
+.auth-register .btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-register .btn.primary {
+    background-color: var(--color-accent-teal);
+    color: var(--color-background-dark); 
+}
+
+.auth-register .btn.primary:hover:not(:disabled) {
+    background-color: var(--color-accent-darker);
+}
+
+.auth-register .btn:disabled {
+    background-color: #4a5568;
+    color: #a0aec0;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.auth-register .btn.primary:disabled .icon-locked {
+    color: #a0aec0;
+    font-size: 1.1em;
+    margin-right: 8px; 
+    animation: shake 0.5s infinite alternate; 
+}
+
+/* --- Mensajes y Estados Registro --- */
+.auth-register .help {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.8em;
+    color: var(--color-text-muted);
+}
+
+.auth-register .help.error {
+    color: var(--color-error-text);
+    font-weight: 600;
+}
+
+.auth-register .status {
+    text-align: center;
+    padding: 10px 15px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+    animation: fade-in 0.3s ease-out;
+}
+
+.auth-register .status.error-message {
+    background-color: hwb(0 9% 90%);
+    color: lab(86.72% 1.71 0.6);
+    border: 1px solid hsl(0, 4%, 10%);
+}
+
+.auth-register .status.success-message {
+    background-color: #f0fff4;
+    color: #2f855a;
+    border: 1px solid #c6f6d5;
+}
+
+/* --- Pie de Página Registro --- */
+.auth-register .register-wrapper {
+    margin-top: 25px; 
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.auth-register .register-wrapper p {
+    margin: 0;
+    color: var(--color-text-muted);
+}
+
+/* --- Animaciones Globales (Compartidas) --- */
+@keyframes shake {
+    from { transform: translateX(0); }
+    to { transform: translateX(1px); }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-3px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Ajustes Responsive (Aplicados a ambos) --- */
+@media (max-width: 450px) {
+    .auth-login, .auth-register {
+        align-items: flex-start; 
+        padding: 10px;
+    }
+
+    .auth-login .auth-card,
+    .auth-register .auth-card {
+        width: 100%; 
+        min-width: unset; 
+        max-width: 100%;
+        margin: 0;
+        padding: 15px; /* Padding reducido para móviles */
+    }
+}

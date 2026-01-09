@@ -117,26 +117,6 @@ function Login() {
                     </p>
                 )}
 
-                {/* Selector de Roles */}
-                <div className="role-selector-container">
-                    <p className="role-selector-title">Iniciar sesión como:</p>
-                    <div className="role-options">
-                        <button
-                            type="button"
-                            className={`role-option ${selectedRole === 'Administrador' ? 'selected' : ''}`}
-                            onClick={() => setSelectedRole('Administrador')}
-                        >
-                            Administrador
-                        </button>
-                        <button
-                            type="button"
-                            className={`role-option ${selectedRole === 'Usuario' ? 'selected' : ''}`}
-                            onClick={() => setSelectedRole('Usuario')}
-                        >
-                            Usuario
-                        </button>
-                    </div>
-                </div>
 
                 {/* Formulario de Login */}
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import "../styles1.css"
+import { API_URL } from '../../api';
+import "../Froms.css"
 
 
 const ProductForm = () => {
@@ -8,11 +9,10 @@ const ProductForm = () => {
     const navigate = useNavigate();
     const isEditing = !!id; 
 
-    const apiBaseUrl = import.meta.env.VITE_API_URL 
-        ? `${import.meta.env.VITE_API_URL}/productos` 
-        : 'http://localhost:8080/api/productos'; 
+    const apiBaseUrl = `${API_URL}/productos`;
     
-    const getAuthToken = () => sessionStorage.getItem('authToken');
+    // Obtener token desde sessionStorage (consistente con AuthContext)
+    const getAuthToken = () => sessionStorage.getItem('token');
     
     const [productData, setProductData] = useState({
         codigo: '', nombre: '', precio: '', descripcion: '', impuesto_porcentaje: '0', 
@@ -24,7 +24,7 @@ const ProductForm = () => {
     useEffect(() => {
         const token = getAuthToken();
         if (!token) {
-            navigate('/');
+            navigate('/login');
             return;
         }
 
@@ -37,8 +37,8 @@ const ProductForm = () => {
                     });
                     
                     if (response.status === 401) {
-                        sessionStorage.removeItem('authToken');
-                        navigate('/');
+                        sessionStorage.removeItem('token');
+                        navigate('/login');
                         return;
                     }
                     if (!response.ok) throw new Error(`No se pudo cargar el producto.`);
@@ -65,7 +65,7 @@ const ProductForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = getAuthToken();
-        if (!token) { navigate('/'); return; }
+        if (!token) { navigate('/login'); return; }
 
         setLoading(true);
         const finalData = { 
@@ -82,7 +82,7 @@ const ProductForm = () => {
             });
 
             if (!response.ok) {
-                if (response.status === 401) { navigate('/'); return; }
+                if (response.status === 401) { navigate('/login'); return; }
                 const result = await response.json();
                 throw new Error(result.message || "Error al guardar");
             }

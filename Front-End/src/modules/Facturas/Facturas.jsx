@@ -18,7 +18,7 @@ function Facturas() {
 
     // Función auxiliar para obtener el token y los headers
     const getAuthHeaders = () => {
-        const token = localStorage.getItem('token'); // Asegúrate de que se llame 'token' al guardarlo en el login
+        const token = sessionStorage.getItem('token'); // Lee del mismo lugar que AuthContext
         return {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
