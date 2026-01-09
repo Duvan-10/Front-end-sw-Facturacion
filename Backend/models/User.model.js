@@ -44,5 +44,39 @@ export const hasUsers = async () => {
     return rows[0].count > 0;
 };
 
+// Función para generar un token de recuperación de contraseña
+export const createPasswordResetToken = async (userId) => {
+    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const expires = new Date(Date.now() + 3600000); // Token válido por 1 hora
+    
+    // Guardar el token en la base de datos
+    await pool.query(
+        'UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?',
+        [token, expires, userId]
+    );
+    
+    return token;
+};
+
+// Función para verificar un token de recuperación
+export const verifyPasswordResetToken = async (token) => {
+    const [rows] = await pool.query(
+        'SELECT id, email FROM users WHERE reset_token = ? AND reset_token_expires > NOW()',
+        [token]
+    );
+    return rows[0];
+};
+
+// Función para actualizar la contraseña de un usuario
+export const updatePassword = async (userId, newPassword) => {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    
+    await pool.query(
+        'UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
+        [hashedPassword, userId]
+    );
+};
+
 // Exportar bcrypt para uso en el controlador de Login
 export { bcrypt };
