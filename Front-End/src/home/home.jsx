@@ -8,9 +8,9 @@
  *  - Manejar todas las rutas internas del sistema.
  * ============================================================
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Routes, Route, Link, Navigate } from 'react-router-dom';
+import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import '../styles/home.css';
 import { 
   FaUserCog, 
@@ -20,7 +20,9 @@ import {
   FaBox, 
   FaChartLine, 
   FaUserCircle,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaBars,
+  FaChevronLeft
 } from 'react-icons/fa';
 
 // Importar módulos
@@ -33,59 +35,86 @@ import GestionUsuarios from '../modules/GestionUsuarios/GestionUsuarios';
 
 const Home = () => {
   const { user, logout } = useAuth();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Estado para controlar el menú
+  const location = useLocation(); // Hook para saber en qué ruta estamos
+
+  // Función para alternar el menú
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  // Función auxiliar para verificar si el link está activo
+  const isActive = (path) => location.pathname === path ? 'active' : '';
   
   return (
     <>
+      {/* Botón para Ocultar/Fijar el menú (Ahora fuera del sidebar para persistir) */}
+      <button className={`sidebar-toggle ${isSidebarOpen ? 'open' : 'closed'}`} onClick={toggleSidebar} title={isSidebarOpen ? "Ocultar menú" : "Mostrar menú"}>
+        {isSidebarOpen ? <FaChevronLeft /> : <FaBars />}
+      </button>
+
       {/* --- SIDEBAR / MENÚ LATERAL --- */}
-      <div className="sidebar">
+      <div className={`sidebar ${isSidebarOpen ? '' : 'collapsed'}`}>
+
         <h2>{user?.name || 'Usuario'}</h2>
+
         <div className="user-icon">
           <img src="https://via.placeholder.com/80" alt="Foto del usuario" />
         </div>
+
         <ul>
-          <li>
-            <Link to="/home">
-              <FaHome /> Dashboard
-            </Link>
-          </li>
-          <li>
-            <Link to="/home/facturas">
-              <FaFileInvoiceDollar /> Facturas
-            </Link>
-          </li>
-          <li>
-            <Link to="/home/clientes">
-              <FaUsers /> Clientes
-            </Link>
-          </li>
-          <li>
-            <Link to="/home/productos">
-              <FaBox /> Productos
-            </Link>
-          </li>
-          <li>
-            <Link to="/home/reportes">
-              <FaChartLine /> Reportes
-            </Link>
-          </li>
-          <li>
-            <Link to="/home/perfil">
-              <FaUserCircle /> Perfil
-            </Link>
-          </li>
-          {user?.role === 'admin' && (
-            <li>
+          
+         {user?.role === 'admin' && (
+            <li className={isActive('/home/usuarios')}>
               <Link to="/home/usuarios">
-                <FaUserCog /> Gestión de Usuarios
+                <FaUserCog /> <span>Gestión de Usuarios</span>
               </Link>
             </li>
           )}
-          <li onClick={logout} style={{ marginTop: '20px', borderTop: '1px solid var(--color-input-background)', paddingTop: '15px' }}>
+
+          <li className={isActive('/home')}>
+            <Link to="/home">
+              <FaHome /> <span>Dashboard</span>
+            </Link>
+          </li>
+          
+          <li className={isActive('/home/facturas')}>
+            <Link to="/home/facturas">
+              <FaFileInvoiceDollar /> <span>Facturas</span>
+            </Link>
+          </li>
+          
+          <li className={isActive('/home/clientes')}>
+            <Link to="/home/clientes">
+              <FaUsers /> <span>Clientes</span>
+            </Link>
+          </li>
+
+          <li className={isActive('/home/productos')}>
+            <Link to="/home/productos">
+              <FaBox /> <span>Productos</span>
+            </Link>
+          </li>
+
+          <li className={isActive('/home/reportes')}>
+            <Link to="/home/reportes">
+              <FaChartLine /> <span>Reportes</span>
+            </Link>
+          </li>
+
+          <li className={isActive('/home/perfil')}>
+            <Link to="/home/perfil">
+              <FaUserCircle /> <span>Configuración</span>
+            </Link>
+          </li>
+          
+          <li onClick={logout} style={{ marginTop: '20px', borderTop: '1px solid var(--color-input-background)' }}>
             <a style={{ cursor: 'pointer' }}>
-              <FaSignOutAlt /> Cerrar Sesión
+              <FaSignOutAlt /> <span>Cerrar Sesión</span>
             </a>
           </li>
+
+
         </ul>
+
       </div>
 
       {/* --- CONTENIDO PRINCIPAL (MAIN) --- */}
