@@ -1,128 +1,157 @@
-import React, { useState, useEffect } from 'react'; 
-// Asegúrate de que Facturas.css está importado en algún lugar
-
-// =======================================================
-// DATOS Y CONSTANTES (Simulación)
-// =======================================================
-
-const initialInvoices = [
-    { id: 'FAC-001', client: 'Tech Solutions Corp', date: '2025-11-20', total: 1500.00, status: 'Pagada', clientEmail: 'tech@corp.com', tipoFactura: 'Contado' },
-    { id: 'FAC-002', client: 'Innova Retail S.A.', date: '2025-11-25', total: 350.50, status: 'Pendiente', clientEmail: 'innova@retail.com', tipoFactura: 'Crédito' },
-    { id: 'FAC-003', client: 'Logistics Pro', date: '2025-12-01', total: 890.75, status: 'Pendiente', clientEmail: 'logis@pro.co', tipoFactura: 'Crédito' },
-    { id: 'FAC-004', client: 'Home Supplies Ltda', date: '2025-12-05', total: 120.00, status: 'Pagada', clientEmail: 'home@supplies.net', tipoFactura: 'Contado' },
-];
+import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { visualizarFactura } from '../../utils/pdfGenerator'; 
+import '../../styles/global.css';
 
 const ITEMS_PER_PAGE = 30; 
 
-// =======================================================
-// COMPONENTE PRINCIPAL: FACTURAS
-// =======================================================
-
 function Facturas() {
-    // 1. Estados principales
-    const [invoices, setInvoices] = useState(initialInvoices); 
-    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const [invoices, setInvoices] = useState([]); 
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    // 2. Estados para Búsqueda y Paginación
     const [searchQuery, setSearchQuery] = useState(''); 
     const [filterState, setFilterState] = useState(''); 
     const [currentPage, setCurrentPage] = useState(1); 
-    const [totalItems, setTotalItems] = useState(initialInvoices.length); 
+    const [totalItems, setTotalItems] = useState(0); 
+    const [isGenerating, setIsGenerating] = useState(null);
 
-    // **ESTADOS ELIMINADOS: isFormVisible y editingInvoiceData ya no se usan**
-    
-    // =======================================================
-    // I. LÓGICA DE CARGA Y FILTRADO (Se mantiene)
-    // =======================================================
-    
-    const getFilteredInvoices = () => {
-        let filtered = initialInvoices; 
-        
-        if (filterState) {
-            filtered = filtered.filter(inv => inv.status === filterState);
-        }
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            filtered = filtered.filter(inv => 
-                inv.id.toLowerCase().includes(query) ||
-                inv.client.toLowerCase().includes(query) ||
-                inv.date.includes(query) 
-            );
-        }
-        
-        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-        const pagedInvoices = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    // Función auxiliar para obtener el token y los headers
+    const getAuthHeaders = () => {
+        const token = sessionStorage.getItem('token'); // Lee del mismo lugar que AuthContext
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+    };
 
-        setTotalItems(filtered.length);
-        setInvoices(pagedInvoices);
+    const formatDate = (dateString) => {
+        if (!dateString) return '---';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-ES', {
+            day: '2-digit', month: '2-digit', year: 'numeric'
+        });
+    };
+
+    const fetchInvoices = async () => {
+        setLoading(true);
+        try {
+            // CORRECCIÓN: Agregado de headers con Token
+            const response = await fetch('http://localhost:8080/api/facturas', {
+                headers: getAuthHeaders()
+            });
+
+            if (response.status === 401) throw new Error('Sesión expirada. Por favor inicie sesión de nuevo.');
+            if (!response.ok) throw new Error('No se pudo conectar con el servidor.');
+
+            const data = await response.json();
+            let filtered = data;
+            
+            if (filterState) {
+                filtered = filtered.filter(inv => inv.status === filterState);
+            }
+
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                filtered = filtered.filter(inv => 
+                    inv.id.toString().toLowerCase().includes(query) ||
+                    inv.client.toLowerCase().includes(query)
+                );
+            }
+            
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const pagedInvoices = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+            setTotalItems(filtered.length);
+            setInvoices(pagedInvoices);
+            setError(null);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
-        getFilteredInvoices();
+        fetchInvoices();
     }, [searchQuery, filterState, currentPage]); 
 
-    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+    const handleView = async (invoice) => {
+        setIsGenerating(invoice.id_real);
+        try {
+            // CORRECCIÓN: Agregado de headers con Token en peticiones de PDF
+            const headers = getAuthHeaders();
+            
+            const resEmisor = await fetch('http://localhost:8080/api/emisor', { headers });
+            const emisorData = await resEmisor.json();
 
+            const resFactura = await fetch(`http://localhost:8080/api/facturas/${invoice.id_real}`, { headers });
+            if (!resFactura.ok) throw new Error("No se pudo obtener el detalle de la factura.");
+            const facturaDB = await resFactura.json();
 
-    // =======================================================
-    // II. HANDLERS DE NAVEGACIÓN Y CRUD
-    // =======================================================
-    
-    // Handler para cambios en la búsqueda (se mantiene)
+            const facturaMapeada = {
+                numero_factura: facturaDB.numero_factura,
+                fecha_emision: facturaDB.fecha_emision,
+                cliente: {
+                    identificacion: facturaDB.cliente.identificacion,
+                    nombre_razon_social: facturaDB.cliente.nombre_razon_social,
+                    telefono: facturaDB.cliente.telefono,
+                    direccion: facturaDB.cliente.direccion
+                },
+                detalles: facturaDB.detalles.map(d => ({
+                    cant: d.cant,
+                    detail: d.detail,
+                    unit: parseFloat(d.unit),
+                    total: d.total
+                })),
+                subtotal: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0),
+                iva: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0) * 0.19,
+                total: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0) * 1.19
+            };
+
+            await visualizarFactura(facturaMapeada, emisorData);
+        } catch (err) {
+            alert("Error al generar PDF: " + err.message);
+        } finally {
+            setIsGenerating(null);
+        }
+    };
+
+    // ... resto de las funciones (handleSearchChange, handleCreateNew, handleEdit, handleEmit)
+    // que se mantienen igual ya que no hacen fetch directo o usan navegación.
+
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
         setCurrentPage(1); 
     };
 
-    // --- NUEVO HANDLER: Crear Factura (Abre Pestaña Nueva) ---
-    const handleCreateNew = () => {
-        // Abre la ruta de creación en una nueva pestaña
-        window.open('/facturas/crear', '_blank'); 
-    };
-    
-    // --- NUEVO HANDLER: Editar Factura (Abre Pestaña Nueva) ---
-    const handleEdit = (invoice) => {
-        // Abre la ruta de edición en una nueva pestaña, pasando el ID
-        window.open(`/facturas/editar/${invoice.id}`, '_blank');
-    };
-    
-    // Handler de visualización (se mantiene)
-    const handleView = (invoice) => {
-        alert(`Simulando: Generar PDF de la Factura ${invoice.id}.`);
-    };
-    
-    // Handler de emisión (se mantiene)
-    const handleEmit = (invoice) => {
-        alert(`Simulando: Emitir Factura ${invoice.id}.`);
+    const handleCreateNew = () => { window.open('/facturas/crear', '_blank'); };
+
+    const handleEdit = (invoice) => { 
+        if (invoice.id_real) {
+            navigate(`/facturas/editar/${invoice.id_real}`);
+        } else {
+            alert("Error: El objeto factura no tiene 'id_real'.");
+        }
     };
 
-    // El handleSubmitInvoice ya no es necesario aquí si la persistencia ocurre en InvoiceForm
-    // Si necesitas manejar el resultado de una llamada API del formulario, tendrías que usar otro mecanismo (ej. Redux, Context, o un Event Bus).
-    
-    // =======================================================
-    // III. RENDERIZADO
-    // =======================================================
+    const handleEmit = (invoice) => { alert(`Emitiendo factura ${invoice.id}...`); };
 
     return (
         <div className="main-content">
+            {/* ... JSX del return (se mantiene igual) ... */}
             <h1 className="module-title">Gestión de Facturas</h1>
-
-            {/* --- 1. Controles de Búsqueda y Botón de Registro --- */}
+            {/* ... resto del código visual ... */}
             <section className="controls-section card">
                 <div className="search-bar">
-                    <label htmlFor="search">Buscar Factura (Número, Cliente, Fecha):</label>
+                    <label htmlFor="search">Buscar Factura:</label>
                     <input 
-                        type="text" 
-                        id="search"
-                        className="search-input" 
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        placeholder="Buscar por # Factura, Cliente, o Fecha..."
+                        type="text" id="search" className="search-input" 
+                        value={searchQuery} onChange={handleSearchChange}
+                        placeholder="ID o Cliente..."
                     />
                 </div>
                 
-                {/* Filtro por Estado */}
                 <select 
                     value={filterState} 
                     onChange={(e) => { setFilterState(e.target.value); setCurrentPage(1); }} 
@@ -133,68 +162,70 @@ function Facturas() {
                     <option value="Pendiente">Pendiente</option>
                 </select>
                 
-                <button 
-                    className="btn btn-primary btn-register-invoice" 
-                    onClick={handleCreateNew} // <--- Llama a la nueva función de pestaña
-                >
+                <button className="btn btn-primary" onClick={handleCreateNew}>
                     Crear Nueva Factura
                 </button>
             </section>
             
             <hr/>
 
-            {/* **SECCIÓN DE FORMULARIO ELIMINADA** */}
-            {/* Si antes tenías: {isFormVisible && (<section>...</section>)} ya NO debe estar aquí */}
-            
-            
-            {/* --- 3. Listado de Facturas (Tabla) --- */}
             <section className="list-section">
                 <h2>Listado de Facturas ({totalItems} en total)</h2>
-
-                {loading && <p className="loading-message">Cargando facturas...</p>}
-                {error && <p className="error-message">{error}</p>}
-
-                {!loading && invoices.length > 0 && (
-                    <>
-                        <table className="data-table">
-                            <thead>
-                                <tr>
-                                    <th># Factura</th>
-                                    <th>Cliente</th>
-                                    <th>Tipo</th>
-                                    <th>Total</th>
-                                    <th>Acciones</th> 
-                                    <th>Estado</th> 
+                {loading && <p className="loading-text">Cargando datos...</p>}
+                {error && <p className="error-message" style={{color: 'red'}}>{error}</p>}
+                {!loading && !error && (
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th># Factura</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Productos</th>
+                                <th>Total</th>
+                                <th>Estado</th> 
+                                <th>Acciones</th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {invoices.map((invoice) => (
+                                <tr key={invoice.id_real}> 
+                                    <td><strong>{invoice.id}</strong></td>
+                                    <td>{formatDate(invoice.date)}</td>
+                                    <td>{invoice.client}</td>
+                                    <td>
+                                        <div className="product-relation-wrapper">
+                                            {invoice.detalles && invoice.detalles.length > 0 ? (
+                                                invoice.detalles.map((item, idx) => (
+                                                    <span key={idx} className="product-badge">
+                                                        {item.producto_nombre}
+                                                    </span>
+                                                ))
+                                            ) : (<small style={{color: '#999'}}>Sin detalle</small>)}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>${parseFloat(invoice.total || 0).toLocaleString('es-CO')}</strong>
+                                    </td>
+                                    <td>
+                                        <span className={`invoice-status status-${invoice.status?.toLowerCase()}`}>
+                                            {invoice.status}
+                                        </span>
+                                    </td>
+                                    <td className="actions-cell">
+                                        <button 
+                                            className="btn btn-sm btn-view" 
+                                            onClick={() => handleView(invoice)}
+                                            disabled={isGenerating === invoice.id_real}
+                                        >
+                                            {isGenerating === invoice.id_real ? '...' : 'Ver'}
+                                        </button>
+                                        <button className="btn btn-sm btn-edit" onClick={() => handleEdit(invoice)}>Editar</button>
+                                        <button className="btn btn-sm btn-success" onClick={() => handleEmit(invoice)}>Emitir</button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {invoices.map((invoice) => (
-                                    <tr key={invoice.id}>
-                                        <td>{invoice.id}</td>
-                                        <td>{invoice.client}</td>
-                                        <td>{invoice.tipoFactura}</td>
-                                        <td>${parseFloat(invoice.total).toFixed(2)}</td>
-                                        <td className="actions-cell">
-                                            <button className="btn btn-sm btn-primary" onClick={() => handleView(invoice)}>Ver</button>
-                                            <button className="btn btn-sm btn-edit" onClick={() => handleEdit(invoice)}>Editar</button> {/* <--- Llama a la nueva función de pestaña */}
-                                            <button className="btn btn-sm btn-success" onClick={() => handleEmit(invoice)}>Emitir</button>
-                                        </td>
-                                        <td>
-                                            <span className={`invoice-status status-${invoice.status.toLowerCase()}`}>
-                                                {invoice.status}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        {/* Paginación */}
-                        {totalPages > 1 && (
-                            <div className="pagination-controls">
-                                {/* Componente de paginación iría aquí */}
-                            </div>
-                        )}
-                    </>
+                            ))}
+                        </tbody>
+                    </table>
                 )}
             </section>
         </div>

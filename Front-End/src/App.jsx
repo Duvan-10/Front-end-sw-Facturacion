@@ -1,73 +1,122 @@
-// Front-end/src/App.jsx (VERSIÓN FINAL CON RUTAS DE PRODUCTOS)
+/**
+ * ============================================================
+ * ENRUTADOR PRINCIPAL DE LA APLICACIÓN
+ * Archivo: App.jsx
+ * RESPONSABILIDAD:
+ *  - Definir las rutas públicas principales (Welcome, Login, Register).
+ *  - Consultar al backend si el sistema ya tiene usuarios creados.
+ *  - Proteger rutas privadas (Home) verificando el token.
+ *  - Gestionar la navegación global.
+ * ============================================================
+ */
 
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import WelcomePage from './auth/WelcomePage';
+import Login from './auth/Login';
+import Register from './auth/Register';
+import ForgotPassword from './auth/ForgotPassword';
+import ResetPassword from './auth/ResetPassword';
+import ThemeSwitch from './components/ThemeSwitch'; 
+import ProtectedRoute from './components/ProtectedRoute';
+import { API_URL } from './api'; // Importamos la configuración local del Frontend
 
-// 1. Importaciones de componentes
-import Login from './modules/Auth/Login.jsx'; 
-import Layout from './components/Layout/Layout.jsx'; 
-import Home from './view/Home.jsx';   
+// Importar componente protegido
+import Home from './home/home';
 
-// Componentes de Módulos (Listados que están dentro del Layout)
-import Facturas from './modules/Facturas/Facturas.jsx'; 
-import Clientes from './modules/Clientes/Clientes.jsx'; 
-import Productos from './modules/Productos/Productos.jsx';
-import Perfil from './modules/Perfil/Perfil.jsx';
-import Reportes from './modules/Reportes/Reportes.jsx';
+// --- CONTEXTO GLOBAL PARA VERIFICACIÓN DE USUARIOS ---
+// Almacena el estado de si existen usuarios en el sistema
+export const SystemContext = React.createContext(null);
 
-// Componentes de Formularios (rutas absolutas, sin Layout)
-import InvoiceForm from './components/InvoiceForm/InvoiceForm';
-import ClientForm from './components/ClientForm/ClientForm'; 
-import ProductForm from './components/ProductForm/ProductForm'; 
+// --- COMPONENTE GUARD (ROOT) ---
+// Se monta cada vez que se visita la ruta "/"
+// asegurando que siempre se verifique el estado actual de la BD.
+const RootGuard = ({ hasUsers }) => {
+    if (hasUsers === null) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--color-background-dark)', color: 'var(--color-text-light)' }}>
+                Cargando sistema...
+            </div>
+        );
+    }
 
-import "./styles/global.css";
+    return hasUsers ? <Navigate to="/login" replace /> : <WelcomePage />;
+};
 
+// --- COMPONENTE PROTECTOR DE REGISTRO ---
+// Solo permite acceso a /register si NO existen usuarios en el sistema
+const RegisterGuard = ({ hasUsers, children }) => {
+    if (hasUsers === null) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--color-background-dark)', color: 'var(--color-text-light)' }}>
+                Cargando sistema...
+            </div>
+        );
+    }
+
+    // Si existen usuarios, no se permite acceder al registro
+    if (hasUsers) {
+        return <Navigate to="/login" replace />;
+    }
+
+    return children;
+};
 
 function App() {
+    const [hasUsers, setHasUsers] = useState(null);
+
+    useEffect(() => {
+        // LOG DE PRUEBA: Muestra en la consola a dónde se está conectando
+        console.log("📡 Conectando a la API en:", API_URL);
+
+        const checkSystem = async () => {
+            try {
+                const res = await fetch(`${API_URL}/auth/has-users`);
+                const data = await res.json();
+                setHasUsers(data.hasUsers);
+            } catch (error) {
+                console.error("Error verificando sistema:", error);
+                // En caso de error, asumimos false para no bloquear la app
+                setHasUsers(false);
+            }
+        };
+        checkSystem();
+    }, []);
+
     return (
-        <BrowserRouter>
+        <>
+            <ThemeSwitch /> 
+
             <Routes>
-                
-                {/* 1. Ruta de Autenticación */}
-                <Route path="/" element={<Login />} />
-                
-                {/* ======================================================= */}
-                {/* 2. RUTAS INDEPENDIENTES (Pestañas Separadas) */}
-                {/* ======================================================= */}
-                
-                {/* Rutas de Facturas */}
-                <Route path="/facturas/crear" element={<InvoiceForm />} />
-                <Route path="/facturas/editar/:id" element={<InvoiceForm />} />
+                {/* PÁGINA DE BIENVENIDA (ruta inicial) */}
+                {/* Usamos RootGuard para que la validación ocurra al entrar a esta ruta */}
+                <Route path="/" element={<RootGuard hasUsers={hasUsers} />} />
 
-                {/* Rutas de Clientes */}
-                <Route path="/clientes/crear" element={<ClientForm />} />
-                <Route path="/clientes/editar/:id" element={<ClientForm />} />
+                {/* RUTA DE REGISTRO - Protegida para solo permitir cuando NO existen usuarios */}
+                <Route 
+                    path="/register" 
+                    element={
+                        <RegisterGuard hasUsers={hasUsers}>
+                            <Register />
+                        </RegisterGuard>
+                    } 
+                />
 
+                {/* RUTAS DE AUTENTICACIÓN (Públicas) */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
-                <Route path="/productos/crear" element={<ProductForm />} />
-                <Route path="/productos/editar/:id" element={<ProductForm />} />
-                {/* ------------------------------------------------------------ */}
-
-
-                {/* 3. Rutas con Layout (Menú, Sidebar, etc.) */}
-                <Route path="/home" element={<Layout />}> 
-
-                    <Route index element={<Home />} /> 
-
-                    {/* Rutas Hijas (dentro del layout) */}
-                    <Route path="clientes" element={<Clientes />} />
-                    <Route path="facturas" element={<Facturas />} /> 
-                    <Route path="productos" element={<Productos />} />
-                    <Route path="reportes" element={<Reportes />} />
-                    <Route path="perfil" element={<Perfil />} />
-                    
+                {/* RUTAS PROTEGIDAS (requieren autenticación) */}
+                <Route path="/home/*" element={<ProtectedRoute />}>
+                    <Route path="*" element={<Home />} />
                 </Route>
 
-                {/* 4. Ruta 404 */}
-                <Route path="*" element={<h1>404 | Página no encontrada</h1>} />
+                {/* RUTA POR DEFECTO - Redirige al login si no hay ruta */}
+                <Route path="*" element={<Navigate to="/login" replace />} />
 
             </Routes>
-        </BrowserRouter>
+        </>
     );
 }
 

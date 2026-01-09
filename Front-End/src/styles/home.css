@@ -1,0 +1,341 @@
+/*
+ * ============================================================
+ * ESTILOS ESPECÍFICOS DEL DASHBOARD (HOME)
+ * Archivo: home.css
+ * RESPONSABILIDAD:
+ *  - Definir la maquetación del Sidebar y el área principal.
+ *  - Implementar diseño responsivo (Mobile First / Desktop).
+ *  - Aplicar variables de tema (Claro/Oscuro) definidas en global.css.
+ * ============================================================
+ */
+
+/* --- SIDEBAR (MENÚ LATERAL) --- */
+.sidebar {
+  width: 220px;
+  background-color: var(--home-sidebar-bg);
+  color: var(--home-text-primary);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding-top: 20px;
+  border-right: 1px solid var(--color-input-background);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  overflow-y: auto; /* Scroll vertical vital para laptops con poca altura */
+}
+
+/* Botón para colapsar/expandir el sidebar */
+.sidebar-toggle {
+  position: fixed; /* Fijo para que flote independientemente del sidebar */
+  top: 15px;
+  z-index: 1100; /* Por encima de todo */
+  background: var(--color-input-background); /* Fondo suave para visibilidad */
+  border: none;
+  border-radius: 50%; /* Redondo */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent-teal);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: left 0.3s ease, transform 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.sidebar-toggle:hover {
+  transform: scale(1.1);
+  background: var(--color-input-hover);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: var(--color-accent-teal);
+}
+
+.user-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.user-icon img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent-teal);
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 0; /* Quitamos padding del contenedor para que el enlace ocupe todo */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  /* gap: 10px; -> El gap se maneja dentro del enlace <a> */
+  color: var(--color-text-muted);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar ul li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+  width: 100%;
+  padding: 15px 20px; /* Agregamos padding al enlace para ampliar zona de clic */
+}
+
+.sidebar ul li:hover {
+  background-color: var(--color-input-hover);
+  color: var(--color-accent-teal);
+}
+
+/* ESTADO ACTIVO (Navegación) */
+.sidebar ul li.active {
+  background-color: var(--color-input-hover);
+  color: var(--color-accent-teal);
+  border-left: 4px solid var(--color-accent-teal); /* Indicador visual izquierdo */
+}
+
+/* --- CONTENIDO PRINCIPAL (MAIN AREA) --- */
+.main-content {
+  margin-left: 220px;
+  padding: 20px;
+  flex: 1;
+  background-color: var(--home-main-bg);
+  color: var(--home-text-primary);
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.header {
+  background-color: var(--color-accent-teal);
+  color: #ffffff; /* Mantenemos blanco para contraste con el Teal */
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* --- TARJETAS / WIDGETS --- */
+.cards {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background-color: var(--home-card-bg);
+  color: var(--home-text-primary);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  flex: 1;
+  min-width: 200px;
+  border: 1px solid var(--color-input-background);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.card h3 {
+  margin-top: 0;
+  color: var(--color-accent-teal);
+}
+
+.card p {
+  color: var(--color-text-muted);
+}
+
+/* ============================================== */
+/* MEDIA QUERIES (DISEÑO RESPONSIVO) */
+/* ============================================== */
+
+/* --- ESTADOS COLAPSADOS (Desktop) --- */
+/* Cuando el sidebar tiene la clase .collapsed */
+.sidebar.collapsed {
+  width: 0; /* OCULTAR COMPLETAMENTE */
+  padding: 0;
+  border: none;
+  overflow: hidden;
+}
+
+/* Posición del botón cuando el menú está ABIERTO */
+.sidebar-toggle.open {
+  left: 170px; /* Alineado dentro del sidebar (220px - margen) */
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Posición del botón cuando el menú está CERRADO */
+.sidebar-toggle.closed {
+  left: 20px; /* Flotando a la izquierda del contenido principal */
+  background-color: white; /* Fondo blanco para resaltar sobre el contenido */
+  border: 1px solid var(--color-input-background);
+}
+
+/* Ajustar el contenido principal cuando el sidebar está colapsado */
+.main-content.collapsed {
+  margin-left: 0; /* Ocupar todo el ancho */
+}
+
+/* 1. Laptops Estándar y Tablets (hasta 1366px) */
+@media (max-width: 1366px) {
+  .sidebar {
+    width: 180px; /* Sidebar un poco más estrecho */
+  }
+  .main-content {
+    margin-left: 180px; /* Ajustar margen acorde */
+  }
+  
+  .sidebar-toggle.open {
+    left: 135px; /* Ajustar posición del botón en sidebar más estrecho */
+  }
+
+  .main-content.collapsed {
+    margin-left: 0;
+  }
+  /* Texto un poco más compacto para aprovechar espacio vertical en laptops */
+  .sidebar ul li {
+    padding: 0;
+    font-size: 0.95em;
+  }
+  .sidebar ul li a {
+    padding: 12px 15px;
+  }
+}
+
+/* 2. Tablets Verticales y Móviles (max-width: 768px) */
+@media (max-width: 768px) {
+  /* 1. Transformar Sidebar vertical en Barra de Navegación horizontal superior */
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative; /* Ya no es fixed */
+    border-right: none;
+    border-bottom: 1px solid var(--color-input-background);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    z-index: 100;
+  }
+  
+  /* En móvil, el botón toggle puede ser fijo o absoluto según preferencia */
+  .sidebar-toggle {
+    position: absolute;
+    left: auto;
+    right: 15px; /* A la derecha en móvil */
+    top: 10px;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* En móvil, "colapsado" significa ocultar los items del menú (estilo acordeón) */
+  .sidebar.collapsed {
+    width: 100%; /* Restaurar ancho en móvil */
+    height: auto;
+    padding-bottom: 0;
+  }
+  .sidebar.collapsed ul,
+  .sidebar.collapsed .user-icon,
+  .sidebar.collapsed h2 {
+    display: none;
+  }
+
+  .sidebar h2 {
+    margin: 5px 0 10px;
+    font-size: 1.2em;
+  }
+
+  .user-icon {
+    margin-bottom: 8px;
+  }
+
+  .user-icon img {
+    width: 50px;
+    height: 50px;
+  }
+
+  /* Convertir lista vertical en botones tipo "chips" horizontales */
+  .sidebar ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+
+  .sidebar ul li {
+    background-color: var(--color-input-background); /* Estilo tipo botón/chip */
+    border-radius: 20px;
+    padding: 0;
+    font-size: 0.85em;
+    justify-content: center;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden; /* Para que el enlace no se salga de los bordes redondeados */
+  }
+
+  .sidebar ul li a {
+    padding: 8px 12px;
+  }
+
+  /* 2. El contenido principal ocupa todo el ancho (sin margen izquierdo) */
+  .main-content {
+    margin-left: 0; /* Quitar margen del sidebar */
+    width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+  .main-content.collapsed {
+    margin-left: 0;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .header {
+    text-align: center;
+  }
+
+  .header h1 {
+    font-size: 1.3em;
+  }
+
+  /* 3. Apilar tarjetas verticalmente en lugar de horizontalmente */
+  .cards {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .card {
+    min-width: 100%;
+  }
+}
+
+/* 3. Móviles Pequeños (max-width: 480px) */
+@media (max-width: 480px) {
+  .sidebar ul li {
+    font-size: 0.75em;
+    padding: 0;
+  }
+  .sidebar ul li a {
+    padding: 6px 10px;
+  }
+
+  .header h1 {
+    font-size: 1.1em;
+  }
+
+  .card {
+    padding: 15px;
+  }
+}

@@ -1,0 +1,181 @@
+================================================================================
+        REGISTRO DE ACTIVIDADES Y CAMBIOS - SISTEMA DE FACTURACIÓN PFEPS
+================================================================================
+
+================================================================================
+FECHA: 8 de Enero de 2026
+================================================================================
+
+RESUMEN GENERAL:
+Implementación completa del sistema de recuperación de contraseña y función 
+"Recordarme" en el módulo de autenticación. Se configuró servicio de email 
+con Brevo para envío real de correos de recuperación.
+
+--------------------------------------------------------------------------------
+FUNCIONALIDADES IMPLEMENTADAS:
+--------------------------------------------------------------------------------
+
+1. BOTÓN "RECORDARME" EN LOGIN
+   - Permite guardar credenciales en localStorage del navegador
+   - Autocompleta email y contraseña en próximos accesos
+   - Limpia credenciales si el usuario desmarca la opción
+   - Archivo modificado: Front-End/src/Auth/Login.jsx
+
+2. SISTEMA DE RECUPERACIÓN DE CONTRASEÑA
+   
+   Frontend:
+   - Componente ForgotPassword.jsx: Solicita número de identificación
+   - Componente ResetPassword.jsx: Permite establecer nueva contraseña
+   - Rutas agregadas en App.jsx: /forgot-password y /reset-password
+   
+   Backend:
+   - Generación de tokens únicos con expiración de 1 hora
+   - Validación de tokens y actualización segura de contraseñas
+   - Integración con servicio de email Brevo (SMTP)
+   - Nuevos endpoints: POST /auth/forgot-password, POST /auth/reset-password
+   
+   Base de Datos:
+   - Campos agregados: reset_token, reset_token_expires
+   - Índice optimizado para búsqueda de tokens
+   - Script de migración: Backend/migrations/add_password_reset_fields.sql
+
+3. CONFIGURACIÓN DE EMAIL
+   - Servicio: Brevo (smtp-relay.brevo.com)
+   - Configuración SMTP con puerto 587 (TLS)
+   - Email remitente verificado: imagenesiso10@gmail.com
+   - Plantilla HTML profesional para emails de recuperación
+   - Límite: 300 emails gratuitos al mes
+
+--------------------------------------------------------------------------------
+ARCHIVOS CREADOS:
+--------------------------------------------------------------------------------
+
+Frontend:
+  - Front-End/src/Auth/ForgotPassword.jsx
+  - Front-End/src/Auth/ResetPassword.jsx
+
+Backend:
+  - Backend/config/email.config.js
+  - Backend/migrations/add_password_reset_fields.sql
+
+Documentación:
+  - DOCUMENTACION_RECUPERACION_CONTRASEÑA.md
+
+--------------------------------------------------------------------------------
+ARCHIVOS MODIFICADOS:
+--------------------------------------------------------------------------------
+
+Frontend:
+  - Front-End/src/Auth/Login.jsx (función "Recordarme")
+  - Front-End/src/App.jsx (rutas de recuperación)
+
+Backend:
+  - Backend/models/User.model.js (funciones de tokens)
+  - Backend/controllers/auth.controller.js (controladores recuperación)
+  - Backend/routes/auth.routes.js (nuevas rutas)
+  - Backend/.env (configuración email)
+
+--------------------------------------------------------------------------------
+DEPENDENCIAS INSTALADAS:
+--------------------------------------------------------------------------------
+
+  - nodemailer@latest (Backend) - Envío de emails
+
+--------------------------------------------------------------------------------
+REFACTORIZACIÓN:
+--------------------------------------------------------------------------------
+
+  - Eliminación de logs de debugging en producción
+  - Agregados títulos descriptivos en archivos de configuración
+  - Optimización de funciones de validación de tokens
+  - Mejora en manejo de errores en envío de emails
+  - Código limpio y profesional listo para producción
+
+--------------------------------------------------------------------------------
+ESTADO FINAL:
+--------------------------------------------------------------------------------
+
+✅ Sistema completamente funcional y probado
+✅ Emails enviándose correctamente a Gmail, Outlook, etc.
+✅ Tokens de recuperación expirando correctamente (1 hora)
+✅ Validación de identificación funcionando
+✅ Base de datos actualizada con nuevos campos
+✅ Código refactorizado y documentado
+✅ Listo para producción
+
+--------------------------------------------------------------------------------
+CONFIGURACIÓN ACTUAL (Brevo):
+--------------------------------------------------------------------------------
+
+  Email Service: custom (Brevo SMTP)
+  Host: smtp-relay.brevo.com
+  Port: 587
+  Login: 9fa251001@smtp-brevo.com
+  From: imagenesiso10@gmail.com
+  Frontend URL: http://localhost:5173
+
+--------------------------------------------------------------------------------
+DOCUMENTACIÓN GENERADA:
+--------------------------------------------------------------------------------
+
+  📄 DOCUMENTACION_RECUPERACION_CONTRASEÑA.md
+     - Guía completa de instalación y configuración
+     - Instrucciones de uso para usuarios finales
+     - Detalles técnicos de implementación
+     - Próximos pasos y mejoras opcionales
+
+--------------------------------------------------------------------------------
+MEJORAS SUGERIDAS:
+--------------------------------------------------------------------------------
+
+  - Validación de complejidad de contraseña (8+ caracteres, mayúsculas, números)
+  - Límite de intentos de recuperación (3 por hora)
+  - Implementación de captcha anti-spam
+  - Personalización de plantilla de email con logo del sistema
+  - Dashboard de estadísticas de recuperaciones
+
+================================================================================
+
+================================================================================
+FECHA: 9 de Enero de 2026
+================================================================================
+
+RESUMEN GENERAL:
+Optimización crítica del servicio de correos para evitar Timeouts y reingeniería 
+completa de la interfaz del Dashboard (Home) para mejorar la experiencia de usuario 
+(UX/UI) y la adaptabilidad a diferentes dispositivos (Responsive Design).
+
+--------------------------------------------------------------------------------
+ACTIVIDADES REALIZADAS:
+--------------------------------------------------------------------------------
+
+1. SOLUCIÓN DE ERRORES EN ENVÍO DE EMAILS (BACKEND)
+- Se aumentaron los timeouts (connection, greeting, socket) a 60s en Nodemailer.
+     
+
+2. MEJORAS EN DASHBOARD Y NAVEGACIÓN (FRONTEND)
+   
+   Funcionalidad de Menú (Sidebar):
+   - Implementación de lógica para Ocultar/Fijar el menú lateral.
+   - Estado "Activo": Resaltado visual de la sección actual en el menú.
+   - Botón flotante (Toggle) para controlar el menú, posicionado dinámicamente.
+   - Mejora de UX: Ampliación del área de clic (Hit Area) en los botones del menú.
+   
+   Diseño Responsivo (Home.css):
+   - Escritorio: El menú se oculta completamente (width: 0) para maximizar espacio.
+   - Laptops (hasta 1366px): Ajuste de escala y scroll vertical para pantallas bajas.
+   - Móviles: Transformación del menú en barra superior tipo "acordeón" con botones tipo chip.
+   
+   Archivos modificados:
+   - Front-End/src/home/home.jsx
+   - Front-End/src/styles/home.css
+
+--------------------------------------------------------------------------------
+ESTADO FINAL DEL MÓDULO HOME:
+--------------------------------------------------------------------------------
+
+✅ Navegación fluida y reactiva entre módulos.
+✅ Adaptabilidad perfecta en Móviles, Tablets y Laptops.
+✅ Mayor espacio de trabajo útil al ocultar el menú.
+✅ Feedback visual claro para el usuario sobre su ubicación en el sistema.
+================================================================================

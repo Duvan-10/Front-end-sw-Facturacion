@@ -1,37 +1,20 @@
-// Backend/routes/cliente.routes.js
-
 import express from 'express';
-// Importamos las funciones del controlador, incluyendo la nueva getClienteById
-import { 
-    getAllClientes, 
-    getClienteById, // <-- NUEVA FUNCIÓN NECESARIA PARA EDICIÓN
-    createCliente, 
-    updateCliente 
-} from '../controllers/clienteController.js'; 
+import clienteController from '../controllers/cliente.controller.js';
+import authMiddleware from '../middleware/auth.middleware.js';
 
-// Importamos el middleware (aunque lo deshabilitaremos temporalmente)
-import { authenticate } from '../middleware/auth.middleware.js'; 
+const router = express.Router();
 
-const router = express.Router(); 
+// Ruta de búsqueda para el autocompletado
+router.get('/buscar', authMiddleware, clienteController.searchClientes);
 
-// NOTA: Para las pruebas iniciales de conexión, se recomienda comentar el middleware 'authenticate'.
+// Rutas estándar de CRUD
 
-// =======================================================
-// RUTAS CORREGIDAS Y CONSOLIDADAS
-// =======================================================
 
-// 1. OBTENER TODOS LOS CLIENTES (GET /api/clientes)
-router.get('/', /* authenticate, */ getAllClientes); 
-
-// 2. OBTENER UN CLIENTE POR ID (GET /api/clientes/:id)
-// Esta ruta es CRÍTICA para que ClientForm cargue los datos en modo edición
-router.get('/:id', /* authenticate, */ getClienteById); 
-
-// 3. REGISTRAR UN NUEVO CLIENTE (POST /api/clientes)
-router.post('/', /* authenticate, */ createCliente); 
-
-// 4. ACTUALIZAR UN CLIENTE EXISTENTE (PUT /api/clientes/:id)
-router.put('/:id', /* authenticate, */ updateCliente);
-
+router.get('/', authMiddleware, clienteController.getClientes);
+router.post('/', authMiddleware, clienteController.createCliente);
+router.get('/:id', authMiddleware, clienteController.getClienteById);
+router.get('/identificacion/:identificacion', authMiddleware, clienteController.getClienteByIdentificacion);
+router.put('/:id', authMiddleware, clienteController.updateCliente);
+router.delete('/:id', authMiddleware, clienteController.deleteCliente);
 
 export default router;
