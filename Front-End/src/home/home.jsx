@@ -31,7 +31,7 @@ import Clientes from '../modules/Clientes/Clientes';
 import Productos from '../modules/Productos/Productos';
 import Reportes from '../modules/Reportes/Reportes';
 import Perfil from '../modules/Perfil/Perfil';
-import GestionUsuarios from '../modules/GestionUsuarios/GestionUsuarios';
+import GestionUsuarios from '../modules/Usuarios/users';
 
 const Home = () => {
   const { user, logout } = useAuth();

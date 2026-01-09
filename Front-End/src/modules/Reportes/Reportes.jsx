@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Reportes.css';
+import '../../styles/Reportes.css';
 
 // Datos de reporte simulados
 const initialReports = [

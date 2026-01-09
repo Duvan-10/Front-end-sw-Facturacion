@@ -1,0 +1,233 @@
+/* ======================================================= */
+/* ESTILOS DEL MÓDULO DE GESTIÓN DE USUARIOS */
+/* ======================================================= */
+
+:root{
+  /* Variables con prefijo --u- para evitar conflictos globales */
+  --u-primary:#3498db;
+  --u-primary-dark:#2980b9;
+  --u-success:#27ae60;
+  --u-warning:#f39c12;
+  --u-danger:hsl(6, 78%, 57%);
+  --u-card-bg:#ffffff;
+  --u-text:#222;
+}
+
+.user-management{
+  max-width:980px;
+  margin:20px auto; /* Ajustado margen para compensar la eliminación del padding del body */
+  background:var(--u-card-bg);
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  color: var(--u-text);
+}
+
+.user-management h2{
+  margin:0 0 16px 0;
+  text-align:center;
+  font-size:20px;
+}
+
+.actions{
+  display:flex;
+  gap:12px;
+  margin-bottom:16px;
+  align-items:center;
+}
+
+.actions input{
+  flex:1;
+  padding:10px 12px;
+  border:1px solid #dcdcdc;
+  border-radius:8px;
+  font-size:14px;
+}
+
+.btn-primary{
+  background:var(--u-primary);
+  color:#fff;
+  border:none;
+  padding:10px 14px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.btn-primary:hover{background:var(--u-primary-dark)}
+
+.user-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+
+.user-table th, .user-table td{
+  padding:12px 10px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+  vertical-align:middle;
+}
+
+.user-table th{
+  background:var(--u-primary);
+  color:#fff;
+  font-weight:600;
+}
+
+.user-table tr:hover{background:#fafafa}
+
+button.editar, .btn-warning{
+  background:var(--u-warning);
+  color:#fff;
+  border:none;
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+}
+button.eliminar, .btn-danger{
+  background:var(--u-danger);
+  color:#fff;
+  border:none;
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+}
+.btn-success{
+  background:var(--u-success);
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.btn-secondary{
+  background:#f0f0f0;
+  color:#333;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* Celda contraseña */
+.password-cell{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.password{
+  font-family:monospace;
+  letter-spacing:2px;
+}
+
+/* Iconos ojo */
+.toggle-eye, .form-eye{
+  cursor:pointer;
+  color:#666;
+  font-size:16px;
+}
+.toggle-eye:hover, .form-eye:hover{color:#333}
+
+/* Password input en formulario con ojo */
+.password-input{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  position:relative;
+}
+.password-input input{
+  flex:1;
+  padding:10px 12px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font-size:14px;
+}
+
+/* Modal animado y oculto por defecto */
+.modal{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.45);
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(8px) scale(0.98);
+  transition:opacity .22s ease, transform .22s ease;
+  z-index:1000;
+}
+
+.modal.visible{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0) scale(1);
+}
+
+/* Contenido modal */
+.modal-content{
+  width:420px;
+  max-width:92%;
+  background:var(--u-card-bg);
+  border-radius:10px;
+  padding:20px 22px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.12);
+  position:relative;
+}
+
+/* Close */
+.close{
+  position:absolute;
+  right:14px;
+  top:10px;
+  background:transparent;
+  border:none;
+  font-size:22px;
+  cursor:pointer;
+  color:#888;
+}
+
+/* Form */
+/* Escopamos los estilos de formulario para que no afecten a otros módulos */
+.user-management form, .modal-content form {display:flex;flex-direction:column;gap:10px}
+.user-management form label, .modal-content form label {font-size:13px;color:#555}
+
+.user-management form input[type="text"],
+.user-management form input[type="email"],
+.user-management form input[type="password"],
+.user-management form select,
+.modal-content form input[type="text"],
+.modal-content form input[type="email"],
+.modal-content form input[type="password"],
+.modal-content form select {
+  padding:10px 12px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font-size:14px;
+}
+
+/* Acciones del form */
+.form-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  margin-top:8px;
+}
+
+/* Responsive */
+@media (max-width:520px){
+  .actions{flex-direction:column;align-items:stretch}
+  .actions input{margin-left:0}
+  .modal-content{padding:16px}
+}
+
+.icon-button{
+  background:transparent;
+  border:none;
+  padding:4px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  color:inherit;
+}
+.icon-button:focus{outline:2px solid rgba(52,152,219,0.25); border-radius:6px;}
