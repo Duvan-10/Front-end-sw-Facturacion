@@ -1,47 +1,123 @@
-// Front-end/src/App.jsx (VERSIÓN CORREGIDA Y COMPLETA)
+/**
+ * ============================================================
+ * ENRUTADOR PRINCIPAL DE LA APLICACIÓN
+ * Archivo: App.jsx
+ * RESPONSABILIDAD:
+ *  - Definir las rutas públicas principales (Welcome, Login, Register).
+ *  - Consultar al backend si el sistema ya tiene usuarios creados.
+ *  - Proteger rutas privadas (Home) verificando el token.
+ *  - Gestionar la navegación global.
+ * ============================================================
+ */
 
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import WelcomePage from './auth/WelcomePage';
+import Login from './auth/Login';
+import Register from './auth/Register';
+import ForgotPassword from './auth/ForgotPassword';
+import ResetPassword from './auth/ResetPassword';
+import ThemeSwitch from './components/ThemeSwitch'; 
+import ProtectedRoute from './components/ProtectedRoute';
+import { API_URL } from './api'; // Importamos la configuración local del Frontend
 
-// 1. Importaciones de componentes
-import Login from './modules/Auth/Login.jsx'; 
-import Layout from './components/Layout/Layout.jsx'; 
-import Home from './view/Home.jsx';   
+// Importar componente protegido
+import Home from './home/home';
 
+// --- CONTEXTO GLOBAL PARA VERIFICACIÓN DE USUARIOS ---
+// Almacena el estado de si existen usuarios en el sistema
+export const SystemContext = React.createContext(null);
 
-// 🚨 NECESITAS IMPORTAR TODOS TUS MÓDULOS
-import Perfil from './modules/Perfil/Perfil.jsx';
-import Clientes from './modules/Clientes/Clientes.jsx'; 
-import Facturas from './modules/Facturas/Facturas.jsx'; 
-import Productos from './modules/Productos/Productos.jsx';
-import Reportes from './modules/Reportes/Reportes.jsx';
+// --- COMPONENTE GUARD (ROOT) ---
+// Se monta cada vez que se visita la ruta "/"
+// asegurando que siempre se verifique el estado actual de la BD.
+const RootGuard = ({ hasUsers }) => {
+    if (hasUsers === null) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--color-background-dark)', color: 'var(--color-text-light)' }}>
+                Cargando sistema...
+            </div>
+        );
+    }
+
+    return hasUsers ? <Navigate to="/login" replace /> : <WelcomePage />;
+};
+
+// --- COMPONENTE PROTECTOR DE REGISTRO ---
+// Solo permite acceso a /register si NO existen usuarios en el sistema
+const RegisterGuard = ({ hasUsers, children }) => {
+    if (hasUsers === null) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--color-background-dark)', color: 'var(--color-text-light)' }}>
+                Cargando sistema...
+            </div>
+        );
+    }
+
+    // Si existen usuarios, no se permite acceder al registro
+    if (hasUsers) {
+        return <Navigate to="/login" replace />;
+    }
+
+    return children;
+};
 
 function App() {
-return (
-<BrowserRouter>
-<Routes>
+    const [hasUsers, setHasUsers] = useState(null);
 
-<Route path="/" element={<Login />} />
+    useEffect(() => {
+        // LOG DE PRUEBA: Muestra en la consola a dónde se está conectando
+        console.log("📡 Conectando a la API en:", API_URL);
 
-<Route path="/home" element={<Layout />}> 
+        const checkSystem = async () => {
+            try {
+                const res = await fetch(`${API_URL}/auth/has-users`);
+                const data = await res.json();
+                setHasUsers(data.hasUsers);
+            } catch (error) {
+                console.error("Error verificando sistema:", error);
+                // En caso de error, asumimos false para no bloquear la app
+                setHasUsers(false);
+            }
+        };
+        checkSystem();
+    }, []);
 
-<Route index element={<Home />} /> 
+    return (
+        <>
+            <ThemeSwitch /> 
 
+            <Routes>
+                {/* PÁGINA DE BIENVENIDA (ruta inicial) */}
+                {/* Usamos RootGuard para que la validación ocurra al entrar a esta ruta */}
+                <Route path="/" element={<RootGuard hasUsers={hasUsers} />} />
 
-{/* 🚨 NECESITAS DEFINIR LAS RUTAS HIJAS DENTRO DEL LAYOUT */}
-<Route path="clientes" element={<Clientes />} />
-<Route path="facturas" element={<Facturas />} />
-<Route path="productos" element={<Productos />} />
-<Route path="reportes" element={<Reportes />} />
-<Route path="perfil" element={<Perfil />} />
+                {/* RUTA DE REGISTRO - Protegida para solo permitir cuando NO existen usuarios */}
+                <Route 
+                    path="/register" 
+                    element={
+                        <RegisterGuard hasUsers={hasUsers}>
+                            <Register />
+                        </RegisterGuard>
+                    } 
+                />
 
-</Route>
+                {/* RUTAS DE AUTENTICACIÓN (Públicas) */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
-<Route path="*" element={<h1>404 | Página no encontrada</h1>} />
+                {/* RUTAS PROTEGIDAS (requieren autenticación) */}
+                <Route path="/home/*" element={<ProtectedRoute />}>
+                    <Route path="*" element={<Home />} />
+                </Route>
 
-</Routes>
-</BrowserRouter>
-);
+                {/* RUTA POR DEFECTO - Redirige al login si no hay ruta */}
+                <Route path="*" element={<Navigate to="/login" replace />} />
+
+            </Routes>
+        </>
+    );
 }
 
 export default App;

@@ -1,19 +1,20 @@
-// Backend/routes/cliente.routes.js
-
 import express from 'express';
-// Importamos las funciones del controlador
-import { getAllClientes, createCliente, updateCliente } from '../controllers/clienteController.js';
-// Importamos el middleware (aunque lo quitemos temporalmente de las rutas)
-import { verifyToken } from '../middleware/auth.middleware.js';
+import clienteController from '../controllers/cliente.controller.js';
+import authMiddleware from '../middleware/auth.middleware.js';
 
-// 🚨 CRÍTICO: Definición del router
-const router = express.Router(); 
+const router = express.Router();
 
-// Rutas (Temporalmente sin verifyToken, para la prueba)
-router.get('/', getAllClientes); // <-- Ruta GET para cargar clientes
-router.post('/', createCliente); // <-- Ruta POST para registrar clientes
-router.get('/', verifyToken, getAllClientes);
-router.post('/', verifyToken, createCliente); 
-router.put('/:id', verifyToken, updateCliente);
+// Ruta de búsqueda para el autocompletado
+router.get('/buscar', authMiddleware, clienteController.searchClientes);
+
+// Rutas estándar de CRUD
+
+
+router.get('/', authMiddleware, clienteController.getClientes);
+router.post('/', authMiddleware, clienteController.createCliente);
+router.get('/:id', authMiddleware, clienteController.getClienteById);
+router.get('/identificacion/:identificacion', authMiddleware, clienteController.getClienteByIdentificacion);
+router.put('/:id', authMiddleware, clienteController.updateCliente);
+router.delete('/:id', authMiddleware, clienteController.deleteCliente);
 
 export default router;
