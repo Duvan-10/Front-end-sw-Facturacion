@@ -30,7 +30,10 @@ if (process.env.EMAIL_SERVICE === 'custom') {
         },
         tls: {
             rejectUnauthorized: false // Para desarrollo
-        }
+        },
+        // Aumentar timeouts para evitar errores de "Greeting never received"
+        greetingTimeout: 20000, // Esperar hasta 20s por el saludo del servidor
+        socketTimeout: 20000    // Esperar hasta 20s por actividad en el socket
     });
 } else {
     // Configuración para servicios de email estándar (Gmail, Outlook, etc.)
