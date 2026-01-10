@@ -5,20 +5,24 @@
  * ESTILOS GLOBALES DE APLICACIÓN
  * Archivo: global.css
  * FUNCIÓN: Define las variables CSS (Custom Properties) y los reseteos
- * básicos que comparten todas las vistas (Welcome, Login, Register).
  * =================================================================
  */
 
 /* ---------------------------------------------------- */
 /* 1. PALETA DE COLORES - MODO OSCURO (Default :root)   */
 /* ---------------------------------------------------- */
+
+/*-----------------------------------------------------*/
+/* Modulo - Welcome, Login, Register */
+/*-----------------------------------------------------*/
+
 :root {
     /* --- BASE Y LAYOUT (Afecta a Welcome, Login, Register) --- */
     /* Color de fondo principal de la ventana */
-    --color-background-dark: oklch(28.63% 0.00456 145.787); 
+    --color-background-dark: #292b29; 
     
     /* Color de fondo para tarjetas/contenedores centrales */
-    --color-card-dark: hwb(0 12% 88%); 
+    --color-card-dark: lab(11.76% 0 0); 
 
     /* --- TIPOGRAFÍA GENERAL --- */
     --color-text-light: hwb(0 89% 9%);       /* Texto principal */
@@ -37,18 +41,55 @@
     --color-error-text: #e53e3e;               /* Texto de error */
     --color-error-background: #9b2c2c;         /* Fondos de error */
     --color-warning-text: #9c5700;             /* Advertencias */
+/*--------------------------------------------------------------------------------------------------*/
+
+
+/*--------------------------------------------------------------------------------------------------*/
 
     /* --- ESTILOS EXCLUSIVOS HOME / DASHBOARD (Modo Oscuro) --- */
     --home-sidebar-bg: var(--color-card-dark); /* Sidebar oscuro integrado */
     --home-main-bg: var(--color-background-dark); /* Fondo principal oscuro */
     --home-card-bg: var(--color-card-dark);    /* Fondo de widgets/tarjetas */
     --home-text-primary: var(--color-text-light);
+
+/*--------------------------------------------------------------------------------------------------*/
+
+    /* ================================================================= */
+    /* MÓDULO USERS*/
+    /* Colores brillantes para resaltar sobre fondo oscuro               */
+    /* ================================================================= */
+    /* Definición independiente para evitar mezclas con estilos globales */
+    --u-card-bg: hsl(0, 3%, 7%);       /* Fondo oscuro específico para Users */
+    --u-text: lch(100% 0.01 296.81);
+    --u-background: lch(8.87% 0.52 19.29);         /* Texto claro específico para Users */
+    
+    --u-primary: #3498db;      /* Azul brillante */
+    --u-primary-dark: #2980b9; /* Azul hover */
+    --u-success: #27ae60;      /* Verde vibrante */
+    --u-warning: #f39c12;      /* Naranja vibrante */
+    --u-danger: hsl(6, 78%, 57%); /* Rojo vibrante */
+
+    --u-error-bg: rgba(229, 62, 62, 0.2);      /* Fondo error translúcido */
+    --u-error-text: #fc8181;                   /* Texto error claro */
+    --u-error-border: #fc8181;
+
+    
 }
+/*----------------------------------------------------------------------------------------------------------*/
+
+
+
 
 /* ----------------------------------------------------------------- */
 /* 2. PALETA DE COLORES - MODO CLARO (html.light-mode)               */
 /* Sobrescribe las variables anteriores cuando el tema es claro.      */
 /* ----------------------------------------------------------------- */
+
+
+/*-----------------------------------------------------*/
+/* Modulo - Welcome, Login, Register */
+/*-----------------------------------------------------*/
+
 html.light-mode {
     /* --- BASE Y LAYOUT --- */
     --color-background-dark: hsl(0, 0%, 100%); 
@@ -60,7 +101,7 @@ html.light-mode {
 
     /* --- FORMULARIOS E INPUTS --- */
     --color-input-background: hsl(0, 9%, 85%); 
-    --color-input-text: hsl(0, 100%, 1%); 
+    --color-input-text: hsl(132, 100%, 1%); 
     --color-input-hover: #f0f0f0;
 
     /* --- BOTONES Y ACENTOS --- */
@@ -72,15 +113,42 @@ html.light-mode {
     --color-error-background: #f9d8d8;
     
 /*--------------------------------------------------------------------------------------------------------------------------*/
+
+
 /* --- ESTILOS EXCLUSIVOS HOME / DASHBOARD (Modo Claro) --- */
+
 /* Define colores específicos para dar contraste tipo "Admin Panel" en modo claro */
     --home-sidebar-bg: lch(100% 0.01 296.81);    /* Sidebar blanco puro para limpieza visual */
     --home-main-bg: hwb(210 95% 2%);    /* Fondo gris muy suave (Slate-50) para diferenciar del sidebar */
     --home-card-bg: #ffffff;        /* Tarjetas blancas sobre fondo gris */
     --home-text-primary: hsl(210, 10%, 12%);/* Texto oscuro con tinte azulado (Slate) */
-/*-------------------------------------------------------------------------------------------------------------------------*/
 
+/*---------------------------------------------------------------------------------------------------------------*/
+
+    /* ================================================================= */
+    /* MÓDULO USERS*/
+    /*  para contraste sobre fondo blanco   */
+    /* ================================================================= */
+    /* Definición independiente para evitar mezclas con estilos globales */
+    --u-card-bg: #ffffff;       /* Fondo blanco específico para Users */
+    --u-text: oklab(0% 0 0);
+    --u-background: hwb(0 100% 0%);          /* Texto oscuro específico para Users */
+
+    --u-primary: #2b6cb0;      /* Azul más oscuro (mejor lectura en blanco) */
+    --u-primary-dark: oklab(97.545% 0.00307 0.00084); /* Azul hover oscuro */
+    --u-success: #2f855a;      /* Verde bosque */
+    --u-warning: #c05621;      /* Naranja quemado */
+    --u-danger: #c53030;       /* Rojo oscuro */
+
+    --u-error-bg: #fff5f5;     /* Fondo error muy suave */
+    --u-error-text: lab(59.41% 21.25 8.53);   /* Texto error oscuro */
+    --u-error-border: #c53030;
+
+            
 }
+/*----------------------------------------------------------------------------------------------------------*/
+
+
 
 /* ------------------------------------- */
 /* 3. RESETEO Y ESTILOS BASE             */

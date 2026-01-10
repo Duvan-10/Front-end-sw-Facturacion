@@ -2,25 +2,24 @@
 /* ESTILOS DEL MÓDULO DE GESTIÓN DE USUARIOS */
 /* ======================================================= */
 
-:root{
-  /* Variables con prefijo --u- para evitar conflictos globales */
-  --u-primary:#3498db;
-  --u-primary-dark:#2980b9;
-  --u-success:#27ae60;
-  --u-warning:#f39c12;
-  --u-danger:hsl(6, 78%, 57%);
-  --u-card-bg:#ffffff;
-  --u-text:#222;
-}
+/* 
+   NOTA: Las variables de tema (--u-primary, --u-card-bg, etc.) 
+   ahora se controlan centralizadamente desde global.css 
+*/
 
+/* 
+   2. CONTENEDOR PRINCIPAL
+   Tarjeta blanca centrada que envuelve la vista de gestión de usuarios.
+*/
 .user-management{
   max-width:980px;
-  margin:20px auto; /* Ajustado margen para compensar la eliminación del padding del body */
+  margin:20px auto;
   background:var(--u-card-bg);
   padding:20px;
   border-radius:10px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  box-shadow:0 6px 18px lch(77.34% 105.53 135.48);
   color: var(--u-text);
+  box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
 }
 
 .user-management h2{
@@ -29,6 +28,31 @@
   font-size:20px;
 }
 
+/* Asegurar box-sizing en todos los elementos hijos para alineación precisa */
+.user-management * {
+  box-sizing: border-box;
+}
+
+/* 
+   3. MENSAJES DE FEEDBACK Y ERROR
+   Estilos para textos de ayuda y validación de campos.
+*/
+.user-management .help.error {
+  color: var(--u-error-text);
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.user-management .input-error {
+  border-color: var(--u-error-text) !important;
+  background-color: var(--u-error-bg);
+}
+
+/* 
+   4. BARRA DE ACCIONES SUPERIOR
+   Contenedor para el buscador y botones de acción principales.
+*/
 .actions{
   display:flex;
   gap:12px;
@@ -39,14 +63,20 @@
 .actions input{
   flex:1;
   padding:10px 12px;
-  border:1px solid #dcdcdc;
+  border:1px solid var(--color-text-muted); /* Borde adaptable */
   border-radius:8px;
   font-size:14px;
+  background-color: var(--color-input-background); /* Fondo input global */
+  color: var(--color-input-text); /* Texto input global */
 }
 
+/* 
+   5. BOTONES GENERALES
+   Estilos base para botones dentro del módulo.
+*/
 .btn-primary{
   background:var(--u-primary);
-  color:#fff;
+  color:hsl(0, 0%, 100%);
   border:none;
   padding:10px 14px;
   border-radius:8px;
@@ -54,6 +84,10 @@
 }
 .btn-primary:hover{background:var(--u-primary-dark)}
 
+/* 
+   6. TABLA DE USUARIOS
+   Estilos para la visualización de datos en filas y columnas.
+*/
 .user-table{
   width:100%;
   border-collapse:collapse;
@@ -62,19 +96,35 @@
 
 .user-table th, .user-table td{
   padding:12px 10px;
-  border-bottom:1px solid #eee;
+  border-bottom:1px solid var(--color-text-muted); /* Separador sutil adaptable */
   text-align:left;
   vertical-align:middle;
+  color: var(--u-text); /* Usa el color de texto del tema actual */
+  background-color: var(--u-background)
 }
 
 .user-table th{
   background:var(--u-primary);
-  color:#fff;
+  color:hsl(0, 0%, 100%);
   font-weight:600;
 }
 
-.user-table tr:hover{background:#fafafa}
 
+/* 
+   Ajuste para inputs dentro de columnas de la tabla 
+   Alinea verticalmente y ajusta el padding para coincidir con el texto de otras celdas
+*/
+.user-table input {
+  vertical-align: middle;
+  padding: 6px 8px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* 
+   7. BOTONES DE ACCIÓN (TABLA)
+   Botones específicos para editar, eliminar, etc.
+*/
 button.editar, .btn-warning{
   background:var(--u-warning);
   color:#fff;
@@ -101,55 +151,60 @@ button.eliminar, .btn-danger{
 }
 .btn-secondary{
   background:#f0f0f0;
-  color:#333;
+  color:hwb(0 5% 95%);
   border:none;
   padding:8px 12px;
   border-radius:8px;
   cursor:pointer;
 }
 
-/* Celda contraseña */
-.password-cell{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.password{
-  font-family:monospace;
-  letter-spacing:2px;
-}
+/* 
+   8. CAMPOS DE CONTRASEÑA Y VISIBILIDAD
+   Estilos para el input con botón de "ojo" para mostrar/ocultar.
+*/
 
-/* Iconos ojo */
-.toggle-eye, .form-eye{
+.form-eye{
   cursor:pointer;
-  color:#666;
+  color:var(--u-icon-color);
   font-size:16px;
 }
-.toggle-eye:hover, .form-eye:hover{color:#333}
 
-/* Password input en formulario con ojo */
+
 .password-input{
-  display:flex;
-  align-items:center;
-  gap:8px;
   position:relative;
+  width: 100%;
 }
 .password-input input{
-  flex:1;
-  padding:10px 12px;
-  border:1px solid #ddd;
+  width: 100%;
+  padding:10px 40px 10px 12px; /* Espacio extra a la derecha para el icono */
+  border:1px solid var(--color-text-muted);
   border-radius:8px;
   font-size:14px;
+  background-color: var(--color-input-background);
+  color: var(--color-input-text);
+  box-sizing: border-box;
 }
 
-/* Modal animado y oculto por defecto */
+/* Icono posicionado absolutamente dentro del input */
+.password-input .form-eye {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+/* 
+   9. VENTANA MODAL (POPUP)
+   Estilos para el fondo oscuro y la tarjeta flotante del formulario.
+*/
 .modal{
   position:fixed;
   inset:0;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:rgba(0,0,0,0.45);
+  background:rgba(0, 0, 0, 0.6); /* Backdrop semitransparente oscuro para mejor contraste */
   opacity:0;
   pointer-events:none;
   transform:translateY(8px) scale(0.98);
@@ -163,7 +218,6 @@ button.eliminar, .btn-danger{
   transform:translateY(0) scale(1);
 }
 
-/* Contenido modal */
 .modal-content{
   width:420px;
   max-width:92%;
@@ -174,7 +228,6 @@ button.eliminar, .btn-danger{
   position:relative;
 }
 
-/* Close */
 .close{
   position:absolute;
   right:14px;
@@ -186,10 +239,12 @@ button.eliminar, .btn-danger{
   color:#888;
 }
 
-/* Form */
-/* Escopamos los estilos de formulario para que no afecten a otros módulos */
+/* 
+   10. FORMULARIOS
+   Estilos unificados para inputs y selects dentro del módulo y modales.
+*/
 .user-management form, .modal-content form {display:flex;flex-direction:column;gap:10px}
-.user-management form label, .modal-content form label {font-size:13px;color:#555}
+.user-management form label, .modal-content form label {font-size:13px;color:var(--color-text-muted)}
 
 .user-management form input[type="text"],
 .user-management form input[type="email"],
@@ -200,12 +255,13 @@ button.eliminar, .btn-danger{
 .modal-content form input[type="password"],
 .modal-content form select {
   padding:10px 12px;
-  border:1px solid #ddd;
+  border:1px solid var(--color-text-muted);
   border-radius:8px;
   font-size:14px;
+  background-color: var(--color-input-background);
+  color: var(--color-input-text);
 }
 
-/* Acciones del form */
 .form-actions{
   display:flex;
   gap:10px;
@@ -213,13 +269,20 @@ button.eliminar, .btn-danger{
   margin-top:8px;
 }
 
-/* Responsive */
+/* 
+   11. RESPONSIVE DESIGN
+   Ajustes para pantallas pequeñas (móviles).
+*/
 @media (max-width:520px){
   .actions{flex-direction:column;align-items:stretch}
   .actions input{margin-left:0}
   .modal-content{padding:16px}
 }
 
+/* 
+   12. UTILIDADES
+   Botones de iconos sin fondo.
+*/
 .icon-button{
   background:transparent;
   border:none;
@@ -230,4 +293,26 @@ button.eliminar, .btn-danger{
   cursor:pointer;
   color:inherit;
 }
-.icon-button:focus{outline:2px solid rgba(52,152,219,0.25); border-radius:6px;}
+
+
+/* 
+   13. ESTILOS ADICIONALES (Refactorización JSX)
+   Clases extraídas de estilos en línea para limpiar el componente React.
+*/
+.user-management .error-message {
+  background-color: var(--u-error-bg);
+  color: var(--u-error-text);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  border: 1px solid var(--u-error-border);
+}
+
+.user-management .access-denied {
+  text-align: center;
+  padding: 20px;
+}
+
+.user-management .action-icon {
+  vertical-align: middle;
+}
