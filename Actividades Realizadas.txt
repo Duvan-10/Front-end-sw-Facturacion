@@ -178,4 +178,43 @@ ESTADO FINAL DEL MÓDULO HOME:
 ✅ Adaptabilidad perfecta en Móviles, Tablets y Laptops.
 ✅ Mayor espacio de trabajo útil al ocultar el menú.
 ✅ Feedback visual claro para el usuario sobre su ubicación en el sistema.
+
+3. MÓDULO DE GESTIÓN DE USUARIOS (FRONTEND/BACKEND)
+   
+   Backend:
+   - Controladores implementados: createUser, getAllUsers, updateUser, deleteUser
+   - Validación de roles: solo admin y user (eliminado rol empleado)
+   - Protección de rutas con middleware de autenticación
+   - Validaciones: email único, identificación única, rol válido
+   - Archivos: Backend/controllers/user.controller.js, Backend/routes/user.routes.js
+   
+   Frontend:
+   - Conexión completa del módulo users.jsx con backend
+   - CRUD completo: Crear, Listar, Editar y Eliminar usuarios
+   - Validaciones en tiempo real: NIT (10 dígitos, solo números), nombre (letras/espacios), 
+     email (formato válido), contraseña (mín. 6 caracteres)
+   - Confirmación de contraseña en creación y edición
+   - Filtrado de usuarios por NIT, nombre o correo
+   - Manejo de estados de carga y errores con mensajes claros
+   - Uso correcto de sessionStorage para tokens de autenticación
+   
+   Seguridad y Permisos:
+   - Opción "Gestión de Usuarios" visible solo para rol admin
+   - Validación de rol antes de cargar datos
+   - Redirección automática si no hay token válido
+   - Usuarios con rol user no ven ni pueden acceder al módulo
+   
+   Archivos modificados:
+   - Front-End/src/modules/users.jsx
+   - Front-End/src/styles/users.css
+
+--------------------------------------------------------------------------------
+ESTADO FINAL:
+--------------------------------------------------------------------------------
+
+✅ Sistema de gestión de usuarios completamente funcional
+✅ Validaciones robustas en frontend y backend
+✅ Control de acceso basado en roles implementado
+✅ Solo 2 roles activos: admin y user
+✅ Interfaz intuitiva con feedback visual de errores
 ================================================================================
