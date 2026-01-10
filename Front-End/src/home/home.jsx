@@ -26,12 +26,12 @@ import {
 } from 'react-icons/fa';
 
 // Importar módulos
-import Facturas from '../modules/Facturas/Facturas';
-import Clientes from '../modules/Clientes/Clientes';
-import Productos from '../modules/Productos/Productos';
-import Reportes from '../modules/Reportes/Reportes';
-import Perfil from '../modules/Perfil/Perfil';
-import GestionUsuarios from '../modules/Usuarios/users';
+import Facturas from '../modules/Facturas';
+import Clientes from '../modules/Clientes';
+import Productos from '../modules/Productos';
+import Reportes from '../modules/Reportes';
+import Perfil from '../modules/Perfil';
+import GestionUsuarios from '../modules/users';
 
 const Home = () => {
   const { user, logout } = useAuth();

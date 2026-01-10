@@ -1,6 +1,6 @@
 // Users.jsx
 import React, { useState, useRef, useEffect } from "react";
-import "../../styles/users.css";
+import "../styles/users.css";
 import { FiEye, FiEyeOff, FiEdit, FiTrash2 } from "react-icons/fi";
 
 export default function Users() {

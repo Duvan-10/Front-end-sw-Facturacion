@@ -1,6 +1,6 @@
 // Front-end/src/modules/Perfil/Perfil.jsx
 import React from 'react';
-import '../../styles/Perfil.css' // Importamos los estilos
+import '../styles/Perfil.css' // Importamos los estilos
 
 function Perfil() {
     return (

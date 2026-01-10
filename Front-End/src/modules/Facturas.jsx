@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { visualizarFactura } from '../../utils/pdfGenerator'; 
-import '../../styles/global.css';
+import { visualizarFactura } from '../utils/pdfGenerator'; 
+import '../styles/global.css';
 
 const ITEMS_PER_PAGE = 30; 
 
