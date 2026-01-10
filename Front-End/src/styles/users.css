@@ -270,13 +270,53 @@ button.eliminar, .btn-danger{
 }
 
 /* 
-   11. RESPONSIVE DESIGN
-   Ajustes para pantallas pequeñas (móviles).
+   11. RESPONSIVE DESIGN (ADAPTABILIDAD)
+   Ajustes para portátiles, tablets y móviles.
 */
-@media (max-width:520px){
-  .actions{flex-direction:column;align-items:stretch}
-  .actions input{margin-left:0}
-  .modal-content{padding:16px}
+
+/* Tablets y pantallas medianas (hasta 768px) */
+@media (max-width: 768px) {
+  .user-management {
+    width: 95%;
+    margin: 15px auto;
+    padding: 15px;
+  }
+
+  /* Habilitar scroll horizontal en la tabla */
+  .user-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+/* Móviles (hasta 520px) */
+@media (max-width: 520px) {
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .actions input {
+    margin-left: 0;
+  }
+  .modal-content {
+    padding: 16px;
+    width: 95%;
+  }
+  
+  /* Botones más accesibles en móvil */
+  .btn-primary,
+  .form-actions button {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
 }
 
 /* 
