@@ -81,4 +81,21 @@ ACTIVIDADES REALIZADAS:
 ✅ **Gestión de usuarios 100% funcional** con validaciones de frontend y backend.
 ✅ **Consistencia visual** y soporte para cambio de tema (Claro/Oscuro) en tiempo real.
 ✅ **Control de acceso basado en roles** y seguridad reforzada en el manejo de credenciales.
+================================================================================================================================================================
+
+================================================================================================================================================================
+**Fecha:** 10 de Enero de 2026
+ACTIVIDADES REALIZADAS:
+================================================================================================================================================================
+
+#### **1. MEJORAS DE UX/UI EN MÓDULOS DE AUTENTICACIÓN**
+
+*   **Visualización de Contraseña:** Reemplazo de los botones de texto "Mostrar/Ocultar" por **iconos de "ojo" (SVG)** integrados dentro de los inputs de contraseña en **Login**, **Register** y **ResetPassword**.
+*   **Control Independiente:** Implementación de estados separados para alternar la visibilidad de los campos "Contraseña" y "Confirmar Contraseña" de forma individual.
+*   **Estilos Centralizados:** Definición de clases utilitarias (`.password-wrapper`, `.password-toggle`) y variables globales (`--color-input-icon`) para garantizar consistencia visual en modos claro y oscuro.
+
+#### **2. LÓGICA DE SEGURIDAD Y USABILIDAD (LOGIN)**
+
+*   **Gestión Dinámica de Credenciales:** Ajuste en el evento `onChange` del correo electrónico para **limpiar automáticamente la contraseña** al modificar el usuario.
+*   **Validación de "Recordarme":** Refinamiento lógico para que la contraseña guardada solo se restaure si el correo ingresado coincide exactamente con el almacenado en `localStorage`; de lo contrario, se limpia el campo y se desmarca la opción.
 
