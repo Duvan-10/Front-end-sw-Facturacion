@@ -376,6 +376,34 @@
     transition: background-color 5000s ease-in-out 0s;
 }
 
+/* --- Wrapper para Input de Contraseña (Icono Ojo) --- */
+.auth-register .password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.auth-register .password-wrapper input {
+    padding-right: 40px; /* Espacio para que el texto no pise el icono */
+}
+
+.auth-register .password-toggle {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: var(--color-input-icon);
+    transition: color 0.3s;
+}
+
+.auth-register .password-toggle:hover {
+    color: var(--color-accent-teal);
+}
+
 /* Utilidad para label y botón mostrar (Registro) */
 .auth-register .label-row {
     display: flex;
