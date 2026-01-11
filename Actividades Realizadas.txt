@@ -99,3 +99,67 @@ ACTIVIDADES REALIZADAS:
 *   **Gestión Dinámica de Credenciales:** Ajuste en el evento `onChange` del correo electrónico para **limpiar automáticamente la contraseña** al modificar el usuario.
 *   **Validación de "Recordarme":** Refinamiento lógico para que la contraseña guardada solo se restaure si el correo ingresado coincide exactamente con el almacenado en `localStorage`; de lo contrario, se limpia el campo y se desmarca la opción.
 
+#### **3. ESTANDARIZACIÓN DE ESTILOS (PRODUCTOS Y CLIENTES)**
+
+*   **Nuevo Archivo de Estilos:** Creación de `cliente_products.css` para centralizar los estilos de los módulos de Productos y Clientes, replicando el diseño modular de Usuarios (`users.css`) sin afectar los archivos existentes.
+*   **Clases Específicas:** Implementación de selectores `.product-management`, `.client-management`, `.product-table` y `.client-table` para aplicar el diseño de tarjetas, tablas y modales modernos a estos módulos.
+*   **Consistencia Visual:** Uso de las variables globales de tema (`--u-*`) para asegurar que todos los módulos de gestión compartan la misma paleta de colores y comportamiento en modo claro/oscuro.
+ 
+
+#### **4. UNIFICACIÓN DE DISEÑO DE TABLAS (USUARIOS, PRODUCTOS, CLIENTES, FACTURAS)**
+
+* **Patrón único de interfaz:** Estandarización del contenedor (título, barra de acciones, tabla, modal) replicando el patrón de `users.jsx` en **Productos**, **Clientes** y **Facturas**.
+* **Clases consistentes:** Uso de `.product-management`, `.client-management`, `.invoice-management`, más `.product-table`, `.client-table`, `.invoice-table` para una semántica clara y reutilizable.
+* **Estados vacíos y carga:** Inclusión de mensajes vacíos en `<tbody>` con `colSpan` correspondiente y manejo de estados `loading` y `error` homogéneo.
+
+#### **5. INTEGRACIÓN DE FORMULARIOS EN MODALES (PRODUCTOS, CLIENTES, FACTURAS)**
+
+* **Modales embebidas:** Integración de **ProductForm**, **ClientForm** e **InvoiceForm** dentro de cada módulo mediante un overlay accesible (roles/aria) y botón de cierre.
+* **Callbacks de éxito:** Implementación de `onSuccess` y `onCancel` en formularios; al guardar, se cierra la modal y se refresca el listado mediante un `refreshKey` (o `postMessage: 'listUpdated'` según el módulo).
+* **Sin alterar lógica base:** La lógica original de cada formulario se respeta; la modal añade sólo orquestación de UI/UX.
+
+#### **6. CENTRALIZACIÓN DE COLORES Y VARIABLES (global.css)**
+
+* **Variables para tablas (CP):** `--cp-table-header-bg`, `--cp-table-header-text`, `--cp-table-border`, `--cp-table-row-hover`, `--cp-badge-bg`, `--cp-badge-text`.
+* **Variables para formularios:** `--form-error-*`, `--form-subtitle-text`, `--form-input-border`, `--form-input-border-focus`, `--form-input-focus-shadow`, `--form-btn-ghost-border`, `--form-close-color`.
+* **Consistencia de tema:** Todas las vistas respetan modo claro/oscuro sin colores hardcodeados.
+
+#### **7. ARCHIVO DE ESTILOS UNIFICADO PARA MÓDULOS (PRODUCTOS/CLIENTES/FACTURAS)**
+
+* **`Modules_clients_products_factures.css`:** Archivo de estilos único para los tres módulos de gestión con clases comunes de contenedor, acciones y tablas.
+* **Soporte Facturas:** Añadidas `.invoice-management` y `.invoice-table`, más estilos de estados `invoice-status` (pagada/pendiente), botones `ver/emitir`, y overlay `modal-overlay` + `modal-body`.
+* **Importes actualizados:** Alineación de importaciones en los módulos para referenciar el archivo unificado.
+
+#### **8. AJUSTES DE RESPONSIVIDAD Y UX PARA MODAL (FACTURAS)**
+
+* **Modal robusta:** Scroll interno con `max-height: 90vh`, sombra, y cierre accesible; compatibilidad móvil/tablet.
+* **Formulario adaptado:** Ajustes en `forms_invoices.css` para que el formulario se renderice limpio dentro de la modal (ancho completo, sin sombras duplicadas, paddings adecuados).
+
+#### **9. NUEVO ESTILO OPCIONAL PROFESIONAL PARA FORMULARIO DE FACTURA (MODAL)**
+
+* **`froms_Products_Clients1.css`:** Estilo alternativo moderno y profesional (prefijo `invoice-*`) para usar específicamente en la **modal de crear factura**.
+* **Secciones semánticas:** Encabezados con indicador, grids responsivos para datos del cliente y productos, botones con gradientes y transiciones.
+* **Guía de uso:** Creación de **GUIA_ESTILOS_INVOICES.md** con pasos, ejemplos y recomendaciones para adopción gradual del nuevo estilo.
+
+#### **10. ACTUALIZACIONES EN `Facturas.jsx`**
+
+* **Acciones y filtros:** Barra `.actions` con botón “Crear”, input de búsqueda y `select` de estado (Pagada/Pendiente).
+* **Estructura de tabla:** Migración a `.invoice-table` con columnas (#, fecha, cliente, productos, total, estado, acciones) y estado vacío consistente.
+* **Integración de modal:** Estados `showForm`/`closeForm`; render condicional del overlay y `InvoiceForm` con `onSuccess/onCancel` y refresco mediante `refreshKey`.
+* **Corrección sintáctica:** Orden y definición clara de handlers (`handleCreateNew`, `handleFormSuccess`, `handleEdit`, `handleEmit`) evitando solapamientos.
+
+#### **11. MANTENIMIENTO Y LIMPIEZA**
+
+* **Imports alineados:** Actualización de importaciones de CSS y formularios a rutas consolidadas.
+* **Consistencia de clases:** Homologación de clases de botones (`btn-primary`, `btn-warning`, `btn-success`, `btn-info`) y acciones (`editar`, `ver`, `emitir`).
+* **Mensajería de actualización:** Uso de `refreshKey` y/o `postMessage` para forzar recarga de listas tras crear/editar.
+
+
+### **ESTADO FINAL DEL SISTEMA (10/Ene/2026)**
+
+✅ **Interfaz unificada** en Usuarios, Productos, Clientes y Facturas.
+✅ **Formularios integrados en modal** sin alterar lógica de negocio.
+✅ **Tema centralizado** (variables globales) y cero colores hardcodeados.
+✅ **CSS consolidado**: un archivo común para módulos y un estilo opcional profesional para la modal de facturas.
+✅ **Responsividad mejorada** y experiencia consistente en desktop/móvil.
+================================================================================================================================================================
