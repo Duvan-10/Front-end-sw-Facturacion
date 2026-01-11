@@ -74,6 +74,30 @@
     --u-error-text: #fc8181;                   /* Texto error claro */
     --u-error-border: #fc8181;
 
+    /* ================================================================= */
+    /* MÓDULO CLIENTES Y PRODUCTOS */
+    /* Variables de color para tablas y componentes                      */
+    /* ================================================================= */
+    --cp-table-header-bg: #3498db;            /* Fondo encabezado tabla */
+    --cp-table-header-text: #ffffff;          /* Texto encabezado tabla */
+    --cp-table-border: #555555;               /* Borde de tabla */
+    --cp-table-row-hover: rgba(52, 152, 219, 0.1); /* Hover fila tabla */
+    --cp-badge-bg: rgba(52, 152, 219, 0.2);  /* Fondo badge */
+    --cp-badge-text: #3498db;                 /* Texto badge */
+
+    /* ================================================================= */
+    /* FORMULARIOS - CLIENTES Y PRODUCTOS */
+    /* Variables de color para inputs y campos                           */
+    /* ================================================================= */
+    --form-error-bg: rgba(239, 68, 68, 0.15); /* Fondo error */
+    --form-error-text: #fc8181;               /* Texto error */
+    --form-error-border: #fc8181;             /* Borde error */
+    --form-subtitle-text: #b0b0b0;            /* Texto subtítulo */
+    --form-input-border: #555555;             /* Borde input */
+    --form-input-border-focus: #3498db;       /* Borde input focus */
+    --form-input-focus-shadow: rgba(52, 152, 219, 0.2); /* Sombra focus */
+    --form-btn-ghost-border: #666666;         /* Borde botón ghost */
+    --form-close-color: #b0b0b0;              /* Color botón cerrar */
     
 }
 /*----------------------------------------------------------------------------------------------------------*/
@@ -146,6 +170,30 @@ html.light-mode {
     --u-error-text: lab(59.41% 21.25 8.53);   /* Texto error oscuro */
     --u-error-border: #c53030;
 
+    /* ================================================================= */
+    /* MÓDULO CLIENTES Y PRODUCTOS */
+    /* Variables de color para tablas y componentes (Modo Claro)         */
+    /* ================================================================= */
+    --cp-table-header-bg: #2b6cb0;            /* Fondo encabezado tabla */
+    --cp-table-header-text: #ffffff;          /* Texto encabezado tabla */
+    --cp-table-border: #e5e7eb;               /* Borde de tabla */
+    --cp-table-row-hover: rgba(43, 108, 176, 0.08); /* Hover fila tabla */
+    --cp-badge-bg: #e0e7ff;                   /* Fondo badge */
+    --cp-badge-text: #2b6cb0;                 /* Texto badge */
+
+    /* ================================================================= */
+    /* FORMULARIOS - CLIENTES Y PRODUCTOS (Modo Claro)                  */
+    /* Variables de color para inputs y campos                           */
+    /* ================================================================= */
+    --form-error-bg: #fef2f2;                 /* Fondo error */
+    --form-error-text: #b91c1c;               /* Texto error */
+    --form-error-border: #fecdd3;             /* Borde error */
+    --form-subtitle-text: #6b7280;            /* Texto subtítulo */
+    --form-input-border: #d1d5db;             /* Borde input */
+    --form-input-border-focus: #2b6cb0;       /* Borde input focus */
+    --form-input-focus-shadow: rgba(43, 108, 176, 0.12); /* Sombra focus */
+    --form-btn-ghost-border: #e5e7eb;         /* Borde botón ghost */
+    --form-close-color: #9ca3af;              /* Color botón cerrar */
             
 }
 /*----------------------------------------------------------------------------------------------------------*/

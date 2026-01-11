@@ -1,11 +1,11 @@
  import React from 'react';
  import { useNavigate } from 'react-router-dom';
  import { useInvoiceLogic } from './logica.js';
- import '../Froms.css';
+ import '../styles/froms_Products_Clients.css';
 
  
   //------------Funcion Formulario-------------//
- const InvoiceForm = () => {
+ const InvoiceForm = ({ onSuccess, onCancel }) => {
   const navigate = useNavigate(); 
 
   const { 
@@ -28,8 +28,24 @@
     subtotal, 
     iva, 
     totalGeneral,
-    handleSubmit 
+    handleSubmit: handleFormSubmit
   } = useInvoiceLogic();
+
+  // Función envolvente para manejar el submit con callbacks opcionales
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Ejecutar la lógica original
+    const result = await handleFormSubmit(e);
+    
+    // Si hay callbacks opcionales, ejecutarlos
+    if (onSuccess && result !== false) {
+      onSuccess();
+    } else if (!onSuccess && result !== false) {
+      // Comportamiento por defecto: navegar
+      navigate('/home/facturas');
+    }
+  };
 
         
   
@@ -305,7 +321,7 @@
     <button 
         type="button" 
         className="btn btn-danger" 
-        onClick={() => navigate('/home/facturas')}
+        onClick={() => onCancel ? onCancel() : navigate('/home/facturas')}
     >
         Cancelar
     </button>

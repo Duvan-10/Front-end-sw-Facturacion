@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../api';
-import "../Froms.css"
+import '../styles/froms_Products_Clients.css';
 
-
-const ProductForm = () => {
-    const { id } = useParams();
+const ProductForm = ({ productId = null, onSuccess, onCancel }) => {
+    const { id: idFromParams } = useParams();
     const navigate = useNavigate();
-    const isEditing = !!id; 
+    const id = productId ?? idFromParams;
+    const isEditing = !!id;
 
     const apiBaseUrl = `${API_URL}/productos`;
     
@@ -88,7 +88,9 @@ const ProductForm = () => {
             }
 
             alert(`✅ Producto guardado.`);
-            if (window.opener) {
+            if (onSuccess) {
+                onSuccess();
+            } else if (window.opener) {
                 window.opener.postMessage('listUpdated', '*');
                 window.close();
             } else {
@@ -102,43 +104,45 @@ const ProductForm = () => {
     };
 
     return (
-        <div className="form-container">
-            <form className="card" onSubmit={handleSubmit}>
-                <h2 className="module-title">{isEditing ? 'Editar Producto' : 'Registrar Producto'}</h2>
-                {error && <div className="error-banner">⚠️ {error}</div>}
+        <div className="form-shell">
+            <form className="form-card" onSubmit={handleSubmit}>
+                <header className="form-header">
+                    <h2>{isEditing ? 'Editar Producto' : 'Registrar Producto'}</h2>
+                    <p className="form-subtitle">Completa los datos para gestionar productos.</p>
+                </header>
+
+                {error && <div className="form-error">⚠️ {error}</div>}
                 
-                <div className="section-group">
-                    <div className="field-col">
-                        <label>Código</label>
+                <div className="form-grid">
+                    <label className="form-field">
+                        <span>Código</span>
                         <input type="text" value={productData.codigo} onChange={(e) => setProductData({...productData, codigo: e.target.value})} required />
-                    </div>
-                    <div className="field-col">
-                        <label>Nombre</label>
+                    </label>
+                    <label className="form-field">
+                        <span>Nombre</span>
                         <input type="text" value={productData.nombre} onChange={(e) => setProductData({...productData, nombre: e.target.value})} required />
-                    </div>
+                    </label>
                 </div>
 
-                <div className="section-group">
-                    <div className="field-col full-width">
-                        <label>Descripción</label>
-                        <textarea value={productData.descripcion} onChange={(e) => setProductData({...productData, descripcion: e.target.value})} required />
-                    </div>
-                </div>
+                <label className="form-field">
+                    <span>Descripción</span>
+                    <textarea value={productData.descripcion} onChange={(e) => setProductData({...productData, descripcion: e.target.value})} required />
+                </label>
 
-                <div className="section-group">
-                    <div className="field-col">
-                        <label>Precio Unitario ($)</label>
+                <div className="form-grid">
+                    <label className="form-field">
+                        <span>Precio Unitario ($)</span>
                         <input type="number" step="0.01" value={productData.precio} onChange={(e) => setProductData({...productData, precio: e.target.value})} required />
-                    </div>
-                    <div className="field-col">
-                        <label>Impuesto (%)</label>
+                    </label>
+                    <label className="form-field">
+                        <span>Impuesto (%)</span>
                         <input type="number" value={productData.impuesto_porcentaje} onChange={(e) => setProductData({...productData, impuesto_porcentaje: e.target.value})} />
-                    </div>
+                    </label>
                 </div>
 
-                <div className="btn-group">
-                    <button type="button" className="btn btn-secondary" onClick={() => window.close()}>Cancelar</button>
-                    <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? 'Guardando...' : 'Guardar Producto'}</button>
+                <div className="form-actions">
+                    <button type="button" className="btn ghost" onClick={onCancel || (() => window.close())}>Cancelar</button>
+                    <button type="submit" className="btn primary" disabled={loading}>{loading ? 'Guardando...' : 'Guardar Producto'}</button>
                 </div>
             </form>
         </div>

@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { visualizarFactura } from '../utils/pdfGenerator'; 
-import '../styles/global.css';
+import InvoiceForm from '../forms/InvoiceForm1.jsx';
+import '../styles/Modules_clients_products_factures.css';
 
 const ITEMS_PER_PAGE = 30; 
 
@@ -15,6 +16,8 @@ function Facturas() {
     const [currentPage, setCurrentPage] = useState(1); 
     const [totalItems, setTotalItems] = useState(0); 
     const [isGenerating, setIsGenerating] = useState(null);
+    const [showForm, setShowForm] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     // Función auxiliar para obtener el token y los headers
     const getAuthHeaders = () => {
@@ -72,7 +75,7 @@ function Facturas() {
         }
     };
 
-    useEffect(() => {
+    useEffect(() => { refreshKey
         fetchInvoices();
     }, [searchQuery, filterState, currentPage]); 
 
@@ -125,7 +128,18 @@ function Facturas() {
         setCurrentPage(1); 
     };
 
-    const handleCreateNew = () => { window.open('/facturas/crear', '_blank'); };
+    const handleCreateNew = () => {
+        setShowForm(true);
+    };
+
+    const closeForm = () => {
+        setShowForm(false);
+    };
+
+    const handleFormSuccess = () => {
+        setRefreshKey(prev => prev + 1);
+        closeForm();
+    };
 
     const handleEdit = (invoice) => { 
         if (invoice.id_real) {
@@ -138,43 +152,43 @@ function Facturas() {
     const handleEmit = (invoice) => { alert(`Emitiendo factura ${invoice.id}...`); };
 
     return (
-        <div className="main-content">
-            {/* ... JSX del return (se mantiene igual) ... */}
-            <h1 className="module-title">Gestión de Facturas</h1>
-            {/* ... resto del código visual ... */}
-            <section className="controls-section card">
-                <div className="search-bar">
-                    <label htmlFor="search">Buscar Factura:</label>
-                    <input 
-                        type="text" id="search" className="search-input" 
-                        value={searchQuery} onChange={handleSearchChange}
-                        placeholder="ID o Cliente..."
-                    />
+        <div className="invoice-management">
+            <h2>Gestión de Facturas</h2>
+
+            {error && (
+                <div className="error-message">
+                    {error}
                 </div>
-                
+            )}
+
+            <div className="actions">
+                <button 
+                    className="btn-primary" 
+                    onClick={handleCreateNew}
+                    disabled={loading}
+                >
+                    ➕ Crear Nueva Factura
+                </button>
+                <input 
+                    type="text" 
+                    placeholder="Buscar por ID o Cliente"
+                    value={searchQuery} 
+                    onChange={handleSearchChange}
+                />
                 <select 
                     value={filterState} 
                     onChange={(e) => { setFilterState(e.target.value); setCurrentPage(1); }} 
-                    className="select-filter form-control" 
+                    disabled={loading}
                 >
                     <option value="">Todos los Estados</option>
                     <option value="Pagada">Pagada</option>
                     <option value="Pendiente">Pendiente</option>
                 </select>
-                
-                <button className="btn btn-primary" onClick={handleCreateNew}>
-                    Crear Nueva Factura
-                </button>
-            </section>
-            
-            <hr/>
+            </div>
 
-            <section className="list-section">
-                <h2>Listado de Facturas ({totalItems} en total)</h2>
-                {loading && <p className="loading-text">Cargando datos...</p>}
-                {error && <p className="error-message" style={{color: 'red'}}>{error}</p>}
-                {!loading && !error && (
-                    <table className="data-table">
+            {loading && <p>Cargando...</p>}
+
+            <table className="invoice-table">
                         <thead>
                             <tr>
                                 <th># Factura</th>
@@ -187,47 +201,63 @@ function Facturas() {
                             </tr>
                         </thead>
                         <tbody>
-                            {invoices.map((invoice) => (
-                                <tr key={invoice.id_real}> 
-                                    <td><strong>{invoice.id}</strong></td>
-                                    <td>{formatDate(invoice.date)}</td>
-                                    <td>{invoice.client}</td>
-                                    <td>
-                                        <div className="product-relation-wrapper">
-                                            {invoice.detalles && invoice.detalles.length > 0 ? (
-                                                invoice.detalles.map((item, idx) => (
-                                                    <span key={idx} className="product-badge">
-                                                        {item.producto_nombre}
-                                                    </span>
-                                                ))
-                                            ) : (<small style={{color: '#999'}}>Sin detalle</small>)}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <strong>${parseFloat(invoice.total || 0).toLocaleString('es-CO')}</strong>
-                                    </td>
-                                    <td>
-                                        <span className={`invoice-status status-${invoice.status?.toLowerCase()}`}>
-                                            {invoice.status}
-                                        </span>
-                                    </td>
-                                    <td className="actions-cell">
-                                        <button 
-                                            className="btn btn-sm btn-view" 
-                                            onClick={() => handleView(invoice)}
-                                            disabled={isGenerating === invoice.id_real}
-                                        >
-                                            {isGenerating === invoice.id_real ? '...' : 'Ver'}
-                                        </button>
-                                        <button className="btn btn-sm btn-edit" onClick={() => handleEdit(invoice)}>Editar</button>
-                                        <button className="btn btn-sm btn-success" onClick={() => handleEmit(invoice)}>Emitir</button>
+                            {invoices.length > 0 ? (
+                                invoices.map((invoice) => (
+                                    <tr key={invoice.id_real}> 
+                                        <td><strong>{invoice.id}</strong></td>
+                                        <td>{formatDate(invoice.date)}</td>
+                                        <td>{invoice.client}</td>
+                                        <td>
+                                            <div className="product-relation-wrapper">
+                                                {invoice.detalles && invoice.detalles.length > 0 ? (
+                                                    invoice.detalles.map((item, idx) => (
+                                                        <span key={idx} className="product-badge">
+                                                            {item.producto_nombre}
+                                                        </span>
+                                                    ))
+                                                ) : (<small>Sin detalle</small>)}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <strong>${parseFloat(invoice.total || 0).toLocaleString('es-CO')}</strong>
+                                        </td>
+                                        <td>
+                                            <span className={`invoice-status status-${invoice.status?.toLowerCase()}`}>
+                                                {invoice.status}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button 
+                                                className="ver btn-info" 
+                                                onClick={() => handleView(invoice)}
+                                                disabled={isGenerating === invoice.id_real}
+                                                title="Ver factura en PDF"
+                                            >
+                                                {isGenerating === invoice.id_real ? '...' : '📄 Ver'}
+                                            </button>
+                                            <button className="editar btn-warning" onClick={() => handleEdit(invoice)} disabled={loading} title="Editar factura">✏️ Editar</button>
+                                            <button className="emitir btn-success" onClick={() => handleEmit(invoice)} disabled={loading} title="Emitir factura">📤 Emitir</button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
+                                        No se encontraron facturas.
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
-                )}
-            </section>
+
+            {showForm && (
+                <div className="modal-overlay" role="dialog" aria-modal="true">
+                    <div className="modal-body">
+                        <button className="modal-close" onClick={closeForm}>✕</button>
+                        <InvoiceForm onSuccess={handleFormSuccess} onCancel={closeForm} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

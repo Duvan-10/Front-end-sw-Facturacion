@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../api';
-import '../styles/global.css';
+import ProductForm from '../forms/ProductForm.jsx';
+import '../styles/Modules_clients_products_factures.css';
+
 
 function Productos() {
     const navigate = useNavigate();
@@ -18,6 +20,8 @@ function Productos() {
     const [refreshKey, setRefreshKey] = useState(0); 
     const [inputValue, setInputValue] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [showForm, setShowForm] = useState(false);
+    const [editingId, setEditingId] = useState(null);
 
     const loadProducts = async () => {
         const token = getAuthToken();
@@ -93,81 +97,101 @@ function Productos() {
         return () => window.removeEventListener('message', handleMessage);
     }, []); 
 
-    const handleCreateNew = () => window.open('/productos/crear', '_blank');
-    const handleEdit = (product) => window.open(`/productos/editar/${product.id}`, '_blank');
+    const handleCreateNew = () => {
+        setEditingId(null);
+        setShowForm(true);
+    };
+
+    const handleEdit = (product) => {
+        setEditingId(product.id);
+        setShowForm(true);
+    };
+
+    const closeForm = () => {
+        setShowForm(false);
+        setEditingId(null);
+    };
+
+    const handleSaved = () => {
+        setRefreshKey(prev => prev + 1);
+        closeForm();
+    };
 
     return (
-        <div className="main-content">
-            <h1 className="module-title">Gestión de Productos</h1>
+        <div className="product-management">
+            <h2>Gestión de Productos</h2>
 
-            <section className="controls-section card">
-                <div className="search-bar">
-                    <label htmlFor="search">Buscar Producto (Código o Nombre):</label>
-                    <input 
-                        type="text" 
-                        id="search"
-                        className="search-input" 
-                        value={inputValue} 
-                        onChange={handleSearchChange}
-                        placeholder="Escribe para buscar..."
-                    />
+            {error && (
+                <div className="error-message">
+                    {error}
                 </div>
-                
-                <button 
-                    className="btn btn-primary btn-register-product" 
-                    onClick={handleCreateNew}
-                >
-                    Registrar Nuevo Producto
-                </button>
-            </section>
-            
-            <hr/>
-            
-            <section className="list-section">
-                <h2>Listado de Productos ({products.length})</h2>
-                
-                {loading && <p className="loading-text">Cargando datos...</p>}
-                {error && (
-                    <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '4px', marginBottom: '10px' }}>
-                        ⚠️ {error}
-                    </div>
-                )}
+            )}
 
-                {!loading && products.length === 0 && !error ? (
-                    <p>No se encontraron productos.</p>
-                ) : (
-                    <table className="data-table">
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Nombre</th>
-                                <th>Descripción</th>
-                                <th>Precio</th>
-                                <th>Impuesto (%)</th> 
-                                <th>Precio Total</th>
-                                <th>Acciones</th> 
+            <div className="actions">
+                <button 
+                    className="btn-primary" 
+                    onClick={handleCreateNew}
+                    disabled={loading}
+                >
+                    ➕ Registrar Nuevo Producto
+                </button>
+                <input 
+                    type="text" 
+                    placeholder="Filtrar por Código o Nombre"
+                    value={inputValue} 
+                    onChange={handleSearchChange}
+                />
+            </div>
+
+            {loading && <p>Cargando...</p>}
+
+            <table className="product-table" id="tablaProductos">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Impuesto (%)</th> 
+                        <th>Precio Total</th>
+                        <th>Acciones</th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    {products.length > 0 ? (
+                        products.map((product) => (
+                            <tr key={product.id}>
+                                <td>{product.codigo}</td> 
+                                <td>{product.nombre}</td>
+                                <td>{product.descripcion || "Sin descripción"}</td>
+                                <td>${parseFloat(product.precio || 0).toFixed(2)}</td>
+                                <td>{parseFloat(product.impuesto_porcentaje || 0).toFixed(2)}%</td>
+                                <td>${calculateFinalPrice(product.precio, product.impuesto_porcentaje)}</td>
+                                <td>
+                                    <button className="editar btn-warning" onClick={() => handleEdit(product)} disabled={loading} title="Editar producto">
+                                        ✏️ Editar
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {products.map((product) => (
-                                <tr key={product.id}>
-                                    <td>{product.codigo}</td> 
-                                    <td>{product.nombre}</td>
-                                    <td>{product.descripcion || "Sin descripción"}</td>
-                                    <td>${parseFloat(product.precio || 0).toFixed(2)}</td>
-                                    <td>{parseFloat(product.impuesto_porcentaje || 0).toFixed(2)}%</td>
-                                    <td>${calculateFinalPrice(product.precio, product.impuesto_porcentaje)}</td>
-                                    <td className="actions-cell">
-                                        <button className="btn btn-sm btn-edit" onClick={() => handleEdit(product)}>
-                                            Editar
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </section>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
+                                No se encontraron productos.
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+
+            {showForm && (
+                <div className="modal-overlay" role="dialog" aria-modal="true">
+                    <div className="modal-body">
+                        <button className="modal-close" onClick={closeForm}>✕</button>
+                        <ProductForm productId={editingId} onSuccess={handleSaved} onCancel={closeForm} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

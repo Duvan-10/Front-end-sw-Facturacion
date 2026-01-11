@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../api';
-import '../styles/global.css';
+import ClienteForm from '../forms/ClientForm.jsx';
+import '../styles/Modules_clients_products_factures.css';
+
 
 function Clientes() {
     const navigate = useNavigate();
@@ -22,6 +24,8 @@ function Clientes() {
     const [refreshKey, setRefreshKey] = useState(0); 
     const [inputValue, setInputValue] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [showForm, setShowForm] = useState(false);
+    const [editingId, setEditingId] = useState(null);
 
     // =======================================================
     // I. LÓGICA DE CARGA DE DATOS (fetch GET)
@@ -108,85 +112,107 @@ function Clientes() {
         return () => window.removeEventListener('message', handleMessage);
     }, []); 
 
-    const handleCreateNew = () => window.open('/clientes/crear', '_blank');
-    const handleEdit = (id) => window.open(`/clientes/editar/${id}`, '_blank');
+    const handleCreateNew = () => {
+        setEditingId(null);
+        setShowForm(true);
+    };
+
+    const handleEdit = (id) => {
+        setEditingId(id);
+        setShowForm(true);
+    };
+
+    const closeForm = () => {
+        setShowForm(false);
+        setEditingId(null);
+    };
+
+    const handleSaved = () => {
+        setRefreshKey(prev => prev + 1);
+        closeForm();
+    };
 
     return (
-        <div className="main-content">
-            <h1 className="module-title">Gestión de Clientes</h1>
+        <div className="client-management">
+            <h2>Gestión de Clientes</h2>
 
-            <section className="controls-section card">
-                <div className="search-bar">
-                    <label htmlFor="search">Buscar Cliente (ID o Nombre):</label>
-                    <input 
-                        type="text" 
-                        id="search"
-                        className="search-input" 
-                        value={inputValue} 
-                        onChange={handleSearchChange}
-                        placeholder="Escribe para buscar..."
-                        autoComplete="off"
-                    />
+            {error && (
+                <div className="error-message">
+                    {error}
                 </div>
-                
+            )}
+
+            <div className="actions">
                 <button 
-                    className="btn btn-primary" 
-                    onClick={handleCreateNew} 
+                    className="btn-primary" 
+                    onClick={handleCreateNew}
                     disabled={loading}
                 >
-                    Registrar Nuevo Cliente
+                    ➕ Registrar Nuevo Cliente
                 </button>
-            </section>
-            
-            <section className="list-section">
-                <h2>Listado de Clientes ({clients.length} encontrados)</h2>
-                
-                {loading && <p>Cargando datos del servidor...</p>}
-                {error && (
-                    <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '4px', marginBottom: '10px' }}>
-                        ⚠️ {error}
-                    </div>
-                )}
+                <input 
+                    type="text" 
+                    placeholder="Filtrar por Identificación o Nombre"
+                    value={inputValue} 
+                    onChange={handleSearchChange}
+                    autoComplete="off"
+                />
+            </div>
 
-                {!loading && !error && clients.length === 0 ? (
-                    <p>No hay clientes registrados en la base de datos.</p>
-                ) : (
-                    <table className="data-table">
-                        <thead>
-                            <tr>
-                                <th>Tipo ID</th>
-                                <th>Identificación</th>
-                                <th>Razón Social / Nombre</th>
-                                <th>Teléfono</th>
-                                <th>Correo</th>
-                                <th>Acciones</th>
+            {loading && <p>Cargando...</p>}
+
+            <table className="client-table" id="tablaClientes">
+                <thead>
+                    <tr>
+                        <th>Tipo ID</th>
+                        <th>Identificación</th>
+                        <th>Razón Social / Nombre</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {clients.length > 0 ? (
+                        clients.map((client) => (
+                            <tr key={client.id}>
+                                <td><span className="badge">{client.tipo_identificacion}</span></td> 
+                                <td>{client.identificacion}</td> 
+                                <td style={{ fontWeight: '600' }}>
+                                    {client.nombre_razon_social}
+                                </td> 
+                                <td>{client.telefono || '---'}</td>
+                                <td>{client.email || '---'}</td>
+                                <td>
+                                    <button 
+                                        className="editar btn-warning" 
+                                        onClick={() => handleEdit(client.id)} 
+                                        disabled={loading}
+                                        title="Editar cliente"
+                                    >
+                                        ✏️ Editar
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {clients.map((client) => (
-                                <tr key={client.id}>
-                                    <td><span className="badge">{client.tipo_identificacion}</span></td> 
-                                    <td>{client.identificacion}</td> 
-                                    <td style={{ fontWeight: '600' }}>
-                                        {client.nombre_razon_social}
-                                    </td> 
-                                    <td>{client.telefono || '---'}</td>
-                                    <td>{client.email || '---'}</td>
-                                    <td>
-                                        <button 
-                                            className="btn btn-sm btn-edit" 
-                                            onClick={() => handleEdit(client.id)} 
-                                            disabled={loading}
-                                        >
-                                            Editar
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </section>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
+                                No hay clientes registrados.
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+
+            {showForm && (
+                <div className="modal-overlay" role="dialog" aria-modal="true">
+                    <div className="modal-body">
+                        <button className="modal-close" onClick={closeForm}>✕</button>
+                        <ClienteForm clientId={editingId} onSuccess={handleSaved} onCancel={closeForm} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -1,0 +1,87 @@
+/* ====== FORMULARIO ====== */
+.app-form.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 2rem;
+  max-width: 1000px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ====== TITULOS ====== */
+.module-title, .section-title, .section-totales {
+  font-weight: 600;
+  color: #1a73e8;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* ====== GRUPOS DE CLIENTE ====== */
+.section-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.client-data.input {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ====== PRODUCTOS ====== */
+.product-grid {
+  display: grid;
+  grid-template-columns: 120px 80px 1fr 120px 120px 80px;
+  gap: 1rem;
+  align-items: center;
+}
+
+.product-header {
+  font-weight: 600;
+  background: #f9fafb;
+  padding: 0.6rem;
+  border-radius: 6px;
+}
+
+.product-row input {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.v-total {
+  font-weight: 600;
+  text-align: right;
+}
+
+/* ====== BOTONES DE ACCIÓN EN FILAS ====== */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* ====== TOTALES ====== */
+.total-line, .iva, .total-final {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.total-final {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a73e8;
+}
+
+/* ====== BOTONES FINALES ====== */
+.final-buttons-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}

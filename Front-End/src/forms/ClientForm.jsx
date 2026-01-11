@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../api';
-import "../Froms.css"
 
 
-function ClienteForm() {
-    const { id } = useParams();
+function ClienteForm({ clientId = null, onSuccess, onCancel }) {
+    const { id: idFromParams } = useParams();
     const navigate = useNavigate();
+    const id = clientId ?? idFromParams;
     const isEdit = Boolean(id);
 
     const apiBaseUrl = `${API_URL}/clientes`;
@@ -116,7 +116,9 @@ function ClienteForm() {
         }
 
         alert("✅ Operación exitosa");
-        if (window.opener) {
+        if (onSuccess) {
+            onSuccess();
+        } else if (window.opener) {
             window.opener.postMessage('listUpdated', '*');
             window.close();
         } else {
@@ -131,50 +133,55 @@ function ClienteForm() {
 };
 
     return (
-        <div className="app-form card">
-            <h1 className="module-title">{isEdit ? 'Editar Cliente' : 'Registro de Nuevo Cliente'}</h1>
-            {error && <p style={{ color: '#721c24', backgroundColor: '#f8d7da', padding: '10px', borderRadius: '4px' }}>⚠️ {error}</p>}
-            <form onSubmit={handleSubmit}>
-                <div className="section-group">
-                    <div className="field-col">
-                        <label>Tipo de ID:</label>
+        <div className="form-shell">
+            <form className="form-card" onSubmit={handleSubmit}>
+                <header className="form-header">
+                    <h2>{isEdit ? 'Editar Cliente' : 'Registrar Cliente'}</h2>
+                    <p className="form-subtitle">Completa los datos para gestionar clientes.</p>
+                </header>
+
+                {error && <div className="form-error">⚠️ {error}</div>}
+
+                <div className="form-grid">
+                    <label className="form-field">
+                        <span>Tipo de ID</span>
                         <select name="tipo_identificacion" value={formData.tipo_identificacion} onChange={handleChange} required>
                             <option value="Cédula de Ciudadanía">Cédula de Ciudadanía</option>
                             <option value="NIT">NIT</option>
                             <option value="Cédula de Extranjería">Cédula de Extranjería</option>
                             <option value="Pasaporte">Pasaporte</option>
                         </select>
-                    </div>
-                    <div className="field-col">
-                        <label>Número de Identificación:</label>
+                    </label>
+                    <label className="form-field">
+                        <span>Número de Identificación</span>
                         <input type="text" name="identificacion" value={formData.identificacion} onChange={handleChange} required />
-                    </div>
+                    </label>
                 </div>
-                <div className="section-group">
-                    <div className="field-col full-width">
-                        <label>Nombre / Razón Social:</label>
-                        <input type="text" name="nombre_razon_social" value={formData.nombre_razon_social} onChange={handleChange} required />
-                    </div>
-                </div>
-                <div className="section-group">
-                    <div className="field-col">
-                        <label>Email:</label>
+
+                <label className="form-field">
+                    <span>Nombre / Razón Social</span>
+                    <input type="text" name="nombre_razon_social" value={formData.nombre_razon_social} onChange={handleChange} required />
+                </label>
+
+                <div className="form-grid">
+                    <label className="form-field">
+                        <span>Email</span>
                         <input type="email" name="email" value={formData.email} onChange={handleChange} />
-                    </div>
-                    <div className="field-col">
-                        <label>Teléfono:</label>
+                    </label>
+                    <label className="form-field">
+                        <span>Teléfono</span>
                         <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} />
-                    </div>
+                    </label>
                 </div>
-                <div className="section-group">
-                    <div className="field-col full-width">
-                        <label>Dirección:</label>
-                        <textarea name="direccion" value={formData.direccion} onChange={handleChange} />
-                    </div>
-                </div>
-                <div className="final-buttons-group">
-                    <button type="button" onClick={() => isEdit ? navigate('/home/clientes') : window.close()} className="btn-secondary">Cancelar</button>
-                    <button type="submit" disabled={loading} className="btn-primary">{loading ? 'Guardando...' : 'Guardar Cliente'}</button>
+
+                <label className="form-field">
+                    <span>Dirección</span>
+                    <textarea name="direccion" value={formData.direccion} onChange={handleChange} />
+                </label>
+
+                <div className="form-actions">
+                    <button type="button" className="btn ghost" onClick={onCancel || (() => isEdit ? navigate('/home/clientes') : window.close())}>Cancelar</button>
+                    <button type="submit" disabled={loading} className="btn primary">{loading ? 'Guardando...' : 'Guardar Cliente'}</button>
                 </div>
             </form>
         </div>
