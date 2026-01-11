@@ -27,6 +27,7 @@ function ResetPassword() {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [statusMessage, setStatusMessage] = useState({ type: null, message: '' });
     const [passwordReset, setPasswordReset] = useState(false);
@@ -168,39 +169,70 @@ function ResetPassword() {
                         <form onSubmit={handleSubmit}>
                             {/* Campo de Nueva Contraseña */}
                             <div className="field">
-                                <div className="label-mostrar">
-                                    <label htmlFor="newPassword">Nueva Contraseña</label>
+                                <label htmlFor="newPassword">Nueva Contraseña</label>
+                                <div className="password-wrapper">
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        id="newPassword"
+                                        name="newPassword"
+                                        placeholder="••••••••"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        disabled={isLoading}
+                                    />
                                     <button
                                         type="button"
-                                        className="link-button"
+                                        className="password-toggle"
                                         onClick={() => setShowPassword(prev => !prev)}
+                                        aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                                     >
-                                        {showPassword ? 'Ocultar' : 'Mostrar'}
+                                        {showPassword ? (
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                                            </svg>
+                                        ) : (
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        )}
                                     </button>
                                 </div>
-                                <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    id="newPassword"
-                                    name="newPassword"
-                                    placeholder="••••••••"
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    disabled={isLoading}
-                                />
                             </div>
 
                             {/* Campo de Confirmar Contraseña */}
                             <div className="field">
                                 <label htmlFor="confirmPassword">Confirmar Contraseña</label>
-                                <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    placeholder="••••••••"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    disabled={isLoading}
-                                />
+                                <div className="password-wrapper">
+                                    <input
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        placeholder="••••••••"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        disabled={isLoading}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="password-toggle"
+                                        onClick={() => setShowConfirmPassword(prev => !prev)}
+                                        aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                                    >
+                                        {showConfirmPassword ? (
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                                            </svg>
+                                        ) : (
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                        )}
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Botones de Acción */}

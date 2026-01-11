@@ -32,6 +32,7 @@
     --color-input-background: oklch(90.792% 0.00251 167.333); /* Fondo de inputs */
     --color-input-text: hwb(0 3% 97%);         /* Texto dentro de inputs */
     --color-input-hover: lab(15.16% 0 0);       /* Color hover genérico */
+    --color-input-icon: #666666;               /* Color de iconos dentro de inputs */
 
     /* --- BOTONES Y ACENTOS (Welcome, Login, Register) --- */
     --color-accent-teal: hwb(151 0% 10%);      /* Color principal (Botones, Links) */
@@ -103,6 +104,7 @@ html.light-mode {
     --color-input-background: hsl(0, 9%, 85%); 
     --color-input-text: hsl(132, 100%, 1%); 
     --color-input-hover: #f0f0f0;
+    --color-input-icon: #555555;
 
     /* --- BOTONES Y ACENTOS --- */
     --color-accent-teal: oklch(26.305% 0.00232 146.108); 
