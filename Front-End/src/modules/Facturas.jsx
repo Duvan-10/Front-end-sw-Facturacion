@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { visualizarFactura } from '../utils/pdfGenerator'; 
-import InvoiceForm from '../forms/InvoiceForm1.jsx';
+import InvoiceForm from '../forms/InvoiceForm.jsx';
 import '../styles/Modules_clients_products_factures.css';
 
 const ITEMS_PER_PAGE = 30; 
@@ -129,15 +129,17 @@ function Facturas() {
     };
 
     const handleCreateNew = () => {
-        setShowForm(true);
+        // Navegar a la ruta de crear factura
+        navigate('/home/facturas/crear');
     };
 
     const closeForm = () => {
         setShowForm(false);
+        fetchInvoices(); // Recargar facturas al cerrar
     };
 
     const handleFormSuccess = () => {
-        setRefreshKey(prev => prev + 1);
+        fetchInvoices(); // Recargar facturas al crear nueva
         closeForm();
     };
 
@@ -250,14 +252,6 @@ function Facturas() {
                         </tbody>
                     </table>
 
-            {showForm && (
-                <div className="modal-overlay" role="dialog" aria-modal="true">
-                    <div className="modal-body">
-                        <button className="modal-close" onClick={closeForm}>✕</button>
-                        <InvoiceForm onSuccess={handleFormSuccess} onCancel={closeForm} />
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

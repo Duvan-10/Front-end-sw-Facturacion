@@ -1,7 +1,8 @@
  import React from 'react';
  import { useNavigate } from 'react-router-dom';
+ import { FaPlus, FaTrash } from "react-icons/fa";
  import { useInvoiceLogic } from './logica.js';
- import '../styles/froms_Products_Clients.css';
+ import '../styles/forms_invoices.css';
 
  
   //------------Funcion Formulario-------------//
@@ -38,13 +39,17 @@
     // Ejecutar la lógica original
     const result = await handleFormSubmit(e);
     
-    // Si hay callbacks opcionales, ejecutarlos
-    if (onSuccess && result !== false) {
-      onSuccess();
-    } else if (!onSuccess && result !== false) {
-      // Comportamiento por defecto: navegar
-      navigate('/home/facturas');
+    // Si la factura se creó exitosamente
+    if (result === true) {
+      // Si hay callback de éxito, ejecutarlo
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        // Comportamiento por defecto: navegar
+        navigate('/home/facturas');
+      }
     }
+    // Si result === false, simplemente no hacer nada (el usuario ya vio los alerts de error)
   };
 
         
@@ -128,7 +133,7 @@
 
     <div className="client-data input">
 
-        <label>Tipo Doc.</label>
+        <label>T.DC</label>
 
         <select 
             name="tipo_identificacion" 
@@ -228,44 +233,77 @@
 
 {productosFactura.map((prod, index) => (
     <div className="product-grid product-row" key={index}>
-        {/* ... tus otros inputs (Código, Cant, Detalle, V.Unit) ... */}
+        {/* Código con búsqueda */}
+        <input 
+            type="text" 
+            value={prod.codigo} 
+            onChange={(e) => {
+                handleInputChange(index, 'codigo', e.target.value);
+                buscarProductos(e.target.value);
+            }}
+            list="lista-productos"
+            placeholder="Código"
+        />
         
-        <input type="text" value={prod.codigo} />
-        <input type="number" value={prod.cantidad} />
-        <input type="text" value={prod.detalle}  />
-        <input type="number" value={prod.vUnitario} readOnly />
+        {/* Cantidad */}
+        <input 
+            type="number" 
+            value={prod.cantidad}
+            onChange={(e) => handleInputChange(index, 'cantidad', e.target.value)}
+            min="1"
+            placeholder="Cant."
+        />
+        
+        {/* Detalle */}
+        <input 
+            type="text" 
+            value={prod.detalle}
+            onChange={(e) => handleInputChange(index, 'detalle', e.target.value)}
+            readOnly
+            placeholder="Detalle"
+        />
+        
+        {/* V.Unitario */}
+        <input 
+            type="number" 
+            value={prod.vUnitario} 
+            readOnly
+            placeholder="Unitario"
+        />
 
         {/* Columna V.Total */}
         <span className="v-total">
             {prod.vTotal.toLocaleString('es-CO')}
         </span>
 
-        {/* COLUMNA DE ACCIONES: Aquí van los botones juntos */}
-        <div className="action-buttons">
-            {/* Botón Añadir (siempre visible o solo en la última fila) */}
-            {index === productosFactura.length - 1 && (
-                <button 
-                    type="button" 
-                    className="btn btn-primary btn-add-inline"
-                    onClick={agregarFilaProducto}
-                    title="Añadir fila"
-                >
-                    +
-                </button>
-            )}
 
-            {/* Botón Eliminar (visible si hay más de una fila) */}
-            {index > 0 && (
-                <button 
-                    type="button" 
-                    className="delete-product"
-                    onClick={() => eliminarFilaProducto(index)}
-                    title="Eliminar fila"
-                >
-                    ✕
-                </button>
-            )}
-        </div>
+       {/* COLUMNA DE ACCIONES */}
+<div className="action-buttons">
+    {/* Botón Añadir (siempre visible o solo en la última fila) */}
+    {index === productosFactura.length - 1 && (
+        
+        <button 
+            type="button" 
+            className="btn-primaryy"
+            onClick={agregarFilaProducto}
+            title="Añadir fila"
+        >
+            <FaPlus />
+        </button>
+    )}
+
+    {/* Botón Eliminar (visible si hay más de una fila) */}
+    {index > 0 && (
+        <button 
+            type="button" 
+            className="delete-product"
+            onClick={() => eliminarFilaProducto(index)}
+            title="Eliminar fila"
+        >
+            <FaTrash />
+        </button>
+    )}
+</div>
     </div>
 ))}
 
@@ -321,7 +359,13 @@
     <button 
         type="button" 
         className="btn btn-danger" 
-        onClick={() => onCancel ? onCancel() : navigate('/home/facturas')}
+        onClick={() => {
+          if (onCancel) {
+            onCancel();
+          } else {
+            navigate('/home/facturas');
+          }
+        }}
     >
         Cancelar
     </button>

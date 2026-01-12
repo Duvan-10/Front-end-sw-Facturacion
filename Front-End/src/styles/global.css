@@ -98,8 +98,45 @@
     --form-input-focus-shadow: rgba(52, 152, 219, 0.2); /* Sombra focus */
     --form-btn-ghost-border: #666666;         /* Borde botón ghost */
     --form-close-color: #b0b0b0;              /* Color botón cerrar */
+
+    /* ================================================================= */
+    /* FORMULARIOS - FACTURAS (Modo Oscuro)                             */
+    /* Variables de color para formulario de facturas                    */
+    /* ================================================================= */
+    --invoice-form-bg: lab(8.25% 0 0);                /* Fondo formulario */
+    --invoice-form-border-color: lch(75.46% 85.28 130.58); /* Borde secciones */
+    --invoice-form-title-color: hwb(136 7% 38%);     /* Color títulos */
+    --invoice-title-border: oklch(87.355% 0.27606 140.748); /* Borde títulos */
+    --invoice-label-color: lab(89.88% 0 -0.01);      /* Color labels */
+    --invoice-input-bg: oklab(18.337999999999997% 0.00156 0.00046); /* Fondo inputs */
+    --invoice-input-border: hwb(125 36% 10%);        /* Borde inputs */
+    --invoice-input-text: hsl(144, 11%, 91%);        /* Texto en inputs */
+    --invoice-pago-text: hsl(109, 14%, 84%);         /* Texto PAGO */
+    --invoice-pago-si: #16a34a;                      /* Verde SI */
+    --invoice-pago-no: #dc2626;                      /* Rojo NO */
+    --invoice-select-bg: white;                       /* Fondo select */
+    --invoice-select-text: #333;                      /* Texto select */
+    --invoice-select-border: hsl(0, 0%, 80%);        /* Borde select */
+    --invoice-product-header-text: #e3ebe3;          /* Texto encabezado productos */
+    --invoice-product-input-bg: oklch(90.28% 0.00394 106.88); /* Fondo inputs productos */
+    --invoice-product-input-border: oklch(80.41% 0.23969 140.806); /* Borde inputs productos */
+    --invoice-product-input-text: lab(21.25% 0 0);   /* Texto inputs productos */
+    --invoice-vtotal-bg: #88e690;                    /* Fondo V.Total */
+    --invoice-vtotal-text: black;                    /* Texto V.Total */
+    --invoice-values-title-color: lab(90.3% 3.4 1.2); /* Títulos valores */
+    --invoice-values-color: oklch(59.1% 0.23611 28.638); /* Color valores */
+    --invoice-total-line-color: #d41515;             /* Color líneas totales */
+    --invoice-total-label-color: hsl(135, 3%, 72%); /* Color labels totales */
+    --invoice-total-value-color: oklab(87.872% 0.03103 0.00986); /* Color valores totales */
+    --invoice-iva-label-color: lch(88.99% 6.59 90.11); /* Color etiqueta IVA */
+    --invoice-iva-value-color: lab(44.09% 66.27 50.28); /* Color valor IVA */
+    --invoice-total-final-border: #999;              /* Borde total final */
+    --invoice-total-final-label-color: lab(76.66% -74.89 69.8); /* Color label total final */
+    --invoice-total-final-value-color: hsl(110, 100%, 50%); /* Color valor total final */
+    --invoice-final-buttons-border: hsl(0, 0%, 93%); /* Borde botones finales */
     
 }
+/*----------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------*/
 
 
@@ -194,7 +231,43 @@ html.light-mode {
     --form-input-focus-shadow: rgba(43, 108, 176, 0.12); /* Sombra focus */
     --form-btn-ghost-border: #e5e7eb;         /* Borde botón ghost */
     --form-close-color: #9ca3af;              /* Color botón cerrar */
-            
+
+    /* ================================================================= */
+    /* FORMULARIOS - FACTURAS (Modo Claro)                              */
+    /* Variables de color para formulario de facturas                    */
+    /* ================================================================= */
+    --invoice-form-bg: oklch(100% 0.00011 271.152);  /* Fondo formulario */
+    --invoice-form-border-color: #e5e7eb;            /* Borde secciones */
+    --invoice-form-title-color: #2b6cb0;             /* Color títulos */
+    --invoice-title-border: #d1d5db;                 /* Borde títulos */
+    --invoice-label-color: #374151;                  /* Color labels */
+    --invoice-input-bg: #f3f4f6;                     /* Fondo inputs */
+    --invoice-input-border: #d1d5db;                 /* Borde inputs */
+    --invoice-input-text: #111827;                   /* Texto en inputs */
+    --invoice-pago-text: #374151;                    /* Texto PAGO */
+    --invoice-pago-si: #16a34a;                      /* Verde SI */
+    --invoice-pago-no: #dc2626;                      /* Rojo NO */
+    --invoice-select-bg: white;                      /* Fondo select */
+    --invoice-select-text: #333;                     /* Texto select */
+    --invoice-select-border: #d1d5db;                /* Borde select */
+    --invoice-product-header-text: #1f2937;          /* Texto encabezado productos */
+    --invoice-product-input-bg: #f9fafb;             /* Fondo inputs productos */
+    --invoice-product-input-border: #e5e7eb;         /* Borde inputs productos */
+    --invoice-product-input-text: #111827;           /* Texto inputs productos */
+    --invoice-vtotal-bg: #d1fae5;                    /* Fondo V.Total */
+    --invoice-vtotal-text: #065f46;                  /* Texto V.Total */
+    --invoice-values-title-color: #1f2937;           /* Títulos valores */
+    --invoice-values-color: #2b6cb0;                 /* Color valores */
+    --invoice-total-line-color: #1f2937;             /* Color líneas totales */
+    --invoice-total-label-color: #374151;            /* Color labels totales */
+    --invoice-total-value-color: #111827;            /* Color valores totales */
+    --invoice-iva-label-color: #374151;              /* Color etiqueta IVA */
+    --invoice-iva-value-color: #c53030;              /* Color valor IVA */
+    --invoice-total-final-border: #d1d5db;           /* Borde total final */
+    --invoice-total-final-label-color: #1f2937;     /* Color label total final */
+    --invoice-total-final-value-color: #16a34a;     /* Color valor total final */
+    --invoice-final-buttons-border: #e5e7eb;         /* Borde botones finales */
+    
 }
 /*----------------------------------------------------------------------------------------------------------*/
 

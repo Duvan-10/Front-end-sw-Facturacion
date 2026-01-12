@@ -23,7 +23,7 @@ export const useInvoiceLogic = () => {
 
     const obtenerProximoNumero = async () => {
         try {
-            const token = sessionStorage.getItem('authToken');
+            const token = sessionStorage.getItem('token');
             const res = await fetch('http://localhost:8080/api/facturas/proximo-numero', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -49,7 +49,7 @@ export const useInvoiceLogic = () => {
         const buscarCoincidencias = async () => {
             if (identificacion.length > 2) {
                 try {
-                    const token = sessionStorage.getItem('authToken');
+                    const token = sessionStorage.getItem('token');
                     const res = await fetch(`http://localhost:8080/api/clientes?search=${identificacion}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
@@ -144,7 +144,7 @@ export const useInvoiceLogic = () => {
     const buscarProductos = async (t) => {
         if (!t) return;
         try {
-            const token = sessionStorage.getItem('authToken');
+            const token = sessionStorage.getItem('token');
             const res = await fetch(`http://localhost:8080/api/facturas/buscar-productos?q=${t}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -187,17 +187,17 @@ export const useInvoiceLogic = () => {
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
         
-        if (pagoEstado === 'Default') return alert("⚠️ Seleccione el estado de pago.");
-        if (!validarDatosCliente()) return; 
+        if (pagoEstado === 'Default') { alert("⚠️ Seleccione el estado de pago."); return false; }
+        if (!validarDatosCliente()) return false; 
 
-        const token = sessionStorage.getItem('authToken');
+        const token = sessionStorage.getItem('token');
         let clienteIdActual = cliente.id;
 
         if (!clienteIdActual) {
             if (window.confirm("¿El cliente no existe, deseas registrarlo con estos datos?")) {
                 clienteIdActual = await registrarClienteRapido(token);
-                if (!clienteIdActual) return; 
-            } else return;
+                if (!clienteIdActual) return false; 
+            } else return false;
         }
 
         // Preparar fecha con hora exacta de la PC
@@ -222,12 +222,16 @@ export const useInvoiceLogic = () => {
 
             if (response.ok) {
                 alert("✅ Factura guardada correctamente");
-                window.location.reload();
+                return true; // Retorna true para indicar éxito
             } else {
                 const errorData = await response.json();
                 alert("❌ Error: " + (errorData.message || "No se pudo guardar"));
+                return false;
             }
-        } catch (err) { alert("❌ Error de conexión"); }
+        } catch (err) { 
+            alert("❌ Error de conexión"); 
+            return false;
+        }
     };
     
     // Retorno unificado para el componente

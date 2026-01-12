@@ -10,7 +10,7 @@
  */
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/home.css';
 import { 
   FaUserCog, 
@@ -32,6 +32,7 @@ import Productos from '../modules/Productos';
 import Reportes from '../modules/Reportes';
 import Perfil from '../modules/Perfil';
 import GestionUsuarios from '../modules/users';
+import InvoiceForm from '../forms/InvoiceForm';
 
 const Home = () => {
   const { user, logout } = useAuth();
@@ -121,7 +122,7 @@ const Home = () => {
       <div className="main-content">
         <Routes>
           <Route index element={<DashboardHome />} />
-          <Route path="facturas" element={<Facturas />} />
+          <Route path="facturas/*" element={<FacturasRoute />} />
           <Route path="clientes" element={<Clientes />} />
           <Route path="productos" element={<Productos />} />
           <Route path="reportes" element={<Reportes />} />
@@ -158,6 +159,33 @@ const DashboardHome = () => {
       </div>
     </>
   );
+};
+
+// Componente para manejar las rutas anidadas de facturas
+const FacturasRoute = () => {
+  const navigate = useNavigate || Navigate; // fallback
+  
+  return (
+    <Routes>
+      <Route index element={<Facturas />} />
+      <Route path="crear" element={<InvoiceFormWrapper />} />
+    </Routes>
+  );
+};
+
+// Wrapper para InvoiceForm que maneja los callbacks
+const InvoiceFormWrapper = () => {
+  const navigate = useNavigate || Navigate;
+  
+  const handleFormSuccess = () => {
+    navigate('/home/facturas');
+  };
+
+  const handleFormCancel = () => {
+    navigate('/home/facturas');
+  };
+
+  return <InvoiceForm onSuccess={handleFormSuccess} onCancel={handleFormCancel} />;
 };
 
 export default Home;
