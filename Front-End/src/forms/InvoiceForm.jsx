@@ -7,6 +7,10 @@
  
   //------------Funcion Formulario-------------//
  const InvoiceForm = ({ onSuccess, onCancel }) => {
+  const handleCancel = () => {
+    onCancel();
+    navigate('/facturas'); // Redirigir a la tabla de facturas
+  };
   const navigate = useNavigate(); 
 
   const { 
