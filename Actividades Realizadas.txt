@@ -174,3 +174,13 @@ ACTIVIDADES REALIZADAS:
 - Revisión y refactorización del código donde fue posible.
 
 ================================================================================================================================================================
+**Fecha:** 13 de Enero de 2026
+
+**Resumen de Actividades:**
+- Ajuste de formato numérico: importes sin decimales en formulario, tablas y PDF.
+- Corrección en PDF: detalle del producto muestra "nombre - descripción".
+- Control de acceso: eliminación disponible solo para rol administrador en Productos, Clientes y Facturas.
+- Mejora en formulario de factura: al ingresar un código de producto inexistente, se limpian los campos de detalle (nombre, precio, IVA y total).
+- Mas Funciones Logicas, seguridad en Detalles clientes y productos para creacion de facturas.
+
+================================================================================================================================================================
