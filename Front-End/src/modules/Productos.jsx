@@ -22,6 +22,8 @@ function Productos() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState(null);
+    const currentUser = (() => { try { return JSON.parse(sessionStorage.getItem('user')); } catch { return null; } })();
+    const isAdmin = currentUser?.role === 'admin';
 
     const loadProducts = async () => {
         const token = getAuthToken();
@@ -84,7 +86,7 @@ function Productos() {
         const p = parseFloat(price) || 0;
         const t = parseFloat(taxPercentage) || 0;
         const finalPrice = p * (1 + (t / 100));
-        return finalPrice.toFixed(2);
+        return Math.round(finalPrice).toLocaleString('es-CO');
     };
 
     useEffect(() => {
@@ -105,6 +107,24 @@ function Productos() {
     const handleEdit = (product) => {
         setEditingId(product.id);
         setShowForm(true);
+    };
+
+    const handleDelete = async (product) => {
+        if (!isAdmin) return;
+        const ok = window.confirm(`¿Eliminar producto "${product.nombre}"?`);
+        if (!ok) return;
+        const token = getAuthToken();
+        try {
+            const res = await fetch(`${apiBaseUrl}/${product.id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (!res.ok) { throw new Error(data.message || 'Error al eliminar producto'); }
+            setRefreshKey(prev => prev + 1);
+        } catch (err) {
+            alert(err.message);
+        }
     };
 
     const closeForm = () => {
@@ -165,12 +185,13 @@ function Productos() {
                                 <td>{product.nombre}</td>
                                 <td>{product.descripcion || "Sin descripción"}</td>
                                 <td>${parseFloat(product.precio || 0).toFixed(2)}</td>
-                                <td>{parseFloat(product.impuesto_porcentaje || 0).toFixed(2)}%</td>
+                                <td>{Math.round(parseFloat(product.impuesto_porcentaje || 0))}%</td>
                                 <td>${calculateFinalPrice(product.precio, product.impuesto_porcentaje)}</td>
                                 <td>
-                                    <button className="editar btn-warning" onClick={() => handleEdit(product)} disabled={loading} title="Editar producto">
-                                        ✏️ Editar
-                                    </button>
+                                    <button className="editar btn-warning" onClick={() => handleEdit(product)} disabled={loading} title="Editar producto">✏️ Editar</button>
+                                    {isAdmin && (
+                                        <button className="eliminar btn-danger" onClick={() => handleDelete(product)} disabled={loading} title="Eliminar producto">🗑️ Eliminar</button>
+                                    )}
                                 </td>
                             </tr>
                         ))

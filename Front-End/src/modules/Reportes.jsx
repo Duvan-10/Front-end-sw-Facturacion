@@ -113,7 +113,7 @@ function Reports() {
                 <td>{report.client}</td>
                 <td>{report.product}</td>
                 <td>{report.date}</td>
-                <td>${report.total.toFixed(2)}</td>
+                <td>${Math.round(report.total).toLocaleString('es-CO')}</td>
               </tr>
             ))}
           </tbody>

@@ -21,11 +21,13 @@
     setFechaEmision,
     identificacion, 
     seleccionarCliente, 
+    autocompletarClienteConTab,
     handleClienteChange, 
     cliente, 
     sugerencias,
     productosFactura, 
     handleInputChange, 
+    autocompletarProductoConTab,
     agregarFilaProducto, 
     eliminarFilaProducto,
     buscarProductos, 
@@ -158,7 +160,8 @@
         <input 
         type="text" 
         value={identificacion}
-        onChange={seleccionarCliente} 
+        onChange={seleccionarCliente}
+        onKeyDown={autocompletarClienteConTab}
         list="clientes-sugerencias" 
         placeholder="Escribe NIT o Nombre..."/>
 
@@ -245,6 +248,7 @@
                 handleInputChange(index, 'codigo', e.target.value);
                 buscarProductos(e.target.value);
             }}
+            onKeyDown={(e) => autocompletarProductoConTab(e, index)}
             list="lista-productos"
             placeholder="Código"
         />
@@ -263,7 +267,6 @@
             type="text" 
             value={prod.detalle}
             onChange={(e) => handleInputChange(index, 'detalle', e.target.value)}
-            readOnly
             placeholder="Detalle"
         />
         
@@ -271,13 +274,13 @@
         <input 
             type="number" 
             value={prod.vUnitario} 
-            readOnly
+            onChange={(e) => handleInputChange(index, 'vUnitario', e.target.value)}
             placeholder="Unitario"
         />
 
         {/* Columna V.Total */}
         <span className="v-total">
-            {prod.vTotal.toLocaleString('es-CO')}
+            ${Math.round(prod.vTotal).toLocaleString('es-CO')}
         </span>
 
 
@@ -335,19 +338,17 @@
 
                 <div className="total-line">
                 <label>Subtotal</label>
-                <span>${subtotal ? subtotal.toFixed(2) : "0.00"}</span>
+                <span>${subtotal ? subtotal.toFixed(0) : "0"}</span>
                </div>
 
                <div className="iva">
-                <label>IVA</label>
-               {/* Cambia totalIva por iva aquí abajo */}
-               <span>${iva ? iva.toFixed(2) : "0.00"}</span> 
+                <label>IVA (19%)</label>
+               <span>${iva ? iva.toFixed(0) : "0"}</span>
                </div>
 
                <div className="total-line total-final">
                <label>Total</label>
-               {/* Cambia totalFinal por totalGeneral aquí abajo */}
-               <span>${totalGeneral ? totalGeneral.toFixed(2) : "0.00"}</span></div>
+               <span>${totalGeneral ? totalGeneral.toFixed(0) : "0"}</span></div>
 
              
       {/*********** BOTONES CREAR - CANCELAR ***********/}

@@ -3,7 +3,7 @@ import { Page, Text, View, Document, Image } from '@react-pdf/renderer';
 import { styles } from './InvoiceStyles';
 
 const InvoicePDF = ({ data, emisor }) => {
-    const formatCurrency = (val) => `$${(val || 0).toLocaleString('es-CO')}`;
+    const formatCurrency = (val) => `$${Math.round(val || 0).toLocaleString('es-CO')}`;
     const logoUrl = emisor?.logo_url ? window.location.origin + emisor.logo_url : null;
 
     return (

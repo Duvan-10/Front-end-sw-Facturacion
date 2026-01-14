@@ -18,6 +18,8 @@ function Facturas() {
     const [isGenerating, setIsGenerating] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const currentUser = (() => { try { return JSON.parse(sessionStorage.getItem('user')); } catch { return null; } })();
+    const isAdmin = currentUser?.role === 'admin';
 
     // Función auxiliar para obtener el token y los headers
     const getAuthHeaders = () => {
@@ -153,6 +155,23 @@ function Facturas() {
 
     const handleEmit = (invoice) => { alert(`Emitiendo factura ${invoice.id}...`); };
 
+    const handleDelete = async (invoice) => {
+        if (!isAdmin) return;
+        const ok = window.confirm(`¿Eliminar factura ${invoice.id}?`);
+        if (!ok) return;
+        try {
+            const res = await fetch(`http://localhost:8080/api/facturas/${invoice.id_real}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            });
+            const data = await res.json();
+            if (!res.ok) { throw new Error(data.message || 'Error al eliminar factura'); }
+            fetchInvoices();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
     return (
         <div className="invoice-management">
             <h2>Gestión de Facturas</h2>
@@ -221,7 +240,7 @@ function Facturas() {
                                             </div>
                                         </td>
                                         <td>
-                                            <strong>${parseFloat(invoice.total || 0).toLocaleString('es-CO')}</strong>
+                                            <strong>${Math.round(parseFloat(invoice.total || 0)).toLocaleString('es-CO')}</strong>
                                         </td>
                                         <td>
                                             <span className={`invoice-status status-${invoice.status?.toLowerCase()}`}>
@@ -239,6 +258,9 @@ function Facturas() {
                                             </button>
                                             <button className="editar btn-warning" onClick={() => handleEdit(invoice)} disabled={loading} title="Editar factura">✏️ Editar</button>
                                             <button className="emitir btn-success" onClick={() => handleEmit(invoice)} disabled={loading} title="Emitir factura">📤 Emitir</button>
+                                            {isAdmin && (
+                                                <button className="eliminar btn-danger" onClick={() => handleDelete(invoice)} disabled={loading} title="Eliminar factura">🗑️ Eliminar</button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))

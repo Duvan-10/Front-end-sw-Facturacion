@@ -26,6 +26,8 @@ function Clientes() {
     const [searchQuery, setSearchQuery] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState(null);
+    const currentUser = (() => { try { return JSON.parse(sessionStorage.getItem('user')); } catch { return null; } })();
+    const isAdmin = currentUser?.role === 'admin';
 
     // =======================================================
     // I. LÓGICA DE CARGA DE DATOS (fetch GET)
@@ -122,6 +124,24 @@ function Clientes() {
         setShowForm(true);
     };
 
+    const handleDelete = async (client) => {
+        if (!isAdmin) return;
+        const ok = window.confirm(`¿Eliminar cliente "${client.nombre_razon_social}"?`);
+        if (!ok) return;
+        const token = getAuthToken();
+        try {
+            const res = await fetch(`${apiBaseUrl}/${client.id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (!res.ok) { throw new Error(data.message || 'Error al eliminar cliente'); }
+            setRefreshKey(prev => prev + 1);
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
     const closeForm = () => {
         setShowForm(false);
         setEditingId(null);
@@ -184,14 +204,10 @@ function Clientes() {
                                 <td>{client.telefono || '---'}</td>
                                 <td>{client.email || '---'}</td>
                                 <td>
-                                    <button 
-                                        className="editar btn-warning" 
-                                        onClick={() => handleEdit(client.id)} 
-                                        disabled={loading}
-                                        title="Editar cliente"
-                                    >
-                                        ✏️ Editar
-                                    </button>
+                                    <button className="editar btn-warning" onClick={() => handleEdit(client.id)} disabled={loading} title="Editar cliente">✏️ Editar</button>
+                                    {isAdmin && (
+                                        <button className="eliminar btn-danger" onClick={() => handleDelete(client)} disabled={loading} title="Eliminar cliente">🗑️ Eliminar</button>
+                                    )}
                                 </td>
                             </tr>
                         ))
