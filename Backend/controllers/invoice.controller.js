@@ -38,7 +38,7 @@ const invoiceController = {
             const f = facturaRows[0];
             const [detallesRows] = await db.query(`
                 SELECT fd.producto_id, p.codigo AS code, fd.cantidad AS cant, 
-                       p.nombre AS detail, fd.precio_unitario AS unit,
+                       CONCAT(p.nombre, ' - ', p.descripcion) AS detail, fd.precio_unitario AS unit,
                        fd.total AS total
                 FROM factura_detalles fd
                 JOIN productos p ON fd.producto_id = p.id
@@ -95,7 +95,7 @@ const invoiceController = {
             for (const item of productos) {
                 await connection.query(
                     "INSERT INTO factura_detalles (factura_id, producto_id, cantidad, precio_unitario, subtotal, total) VALUES (?,?,?,?,?,?)",
-                    [result.insertId, item.producto_id, item.cantidad, item.vUnitario, item.vTotal, item.vTotal]
+                    [result.insertId, item.producto_id, item.cantidad, item.precio, item.subtotal || (item.cantidad * item.precio), item.subtotal || (item.cantidad * item.precio)]
                 );
             }
 
@@ -172,7 +172,7 @@ const invoiceController = {
                 for (const item of productos) {
                     await connection.query(
                         "INSERT INTO factura_detalles (factura_id, producto_id, cantidad, precio_unitario, subtotal, total) VALUES (?,?,?,?,?,?)",
-                        [id, item.producto_id, item.cantidad, item.vUnitario, item.vTotal, item.vTotal]
+                        [id, item.producto_id, item.cantidad, item.precio, item.subtotal || (item.cantidad * item.precio), item.subtotal || (item.cantidad * item.precio)]
                     );
                 }
             }
@@ -185,6 +185,42 @@ const invoiceController = {
             res.status(500).json({ error: "Error interno", message: e.message }); 
         } finally { 
             connection.release(); 
+        }
+    }
+    ,
+    // 7. ELIMINAR FACTURA (SOLO ADMIN)
+    deleteInvoice: async (req, res) => {
+        const connection = await db.getConnection();
+        try {
+            const { id } = req.params;
+
+            // 1. Validar que el solicitante sea admin
+            const [userRows] = await connection.query('SELECT role FROM users WHERE id = ?', [req.user.id]);
+            if (!userRows.length || userRows[0].role !== 'admin') {
+                return res.status(403).json({ message: 'Acceso denegado. Solo administradores pueden eliminar facturas.' });
+            }
+
+            await connection.beginTransaction();
+
+            // 2. Verificar existencia
+            const [facturaRows] = await connection.query('SELECT id FROM facturas WHERE id = ?', [id]);
+            if (!facturaRows.length) {
+                await connection.rollback();
+                return res.status(404).json({ message: 'Factura no encontrada.' });
+            }
+
+            // 3. Eliminar detalles y factura
+            await connection.query('DELETE FROM factura_detalles WHERE factura_id = ?', [id]);
+            await connection.query('DELETE FROM facturas WHERE id = ?', [id]);
+
+            await connection.commit();
+            return res.status(200).json({ message: 'Factura eliminada correctamente.' });
+        } catch (error) {
+            if (connection) await connection.rollback();
+            console.error('Error al eliminar factura:', error);
+            res.status(500).json({ message: 'Error interno del servidor.' });
+        } finally {
+            connection.release();
         }
     }
 }

@@ -7,7 +7,8 @@ import {
     getAllProductos, 
     getProductoById, 
     createProducto, 
-    updateProducto 
+    updateProducto,
+    deleteProducto
 } from '../controllers/productoController.js'; 
 
 // 2. Importamos el middleware correctamente
@@ -16,12 +17,12 @@ import authMiddleware from '../middleware/auth.middleware.js';
 const router = express.Router();
 
 // 3. Usamos 'authMiddleware' en lugar de 'authenticate' para que coincida con el import
-router.get('/', authMiddleware, getAllProductos);
-router.get('/:id', authMiddleware, getProductoById); 
-router.post('/', authMiddleware, createProducto);
-router.put('/:id', authMiddleware, updateProducto);
-
-// 4. Agregamos el middleware también a la búsqueda por código si es necesario
+// Las rutas específicas DEBEN ir antes de las rutas con parámetros
 router.get('/codigo/:codigo', authMiddleware, getProductoByCodigo);
+router.get('/', authMiddleware, getAllProductos);
+router.post('/', authMiddleware, createProducto);
+router.get('/:id', authMiddleware, getProductoById); 
+router.put('/:id', authMiddleware, updateProducto);
+router.delete('/:id', authMiddleware, deleteProducto);
 
 export default router;

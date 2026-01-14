@@ -196,6 +196,12 @@ clienteController.deleteCliente = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
+
+        // Verificar que el usuario autenticado sea admin
+        const [userRows] = await connection.query('SELECT role FROM users WHERE id = ?', [req.user.id]);
+        if (!userRows.length || userRows[0].role !== 'admin') {
+            return res.status(403).json({ message: 'Acceso denegado. Solo administradores pueden eliminar clientes.' });
+        }
         const query = "DELETE FROM clientes WHERE id = ?";
         const [result] = await connection.execute(query, [id]);
         if (result.affectedRows === 0) return res.status(404).json({ message: 'No encontrado.' });

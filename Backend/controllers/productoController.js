@@ -92,6 +92,36 @@ export const updateProducto = async (req, res) => {
     }
 };
 
+// 6. ELIMINAR PRODUCTO (SOLO ADMIN)
+export const deleteProducto = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // 1. Validar que el solicitante sea admin
+        const [userRows] = await db.query('SELECT role FROM users WHERE id = ?', [req.user.id]);
+        if (!userRows.length || userRows[0].role !== 'admin') {
+            return res.status(403).json({ message: 'Acceso denegado. Solo administradores pueden eliminar productos.' });
+        }
+
+        // 2. Intentar eliminar (manejar FK con detalles de factura)
+        try {
+            const [result] = await db.query('DELETE FROM productos WHERE id = ?', [id]);
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ message: 'Producto no encontrado.' });
+            }
+        } catch (error) {
+            if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+                return res.status(409).json({ message: 'No se puede eliminar: el producto tiene facturas asociadas.' });
+            }
+            throw error;
+        }
+
+        return res.status(200).json({ message: 'Producto eliminado correctamente.' });
+    } catch (error) {
+        console.error('Error al eliminar producto:', error);
+        res.status(500).json({ message: 'Error interno del servidor.' });
+    }
+};
 // 5. BUSCAR PRODUCTO POR CÓDIGO (NUEVO: Para auto-relleno en Factura)
 // ------------------------------------------------------------------
 export const getProductoByCodigo = async (req, res) => {

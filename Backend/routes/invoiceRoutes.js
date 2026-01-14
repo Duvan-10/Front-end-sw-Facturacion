@@ -31,5 +31,6 @@ router.get('/', authMiddleware, check('getAllInvoices', invoiceController.getAll
 router.post('/', authMiddleware, check('createInvoice', invoiceController.createInvoice));
 router.get('/:id', authMiddleware, check('getInvoiceById', invoiceController.getInvoiceById));
 router.put('/:id', authMiddleware, check('updateInvoice', invoiceController.updateInvoice));
+router.delete('/:id', authMiddleware, check('deleteInvoice', invoiceController.deleteInvoice));
 
 export default router;
