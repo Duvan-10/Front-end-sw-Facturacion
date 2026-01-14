@@ -1,4 +1,6 @@
 *****ANTES DE INICIAR**********
+Validar Funciones del Formulario "crear facturas" la logica y seguridad.
+Pendiente funcionalidad de botones de editar y emitir en modulo facturas
+Pendiente Funcion limpiar campos productos si el codigo no existe
 
-VALIDAR ESTILO DE FORMULARIO PARA FACTURAS, DEFINIR EL ESTILO PARA CREACION DE FACTURAS.
-VALIDAR CONEXION A LA BASE DE DATOS DE LOS FORMULARIOS.
+si todo funciona perfectamente realizar merge con rama master
