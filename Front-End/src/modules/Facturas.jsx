@@ -1,6 +1,21 @@
+/**
+ * ============================================================
+ * MÓDULO DE FACTURAS
+ * Archivo: Front-End/src/modules/Facturas.jsx
+ * PROPÓSITO:
+ *  - Mostrar listado de facturas con paginación y búsqueda
+ *  - Permitir filtrar facturas por estado
+ *  - Generar y visualizar PDFs de facturas
+ *  - Cambiar estado de facturas mediante modal
+ *  - Emitir facturas (generar PDF y enviar por email)
+ *  - Crear, editar y eliminar facturas
+ * ============================================================
+ */
+
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { visualizarFactura } from '../utils/pdfGenerator'; 
+import InvoiceStatusModal from '../components/InvoiceStatusModal';
 import InvoiceForm from '../forms/InvoiceForm.jsx';
 import '../styles/Modules_clients_products_factures.css';
 
@@ -18,6 +33,8 @@ function Facturas() {
     const [isGenerating, setIsGenerating] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [showStatusModal, setShowStatusModal] = useState(false);
+    const [selectedInvoice, setSelectedInvoice] = useState(null);
     const currentUser = (() => { try { return JSON.parse(sessionStorage.getItem('user')); } catch { return null; } })();
     const isAdmin = currentUser?.role === 'admin';
 
@@ -36,6 +53,32 @@ function Facturas() {
         return date.toLocaleDateString('es-ES', {
             day: '2-digit', month: '2-digit', year: 'numeric'
         });
+    };
+
+    const getInvoiceStatus = (invoice) => {
+        // Si el estado es Vencida, mostrar en rojo
+        if (invoice.status === 'Vencida') {
+            return { status: '🔴 Vencida', className: 'status-vencida' };
+        }
+        
+        // Si tiene fecha de vencimiento y es crédito, verificar si está vencida
+        if (invoice.fecha_vencimiento && invoice.status !== 'Pagada' && invoice.status !== 'Anulada') {
+            const today = new Date();
+            const vencimiento = new Date(invoice.fecha_vencimiento);
+            if (vencimiento < today) {
+                return { status: '🔴 Vencida', className: 'status-vencida' };
+            }
+        }
+        
+        // Retornar estado normal
+        const statusMap = {
+            'Pagada': '🟢 Pagada',
+            'Pendiente': '🟡 Pendiente',
+            'Anulada': '⚪ Anulada',
+            'Parcial': '🔵 Parcial'
+        };
+        
+        return { status: statusMap[invoice.status] || invoice.status, className: `status-${invoice.status?.toLowerCase()}` };
     };
 
     const fetchInvoices = async () => {
@@ -82,41 +125,25 @@ function Facturas() {
     }, [searchQuery, filterState, currentPage]); 
 
     const handleView = async (invoice) => {
-        setIsGenerating(invoice.id_real);
         try {
-            // CORRECCIÓN: Agregado de headers con Token en peticiones de PDF
-            const headers = getAuthHeaders();
+            setIsGenerating(invoice.id_real);
             
-            const resEmisor = await fetch('http://localhost:8080/api/emisor', { headers });
-            const emisorData = await resEmisor.json();
+            // Obtener datos de la factura
+            const resFactura = await fetch(`http://localhost:8080/api/facturas/${invoice.id_real}`, {
+                headers: getAuthHeaders()
+            });
+            if (!resFactura.ok) throw new Error('No se pudo obtener la factura');
+            const facturaData = await resFactura.json();
 
-            const resFactura = await fetch(`http://localhost:8080/api/facturas/${invoice.id_real}`, { headers });
-            if (!resFactura.ok) throw new Error("No se pudo obtener el detalle de la factura.");
-            const facturaDB = await resFactura.json();
+            // Obtener datos del emisor
+            const resEmisor = await fetch('http://localhost:8080/api/perfil/emisor', {
+                headers: getAuthHeaders()
+            });
+            const emisorData = resEmisor.ok ? await resEmisor.json() : null;
 
-            const facturaMapeada = {
-                numero_factura: facturaDB.numero_factura,
-                fecha_emision: facturaDB.fecha_emision,
-                cliente: {
-                    identificacion: facturaDB.cliente.identificacion,
-                    nombre_razon_social: facturaDB.cliente.nombre_razon_social,
-                    telefono: facturaDB.cliente.telefono,
-                    direccion: facturaDB.cliente.direccion
-                },
-                detalles: facturaDB.detalles.map(d => ({
-                    cant: d.cant,
-                    detail: d.detail,
-                    unit: parseFloat(d.unit),
-                    total: d.total
-                })),
-                subtotal: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0),
-                iva: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0) * 0.19,
-                total: facturaDB.detalles.reduce((acc, d) => acc + d.total, 0) * 1.19
-            };
-
-            await visualizarFactura(facturaMapeada, emisorData);
+            visualizarFactura(facturaData, emisorData);
         } catch (err) {
-            alert("Error al generar PDF: " + err.message);
+            alert('Error al generar PDF: ' + err.message);
         } finally {
             setIsGenerating(null);
         }
@@ -145,15 +172,95 @@ function Facturas() {
         closeForm();
     };
 
-    const handleEdit = (invoice) => { 
-        if (invoice.id_real) {
-            navigate(`/facturas/editar/${invoice.id_real}`);
-        } else {
-            alert("Error: El objeto factura no tiene 'id_real'.");
-        }
+    const handleStatusChange = (newStatus) => {
+        // Actualizar la factura en el estado
+        setInvoices(invoices.map(inv => 
+            inv.id_real === selectedInvoice.id ? { ...inv, status: newStatus } : inv
+        ));
     };
 
-    const handleEmit = (invoice) => { alert(`Emitiendo factura ${invoice.id}...`); };
+    const handleEdit = (invoice) => {
+        setSelectedInvoice({
+            id: invoice.id_real,
+            numero_factura: invoice.id,
+            cliente_nombre: invoice.client,
+            identificacion: invoice.identificacion,
+            total: invoice.total,
+            estado: invoice.status,
+            fecha_vencimiento: invoice.fecha_vencimiento,
+            date: invoice.date,
+            detalles: invoice.detalles
+        });
+        setShowStatusModal(true);
+    };
+
+    const handleEmit = async (invoice) => {
+        // Validar estado
+        if (invoice.status === 'Anulada') {
+            alert('❌ No se puede emitir una factura anulada');
+            return;
+        }
+
+        // Validar si está vencida
+        let isExpired = false;
+        if (invoice.fecha_vencimiento && invoice.status !== 'Pagada' && invoice.status !== 'Anulada') {
+            const today = new Date();
+            const vencimiento = new Date(invoice.fecha_vencimiento);
+            isExpired = vencimiento < today;
+        }
+
+        if (isExpired) {
+            alert('❌ No se puede emitir una factura vencida');
+            return;
+        }
+
+        // Mostrar alerta de confirmación con estado actual
+        const statusEmoji = {
+            'Pagada': '🟢',
+            'Pendiente': '🟡',
+            'Vencida': '🔴',
+            'Anulada': '⚪',
+            'Parcial': '🔵'
+        };
+
+        const statusText = statusEmoji[invoice.status] || '⚪';
+        const confirmed = window.confirm(
+            `¿Está seguro de emitir la factura ${invoice.id}?\n\n` +
+            `Estado actual: ${statusText} ${invoice.status}\n` +
+            `Cliente: ${invoice.client}\n` +
+            `Total: $${Math.round(invoice.total).toLocaleString('es-CO')}\n\n` +
+            `Se enviará al correo del cliente.`
+        );
+
+        if (!confirmed) return;
+
+        try {
+            setIsGenerating(invoice.id_real);
+            const token = sessionStorage.getItem('token');
+            
+            // Llamar al backend para enviar email
+            const response = await fetch(`http://localhost:8080/api/facturas/${invoice.id_real}/emit`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ 
+                    clientEmail: invoice.email,
+                    numeroFactura: invoice.id 
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al emitir factura');
+            }
+
+            alert('✅ Factura emitida y enviada al correo del cliente correctamente');
+            fetchInvoices();
+        } catch (err) {
+            alert('❌ Error al emitir factura: ' + err.message);
+        } finally {
+            setIsGenerating(null);
+        }
+    };
 
     const handleDelete = async (invoice) => {
         if (!isAdmin) return;
@@ -215,7 +322,7 @@ function Facturas() {
                                 <th># Factura</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
-                                <th>Productos</th>
+                                <th>Identificación</th>
                                 <th>Total</th>
                                 <th>Estado</th> 
                                 <th>Acciones</th> 
@@ -228,23 +335,13 @@ function Facturas() {
                                         <td><strong>{invoice.id}</strong></td>
                                         <td>{formatDate(invoice.date)}</td>
                                         <td>{invoice.client}</td>
-                                        <td>
-                                            <div className="product-relation-wrapper">
-                                                {invoice.detalles && invoice.detalles.length > 0 ? (
-                                                    invoice.detalles.map((item, idx) => (
-                                                        <span key={idx} className="product-badge">
-                                                            {item.producto_nombre}
-                                                        </span>
-                                                    ))
-                                                ) : (<small>Sin detalle</small>)}
-                                            </div>
-                                        </td>
+                                        <td>{invoice.identificacion || '---'}</td>
                                         <td>
                                             <strong>${Math.round(parseFloat(invoice.total || 0)).toLocaleString('es-CO')}</strong>
                                         </td>
                                         <td>
-                                            <span className={`invoice-status status-${invoice.status?.toLowerCase()}`}>
-                                                {invoice.status}
+                                            <span className={`invoice-status ${getInvoiceStatus(invoice).className}`}>
+                                                {getInvoiceStatus(invoice).status}
                                             </span>
                                         </td>
                                         <td>
@@ -273,6 +370,13 @@ function Facturas() {
                             )}
                         </tbody>
                     </table>
+
+        <InvoiceStatusModal 
+            invoice={selectedInvoice} 
+            isOpen={showStatusModal} 
+            onClose={() => setShowStatusModal(false)}
+            onStatusChange={handleStatusChange}
+        />
 
         </div>
     );

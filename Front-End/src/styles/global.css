@@ -112,8 +112,6 @@
     --invoice-input-border: hwb(125 36% 10%);        /* Borde inputs */
     --invoice-input-text: hsl(144, 11%, 91%);        /* Texto en inputs */
     --invoice-pago-text: hsl(109, 14%, 84%);         /* Texto PAGO */
-    --invoice-pago-si: #16a34a;                      /* Verde SI */
-    --invoice-pago-no: #dc2626;                      /* Rojo NO */
     --invoice-select-bg: white;                       /* Fondo select */
     --invoice-select-text: #333;                      /* Texto select */
     --invoice-select-border: hsl(0, 0%, 80%);        /* Borde select */
@@ -130,6 +128,33 @@
     --invoice-total-value-color: oklab(87.872% 0.03103 0.00986); /* Color valores totales */
     --invoice-iva-label-color: lch(88.99% 6.59 90.11); /* Color etiqueta IVA */
     --invoice-iva-value-color: lab(44.09% 66.27 50.28); /* Color valor IVA */
+    --invoice-total-final-border: #999;              /* Borde total final */
+    --invoice-total-final-label-color: lab(76.66% -74.89 69.8); /* Color label total final */
+    --invoice-total-final-value-color: hsl(110, 100%, 50%); /* Color valor total final */
+    --invoice-final-buttons-border: hsl(0, 0%, 93%); /* Borde botones finales */
+
+    /* ================================================================= */
+    /* STATUS MODAL - CAMBIAR ESTADO DE FACTURA (Modo Oscuro)          */
+    /* Variables de color EXCLUSIVAS para modal de cambio de estado     */
+    /* ================================================================= */
+    --status-modal-bg: #1a1a1a;                      /* Fondo modal */
+    --status-modal-text: #e0e0e0;                    /* Texto principal */
+    --status-modal-border: #444;                     /* Bordes */
+    --status-modal-header-border: #555;              /* Borde header */
+    --status-modal-footer-border: #555;              /* Borde footer */
+    --status-modal-section-bg: #252525;              /* Fondo secciones */
+    --status-modal-section-border: #444;             /* Borde secciones */
+    --status-modal-info-bg: #2a2a2a;                 /* Fondo info */
+    --status-modal-detail-bg: #1f1f1f;               /* Fondo detalles */
+    --status-modal-detail-border: #444;              /* Borde detalles */
+    --status-modal-status-border: #444;              /* Borde opciones estado */
+    --status-modal-status-hover-bg: #333;            /* Hover opciones estado */
+    --status-modal-btn-secondary-border: #666;       /* Borde botón secundario */
+    --status-modal-btn-secondary-text: #e0e0e0;      /* Texto botón secundario */
+    --status-modal-btn-secondary-hover: #3a3a3a;     /* Hover botón secundario */
+    --status-modal-btn-primary-bg: #3498db;          /* Fondo botón primario */
+    --status-modal-btn-primary-hover: #2980b9;       /* Hover botón primario */
+    
     --invoice-total-final-border: #999;              /* Borde total final */
     --invoice-total-final-label-color: lab(76.66% -74.89 69.8); /* Color label total final */
     --invoice-total-final-value-color: hsl(110, 100%, 50%); /* Color valor total final */
@@ -245,8 +270,6 @@ html.light-mode {
     --invoice-input-border: #d1d5db;                 /* Borde inputs */
     --invoice-input-text: #111827;                   /* Texto en inputs */
     --invoice-pago-text: #374151;                    /* Texto PAGO */
-    --invoice-pago-si: #16a34a;                      /* Verde SI */
-    --invoice-pago-no: #dc2626;                      /* Rojo NO */
     --invoice-select-bg: white;                      /* Fondo select */
     --invoice-select-text: #333;                     /* Texto select */
     --invoice-select-border: #d1d5db;                /* Borde select */
@@ -267,6 +290,32 @@ html.light-mode {
     --invoice-total-final-label-color: #1f2937;     /* Color label total final */
     --invoice-total-final-value-color: #16a34a;     /* Color valor total final */
     --invoice-final-buttons-border: #e5e7eb;         /* Borde botones finales */
+
+    /* ================================================================= */
+    /* STATUS MODAL - CAMBIAR ESTADO DE FACTURA (Modo Claro)           */
+    /* Variables de color EXCLUSIVAS para modal de cambio de estado     */
+    /* ================================================================= */
+    --status-modal-bg: #ffffff;                      /* Fondo modal */
+    --status-modal-text: #1f2937;                    /* Texto principal */
+    --status-modal-border: #e5e7eb;                  /* Bordes */
+    --status-modal-header-border: #d1d5db;           /* Borde header */
+    --status-modal-footer-border: #d1d5db;           /* Borde footer */
+    --status-modal-section-bg: #f9fafb;              /* Fondo secciones */
+    --status-modal-section-border: #e5e7eb;          /* Borde secciones */
+    --status-modal-info-bg: #f3f4f6;                 /* Fondo info */
+    --status-modal-detail-bg: #ffffff;               /* Fondo detalles */
+    --status-modal-detail-border: #e5e7eb;           /* Borde detalles */
+    --status-modal-status-border: #e5e7eb;           /* Borde opciones estado */
+    --status-modal-status-hover-bg: #f0f0f0;         /* Hover opciones estado */
+    --status-modal-btn-secondary-border: #d1d5db;    /* Borde botón secundario */
+    --status-modal-btn-secondary-text: #374151;      /* Texto botón secundario */
+    --status-modal-btn-secondary-hover: #f3f4f6;     /* Hover botón secundario */
+    --status-modal-btn-primary-bg: #3498db;          /* Fondo botón primario */
+    --status-modal-btn-primary-hover: #2980b9;       /* Hover botón primario */
+    --modal-btn-secondary-text: #374151;             /* Texto botón secundario */
+    --modal-btn-secondary-hover: #f3f4f6;            /* Hover botón secundario */
+    --modal-btn-primary-bg: #3498db;                 /* Fondo botón primario */
+    --modal-btn-primary-hover: #2980b9;              /* Hover botón primario */
     
 }
 /*----------------------------------------------------------------------------------------------------------*/

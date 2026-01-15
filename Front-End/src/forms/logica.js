@@ -19,13 +19,7 @@ export const useInvoiceLogic = () => {
     const navigate = useNavigate();
 
     // ==========================================
-    // 1. ESTADO DE PAGO
-    // ==========================================
-    const [pagoEstado, setPagoEstado] = useState('Default');
-
-
-    // ==========================================
-    // 2. NUMERO FACTURA Y FECHA
+    // 1. NUMERO FACTURA Y FECHA
     // ==========================================
     const [numeroFactura, setNumeroFactura] = useState('Cargando...');
     const [fechaEmision, setFechaEmision] = useState(() => {
@@ -50,9 +44,17 @@ export const useInvoiceLogic = () => {
 
     useEffect(() => { obtenerProximoNumero(); }, []);
 
+    const [fechaVencimiento, setFechaVencimiento] = useState(() => {
+        const ahora = new Date();
+        ahora.setDate(ahora.getDate() + 30); // 30 días por defecto
+        return ahora.getFullYear() + "-" + 
+               String(ahora.getMonth() + 1).padStart(2, '0') + "-" + 
+               String(ahora.getDate()).padStart(2, '0');
+    });
+
 
     // ==========================================
-    // 3. DETALLES CLIENTE (Búsqueda, Selección, Registro)
+    // 2. DETALLES CLIENTE (Búsqueda, Selección, Registro)
     // ==========================================
     const [identificacion, setIdentificacion] = useState('');
     const [sugerencias, setSugerencias] = useState([]);
@@ -102,7 +104,7 @@ export const useInvoiceLogic = () => {
         setIdentificacion(valorIngresado);
         const encontrado = sugerencias.find(c => 
             String(c.identificacion) === String(valorIngresado) || 
-            c.nombre_razon_social === valorIngresado
+            c.nombre_razon_social.toLowerCase().includes(valorIngresado.toLowerCase())
         );
         if (encontrado) {
             setIdentificacion(encontrado.identificacion); 
@@ -250,7 +252,7 @@ export const useInvoiceLogic = () => {
     // 4. DETALLES PRODUCTO
     // ==========================================
     const [productosFactura, setProductosFactura] = useState([
-        { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0, ivaPorcentaje: 0 }
+        { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, descuento: 0, vTotal: 0, ivaPorcentaje: 0 }
     ]);
     const [sugerenciasProd, setSugerenciasProd] = useState([]);
     const [productosNuevos, setProductosNuevos] = useState(new Set()); // Rastrear productos nuevos
@@ -306,15 +308,20 @@ export const useInvoiceLogic = () => {
         if (campo === 'codigo') {
             productoActual.codigo = valor;
 
-            // Buscar producto en sugerencias
-            const productoEncontrado = sugerenciasProd.find(p => String(p.codigo) === String(valor));
+            // Buscar producto en sugerencias por código o nombre
+            const productoEncontrado = sugerenciasProd.find(p => 
+                String(p.codigo).toLowerCase() === String(valor).toLowerCase() ||
+                p.nombre.toLowerCase().includes(valor.toLowerCase())
+            );
             
             if (productoEncontrado) {
                 // Autocompletar todos los campos
+                productoActual.codigo = productoEncontrado.codigo;
                 productoActual.producto_id = productoEncontrado.id;
                 productoActual.detalle = productoEncontrado.nombre + 
                     (productoEncontrado.descripcion ? ` - ${productoEncontrado.descripcion}` : "");
                 productoActual.vUnitario = parseFloat(productoEncontrado.precio) || 0;
+                productoActual.descuento = 0;
                 productoActual.ivaPorcentaje = parseFloat(productoEncontrado.impuesto_porcentaje) || 0;
                 
                 // Marcar como producto existente
@@ -326,9 +333,11 @@ export const useInvoiceLogic = () => {
                 productoActual.producto_id = null;
                 productoActual.detalle = '';
                 productoActual.vUnitario = 0;
+                productoActual.descuento = 0;
                 productoActual.ivaPorcentaje = 0;
-                // Recalcular total
-                productoActual.vTotal = (parseFloat(productoActual.cantidad) || 0) * (parseFloat(productoActual.vUnitario) || 0);
+                const subtotalProd = (parseFloat(productoActual.cantidad) || 0) * (parseFloat(productoActual.vUnitario) || 0);
+                const descuentoProd = subtotalProd * ((parseFloat(productoActual.descuento) || 0) / 100);
+                productoActual.vTotal = subtotalProd - descuentoProd;
 
                 // No marcar como nuevo automáticamente
                 const nuevosProductos = new Set(productosNuevos);
@@ -346,10 +355,14 @@ export const useInvoiceLogic = () => {
             }
         } else if (campo === 'vUnitario') {
             productoActual.vUnitario = valor;
+        } else if (campo === 'descuento') {
+            productoActual.descuento = valor;
         }
 
-        // Calcular vTotal
-        productoActual.vTotal = (parseFloat(productoActual.cantidad) || 0) * (parseFloat(productoActual.vUnitario) || 0);
+        // Calcular vTotal con descuento
+        const subtotalProducto = (parseFloat(productoActual.cantidad) || 0) * (parseFloat(productoActual.vUnitario) || 0);
+        const descuentoAplicado = subtotalProducto * ((parseFloat(productoActual.descuento) || 0) / 100);
+        productoActual.vTotal = subtotalProducto - descuentoAplicado;
         
         setProductosFactura(nuevos);
     };
@@ -366,8 +379,11 @@ export const useInvoiceLogic = () => {
             nuevos[index].detalle = productoSugerido.nombre + 
                 (productoSugerido.descripcion ? ` - ${productoSugerido.descripcion}` : "");
             nuevos[index].vUnitario = parseFloat(productoSugerido.precio) || 0;
+            nuevos[index].descuento = 0;
             nuevos[index].ivaPorcentaje = parseFloat(productoSugerido.impuesto_porcentaje) || 0;
-            nuevos[index].vTotal = (parseFloat(nuevos[index].cantidad) || 0) * (parseFloat(nuevos[index].vUnitario) || 0);
+            const subtotalProd = (parseFloat(nuevos[index].cantidad) || 0) * (parseFloat(nuevos[index].vUnitario) || 0);
+            const descuentoProd = subtotalProd * ((parseFloat(nuevos[index].descuento) || 0) / 100);
+            nuevos[index].vTotal = subtotalProd - descuentoProd;
             
             setProductosFactura(nuevos);
             setSugerenciasProd([]); // Limpiar sugerencias
@@ -519,17 +535,19 @@ export const useInvoiceLogic = () => {
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
         
-        // Validar estado de pago
-        if (pagoEstado === 'Default') {
-            alert("⚠️ Seleccione el estado de pago.");
+        // Validar fecha vencimiento
+        if (!fechaVencimiento.trim()) {
+            alert("⚠️ Debe especificar la fecha de vencimiento.");
             return false;
         }
 
-        // Validar cliente
-        if (!await validarDatosCliente()) return false;
+        // Validar cliente (mantener datos en caso de error)
+        const clienteValido = await validarDatosCliente();
+        if (!clienteValido) return false;
 
-        // Validar productos
-        if (!await validarProductos()) return false;
+        // Validar productos (mantener datos en caso de error)
+        const productosValidos = await validarProductos();
+        if (!productosValidos) return false;
 
         const token = sessionStorage.getItem('token');
         let clienteIdActual = cliente.id;
@@ -580,6 +598,7 @@ export const useInvoiceLogic = () => {
                 producto_id: productoId,
                 cantidad: p.cantidad,
                 precio: p.vUnitario,
+                descuento: p.descuento || 0,
                 subtotal: p.vTotal,
                 ivaPorcentaje: p.ivaPorcentaje
             });
@@ -596,7 +615,7 @@ export const useInvoiceLogic = () => {
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({
                     cliente_id: clienteIdActual,
-                    pago: pagoEstado,
+                    fecha_vencimiento: fechaVencimiento,
                     fecha_emision: fechaFinalFactura,
                     subtotal: subtotal,
                     iva: iva,
@@ -622,10 +641,8 @@ export const useInvoiceLogic = () => {
     
     // Retorno unificado para el componente
     return {
-        // Estado Pago
-        pagoEstado, setPagoEstado,
         // Numero/Fecha
-        numeroFactura, fechaEmision, setFechaEmision,
+        numeroFactura, fechaEmision, setFechaEmision, fechaVencimiento, setFechaVencimiento,
         // Cliente
         identificacion, setIdentificacion, seleccionarCliente, cliente, sugerencias, autocompletarClienteConTab,
         handleClienteChange: (e) => {
@@ -634,7 +651,7 @@ export const useInvoiceLogic = () => {
         },
         // Productos
         productosFactura, sugerenciasProd, buscarProductos, handleInputChange, autocompletarProductoConTab,
-        agregarFilaProducto: () => setProductosFactura([...productosFactura, { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, vTotal: 0, ivaPorcentaje: 0 }]),
+        agregarFilaProducto: () => setProductosFactura([...productosFactura, { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, descuento: 0, vTotal: 0, ivaPorcentaje: 0 }]),
         eliminarFilaProducto: (i) => { if (productosFactura.length > 1) setProductosFactura(productosFactura.filter((_, idx) => idx !== i)) },
         // Valores
         subtotal, iva, totalGeneral,

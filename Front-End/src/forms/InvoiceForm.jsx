@@ -1,21 +1,20 @@
- import React from 'react';
- import { useNavigate } from 'react-router-dom';
- import { FaPlus, FaTrash } from "react-icons/fa";
- import { useInvoiceLogic } from './logica.js';
- import '../styles/forms_invoices.css';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaPlus, FaTrash } from "react-icons/fa";
+import { useInvoiceLogic } from './logica.js';
+import '../styles/forms_invoices.css';
 
- 
-  //------------Funcion Formulario-------------//
- const InvoiceForm = ({ onSuccess, onCancel }) => {
+const InvoiceForm = ({ onSuccess, onCancel }) => {
+  const navigate = useNavigate(); 
+  
   const handleCancel = () => {
     onCancel();
-    navigate('/facturas'); // Redirigir a la tabla de facturas
-  };
-  const navigate = useNavigate(); 
+    navigate('/facturas');
+  }; 
 
   const { 
-    pagoEstado, 
-    setPagoEstado, 
+    fechaVencimiento,
+    setFechaVencimiento,
     numeroFactura, 
     fechaEmision, 
     setFechaEmision,
@@ -57,21 +56,10 @@
     }
     // Si result === false, simplemente no hacer nada (el usuario ya vio los alerts de error)
   };
-
-        
   
   return (
-
-          //************FORMULARIO CREACION FACTURA ELECTRONICA********************//
-
-            <form className="app-form card" onSubmit={handleSubmit}>
-
-                 <h2 className="module-title"> Registrar Nueva Factura</h2>
-
-
-
-
-                 
+    <form className="app-form card" onSubmit={handleSubmit}>
+      <h2 className="module-title">Registrar Nueva Factura</h2>
 
  {/*********************** N°FACTURA Y FECHA*****************************/}
     
@@ -83,48 +71,13 @@
                  <input type="text" value={numeroFactura} readOnly /> Número de Factura</label>
                  
                  <label className='Fecha'>
-                 <input type="date" value={fechaEmision} onChange={(e) => setFechaEmision(e.target.value)} /> Fecha</label>
-                 
+                 <input type="date" value={fechaEmision} onChange={(e) => setFechaEmision(e.target.value)} /> Fecha Emisión</label>
+
+                 <label className='Fecha'>
+                 <input type="date" value={fechaVencimiento} onChange={(e) => setFechaVencimiento(e.target.value)} /> Fecha Vencimiento</label>
                  
                 </div>
-           
-
-                {/******************** SELECCION PAGO CON LÓGICA *******************/}
-                  
-
-                <div className="pago">
-
-                  <label>PAGO:</label>
-
-                  <label className="selected-Default">
-
-                  <input 
-                  type="radio" 
-                  name="pagoEstado" 
-                  value="Default"
-                  checked={pagoEstado === 'Default'}
-                  onChange={(e) => setPagoEstado(e.target.value)}/> Default</label>
-
-
-                 <label className="selected-si">
-                 <input 
-                 type="radio" 
-                 name="pagoEstado" 
-                 value="Si"
-                 checked={pagoEstado === 'Si'}
-                 onChange={(e) => setPagoEstado(e.target.value)}/> Si</label>
-
-                 <label className="selected-no">
-                 <input 
-                 type="radio" 
-                 name="pagoEstado" 
-                 value="No"
-                 checked={pagoEstado === 'No'}
-                 onChange={(e) => setPagoEstado(e.target.value)}/> No</label>
-                
-                </div>
-                
-            </div>
+            </div>    
                 
                 
 {/* ******************** DATOS DEL CLIENTE *********************************** */}
@@ -169,8 +122,8 @@
           {sugerencias.map((c) => (
             <option 
                 key={c.id} 
-                value={c.identificacion}> {/* CAMBIADO: Ahora el valor es la ID*/}
-                {c.nombre_razon_social} {/* El nombre aparece como texto de ayuda */}
+                value={c.nombre_razon_social}>
+                {c.identificacion}
             </option>
          ))}
        </datalist>
@@ -234,6 +187,7 @@
     <span>Cant.</span>
     <span>Detalle</span>
     <span>V.Unitario</span>
+    <span>Desc.%</span>
     <span>V.Total</span>
     <span></span>
 </div>
@@ -278,39 +232,51 @@
             placeholder="Unitario"
         />
 
+        {/* Descuento */}
+        <input 
+            type="number" 
+            value={prod.descuento} 
+            onChange={(e) => handleInputChange(index, 'descuento', e.target.value)}
+            min="0"
+            max="100"
+            placeholder="%"
+        />
+
         {/* Columna V.Total */}
         <span className="v-total">
             ${Math.round(prod.vTotal).toLocaleString('es-CO')}
         </span>
 
 
-       {/* COLUMNA DE ACCIONES */}
-<div className="action-buttons">
-    {/* Botón Añadir (siempre visible o solo en la última fila) */}
-    {index === productosFactura.length - 1 && (
+       
+       
+     {/* COLUMNA DE ACCIONES */}
+       <div className="action-buttons">
+         {/* Botón Añadir (siempre visible o solo en la última fila) */}
+         {index === productosFactura.length - 1 && (
         
-        <button 
+          <button 
             type="button" 
             className="btn-primaryy"
             onClick={agregarFilaProducto}
             title="Añadir fila"
-        >
+          >
             <FaPlus />
-        </button>
-    )}
+          </button>
+            )}
 
-    {/* Botón Eliminar (visible si hay más de una fila) */}
-    {index > 0 && (
-        <button 
+          {/* Botón Eliminar (visible si hay más de una fila) */}
+         {index > 0 && (
+           <button 
             type="button" 
             className="delete-product"
             onClick={() => eliminarFilaProducto(index)}
             title="Eliminar fila"
-        >
+          >
             <FaTrash />
-        </button>
-    )}
-</div>
+             </button>
+           )}
+      </div>
     </div>
 ))}
 
@@ -318,8 +284,8 @@
 {/* DATALIST: Debe estar FUERA del map y el ID debe ser 'lista-productos' */}
 <datalist id="lista-productos">
     {sugerenciasProd.map((p) => (
-        <option key={p.id} value={p.codigo}>
-            {p.nombre} - ${p.precio}
+        <option key={p.id} value={p.nombre}>
+            {p.codigo} - ${p.precio}
         </option>
     ))}
 </datalist>
@@ -338,17 +304,17 @@
 
                 <div className="total-line">
                 <label>Subtotal</label>
-                <span>${subtotal ? subtotal.toFixed(0) : "0"}</span>
+                <span>${subtotal ? Math.round(subtotal).toLocaleString('es-CO') : "0"}</span>
                </div>
 
                <div className="iva">
                 <label>IVA (19%)</label>
-               <span>${iva ? iva.toFixed(0) : "0"}</span>
+               <span>${iva ? Math.round(iva).toLocaleString('es-CO') : "0"}</span>
                </div>
 
                <div className="total-line total-final">
                <label>Total</label>
-               <span>${totalGeneral ? totalGeneral.toFixed(0) : "0"}</span></div>
+               <span>${totalGeneral ? Math.round(totalGeneral).toLocaleString('es-CO') : "0"}</span></div>
 
              
       {/*********** BOTONES CREAR - CANCELAR ***********/}
@@ -379,5 +345,8 @@
             </form>
         );
     };
+    
+    export default InvoiceForm;
+    
 
-export default InvoiceForm;
+

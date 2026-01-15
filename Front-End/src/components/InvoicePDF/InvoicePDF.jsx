@@ -1,12 +1,53 @@
-import React from 'react';
+/**
+ * ============================================================
+ * COMPONENTE PDF DE FACTURA
+ * Archivo: Front-End/src/components/InvoicePDF/InvoicePDF.jsx
+ * PROPÓSITO:
+ *  - Renderizar factura en formato PDF usando @react-pdf/renderer
+ *  - Mostrar datos del emisor (logo, NIT, dirección, etc.)
+ *  - Mostrar datos del cliente y detalles de productos
+ *  - Incluir información de descuentos por producto
+ *  - Calcular y mostrar totales (subtotal, IVA, total)
+ *  - Permitir cambio de estado y impresión si showControls es true
+ * ============================================================
+ */
+
+import React, { useState } from 'react';
 import { Page, Text, View, Document, Image } from '@react-pdf/renderer';
 import { styles } from './InvoiceStyles';
 
-const InvoicePDF = ({ data, emisor }) => {
+const InvoicePDF = ({ data, emisor, onStatusChange, showControls = false }) => {
+    const [selectedStatus, setSelectedStatus] = useState(data.estado || 'Pendiente');
     const formatCurrency = (val) => `$${Math.round(val || 0).toLocaleString('es-CO')}`;
     const logoUrl = emisor?.logo_url ? window.location.origin + emisor.logo_url : null;
 
-    return (
+    const handleStatusUpdate = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/facturas/${data.id}/estado`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ estado: selectedStatus })
+            });
+
+            if (response.ok) {
+                alert('✅ Estado actualizado');
+                if (onStatusChange) onStatusChange(selectedStatus);
+            } else {
+                alert('❌ Error al actualizar estado');
+            }
+        } catch (error) {
+            alert('❌ Error: ' + error.message);
+        }
+    };
+
+    const handlePrint = () => {
+        window.print();
+    };
+
+    const PDFContent = (
         <Document>
             <Page size="A4" style={styles.page}>
                 {/* 1. ENCABEZADO: DATOS DEL EMISOR */}
@@ -50,18 +91,20 @@ const InvoicePDF = ({ data, emisor }) => {
                 {/* 3. DETALLE DE PRODUCTOS */}
                 <View style={styles.table}>
                     <View style={[styles.tableRow, styles.tableHeader]}>
-                        <Text style={{ width: '10%', color: 'white', textAlign: 'center' }}>Cant.</Text>
-                        <Text style={{ width: '50%', color: 'white', paddingLeft: 5 }}>Detalle</Text>
-                        <Text style={{ width: '20%', color: 'white', textAlign: 'right' }}>V. Unitario</Text>
-                        <Text style={{ width: '20%', color: 'white', textAlign: 'right', paddingRight: 5 }}>V. Total</Text>
+                        <Text style={{ width: '8%', color: 'white', textAlign: 'center' }}>Cant.</Text>
+                        <Text style={{ width: '42%', color: 'white', paddingLeft: 5 }}>Detalle</Text>
+                        <Text style={{ width: '15%', color: 'white', textAlign: 'right' }}>V. Unit.</Text>
+                        <Text style={{ width: '12%', color: 'white', textAlign: 'center' }}>Desc.%</Text>
+                        <Text style={{ width: '23%', color: 'white', textAlign: 'right', paddingRight: 5 }}>V. Total</Text>
                     </View>
 
                     {data.detalles.map((item, i) => (
                         <View key={i} style={styles.tableRow}>
-                            <Text style={{ width: '10%', textAlign: 'center' }}>{item.cant}</Text>
-                            <Text style={{ width: '50%', paddingLeft: 5 }}>{item.detail}</Text>
-                            <Text style={{ width: '20%', textAlign: 'right' }}>{formatCurrency(item.unit)}</Text>
-                            <Text style={{ width: '20%', textAlign: 'right', paddingRight: 5 }}>{formatCurrency(item.total)}</Text>
+                            <Text style={{ width: '8%', textAlign: 'center' }}>{item.cant}</Text>
+                            <Text style={{ width: '42%', paddingLeft: 5 }}>{item.detail}</Text>
+                            <Text style={{ width: '15%', textAlign: 'right' }}>{formatCurrency(item.unit)}</Text>
+                            <Text style={{ width: '12%', textAlign: 'center' }}>{item.descuento || 0}%</Text>
+                            <Text style={{ width: '23%', textAlign: 'right', paddingRight: 5 }}>{formatCurrency(item.total)}</Text>
                         </View>
                     ))}
                 </View>
@@ -83,6 +126,60 @@ const InvoicePDF = ({ data, emisor }) => {
                 </View>
             </Page>
         </Document>
+    );
+
+    if (!showControls) {
+        return PDFContent;
+    }
+
+    return (
+        <>
+            <div style={{ padding: '20px', backgroundColor: '#f5f5f5', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <label style={{ marginRight: '10px' }}>
+                        <strong>Estado:</strong>
+                        <select 
+                            value={selectedStatus} 
+                            onChange={(e) => setSelectedStatus(e.target.value)}
+                            style={{ marginLeft: '5px', padding: '5px', borderRadius: '4px' }}
+                        >
+                            <option value="Pagada">🟢 Pagada</option>
+                            <option value="Pendiente">🟡 Pendiente</option>
+                            <option value="Vencida">🔴 Vencida</option>
+                            <option value="Anulada">⚪ Anulada</option>
+                            <option value="Parcial">🔵 Parcial</option>
+                        </select>
+                    </label>
+                    <button 
+                        onClick={handleStatusUpdate}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: '#007bff',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Guardar Estado
+                    </button>
+                    <button 
+                        onClick={handlePrint}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: '#28a745',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        🖨️ Imprimir
+                    </button>
+                </div>
+            </div>
+            {PDFContent}
+        </>
     );
 };
 
