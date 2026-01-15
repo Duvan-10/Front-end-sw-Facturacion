@@ -184,3 +184,37 @@ ACTIVIDADES REALIZADAS:
 - Mas Funciones Logicas, seguridad en Detalles clientes y productos para creacion de facturas.
 
 ================================================================================================================================================================
+**Fecha:** 15 de Enero de 2026
+
+**Resumen de Actividades:**
+
+#### **1. MEJORA DE GENERA CIÓN Y VISUALIZACIÓN DE PDF**
+* **Datos del Emisor en PDF:** Integración de datos desde tabla perfil_emisor (NIT, nombre, dirección, teléfono, ciudad, país) y logo en encabezado de factura.
+* **Información de Descuentos:** Adición de columna de descuento (%) en tabla de productos del PDF, reflejando descuentos aplicados por línea.
+* **Ruta Corregida:** Ajuste de ruta de perfil en server.js de /api a /api/perfil para consistencia.
+
+#### **2. REFACTORIZACIÓN Y DOCUMENTACIÓN DE CÓDIGO**
+* **Backend - invoice.controller.js:** Agregados comentarios de propósito, mejorada legibilidad en consultas SQL, incluidos campos subtotal/iva/total en getInvoiceById(), y email del cliente en getAllInvoices().
+* **Backend - email.config.js:** Creada función sendInvoiceEmail() para envío de facturas por email con PDF adjunto. Función auxiliar generateInvoiceHTML() para plantilla HTML reutilizable.
+* **Frontend - InvoicePDF.jsx:** Comentarios descriptivos, eliminada visualización de estado en PDF (solo se mostra en modal de cambio de estado).
+* **Frontend - Facturas.jsx:** Mejorada función handleView() para obtener datos del emisor y cliente; actualizada función handleEmit() para envío de email.
+
+#### **3. FUNCIONALIDAD DE EMISIÓN DE FACTURAS POR EMAIL**
+* **Generación de PDF:** Implementado uso de Puppeteer para generar PDF del lado del servidor con todos los datos de factura.
+* **Envío de Email:** Email profesional con PDF adjunto, datos de factura en cuerpo del mensaje, y información de cliente/emisor.
+* **Validaciones:** Mantención de validaciones para no emitir facturas Anuladas o Vencidas. Confirmación con estado actual antes de enviar.
+* **Payload Corregido:** Corrección en estructura JSON enviada desde frontend (numeroFactura, clientEmail).
+
+#### **4. LIMPIEZA Y DEPURACIÓN**
+* Eliminadas variables de token no utilizadas en InvoicePDF.jsx.
+* Removida visualización de sección de descuentos totales (información se muestra en detalles de productos).
+* Removida visualización de estado "Pagada" y "Pendiente" del PDF (información de estado en modal solamente).
+
+### **ESTADO FINAL DEL SISTEMA**
+
+✅ **PDFs profesionales:** Facturas con logo, datos completos de emisor y cliente, con descuentos visibles.
+✅ **Emisión por Email:** Facturas se envían automáticamente al correo del cliente con PDF adjunto.
+✅ **Código refactorizado:** Comentarios descriptivos, funciones auxiliares reutilizables, eliminado código innecesario.
+✅ **Validaciones funcionales:** Prevención de emisión de facturas anuladas o vencidas, con confirmación del usuario.
+
+================================================================================================================================================================
