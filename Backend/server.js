@@ -32,7 +32,7 @@ testConnection();
 app.use('/api/auth', authRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/productos', productoRoutes);
-app.use('/api', perfilRoutes);
+app.use('/api/perfil', perfilRoutes);
 app.use('/api/facturas', invoiceRoutes);
 app.use('/api/users', userRoutes);
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => res.status(204).end());
