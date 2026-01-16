@@ -218,3 +218,19 @@ ACTIVIDADES REALIZADAS:
 ✅ **Validaciones funcionales:** Prevención de emisión de facturas anuladas o vencidas, con confirmación del usuario.
 
 ================================================================================================================================================================
+**Fecha:** 16 de Enero de 2026
+
+**Resumen de Actividades:**
+
+1. Módulo Perfil (Fullstack): Cambio de foto, actualización de datos (identificación, nombre, email) y cambio de contraseña contra tabla `users`.
+2. Persistencia de Foto en Home: `profile_photo` incluido en login y sincronización inmediata del sidebar.
+3. Almacenamiento de Imágenes: Guardado en `Front-End/src/Pictures/Profile` y servido por backend bajo `/pictures`.
+4. UX Mensajes: Errores de contraseña visibles en "Seguridad"; datos en "Información Personal".
+5. Refactor Backend: Eliminado endpoint legacy `/perfil/emisor`; comentarios y código obsoleto limpiados.
+
+Estado Final:
+✅ Perfil funcional con base en `users` (sin tabla extra).
+✅ Fotos persistentes por usuario y visibles tras relogin.
+✅ Rutas y comentarios actualizados; código depurado.
+
+================================================================================================================================================================
