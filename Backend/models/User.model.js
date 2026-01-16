@@ -16,7 +16,7 @@ export const findUserByIdentification = async (identification) => {
 // Función para encontrar un usuario por email (necesario para el Login)
 export const findUserByEmail = async (email) => {
     const [rows] = await pool.query(
-        'SELECT id, identification, email, name, password, role FROM users WHERE email = ?',
+        'SELECT id, identification, email, name, password, role, profile_photo FROM users WHERE email = ?',
         [email]
     );
     return rows[0];

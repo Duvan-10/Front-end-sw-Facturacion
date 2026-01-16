@@ -1,20 +1,58 @@
-import express from 'express'; // Cambiado de require a import
-import db from '../config/db.config.js'; // Cambiado de require a import (agrega .js al final)
+import express from 'express';
+import authMiddleware from '../middleware/auth.middleware.js';
+import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import {
+    getUserProfile,
+    updateUserProfile,
+    changePassword,
+    uploadProfilePhoto
+} from '../controllers/perfilController.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
-// Endpoint para obtener los datos de perfil_emisor
-router.get('/emisor', async (req, res) => {
-    try {
-        const [rows] = await db.query('SELECT * FROM perfil_emisor LIMIT 1');
-        if (rows.length === 0) {
-            return res.status(404).json({ message: "No hay datos" });
+// Configurar multer para subir fotos de perfil
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        // Guardar en Front-End/src/Pictures/Profile
+        const uploadDir = path.join(__dirname, '../../Front-End/src/Pictures/Profile');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
         }
-        // Enviamos el primer objeto directamente
-        res.json(rows[0]); 
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'profile-' + req.user.id + '-' + uniqueSuffix + path.extname(file.originalname));
     }
 });
 
-export default router; // Cambiado de module.exports a export default
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Tipo de archivo no permitido. Solo se aceptan imágenes (JPG, PNG, GIF)'), false);
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB max
+});
+
+// (Legacy eliminado) Perfil emisor ya no se usa; el perfil viene de tabla users
+
+// Nuevas rutas para perfil de usuario
+router.get('/me', authMiddleware, getUserProfile);
+router.put('/me', authMiddleware, updateUserProfile);
+router.put('/change-password', authMiddleware, changePassword);
+router.post('/upload-photo', authMiddleware, upload.single('photo'), uploadProfilePhoto);
+
+export default router;

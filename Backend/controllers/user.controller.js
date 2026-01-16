@@ -2,6 +2,7 @@
 
 import { createUser, findUserByIdentification, findUserByEmail } from '../models/user.model.js';
 import pool from '../models/db.js';
+import bcrypt from 'bcryptjs';
 
 // Controlador para crear un nuevo usuario (SOLO ADMIN)
 export const createNewUser = async (req, res) => {
@@ -174,7 +175,6 @@ export const updateUser = async (req, res) => {
             values.push(role);
         }
         if (password) {
-            const bcrypt = await import('bcrypt');
             const hashedPassword = await bcrypt.hash(password, 10);
             updates.push('password = ?');
             values.push(hashedPassword);

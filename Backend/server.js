@@ -27,6 +27,10 @@ const HOST = process.env.HOST || '0.0.0.0'; // Escucha en todas las interfaces
 app.use(cors()); 
 app.use(express.json()); 
 
+// Servir archivos estáticos (fotos de perfil)
+// Servimos archivos de imágenes desde Front-End/src/Pictures
+app.use('/pictures', express.static(path.join(__dirname, '../Front-End/src/Pictures')));
+
 testConnection(); 
 
 app.use('/api/auth', authRoutes);
