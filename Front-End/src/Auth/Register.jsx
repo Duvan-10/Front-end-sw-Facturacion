@@ -7,7 +7,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import logo from '../assets/logo.png';
+import logo from '../Pictures/Auth/logo.png';
 import '../styles/Registro_Login.css';
 
 function Register() {

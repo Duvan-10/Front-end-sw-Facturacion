@@ -159,6 +159,44 @@
     --invoice-total-final-label-color: lab(76.66% -74.89 69.8); /* Color label total final */
     --invoice-total-final-value-color: hsl(110, 100%, 50%); /* Color valor total final */
     --invoice-final-buttons-border: hsl(0, 0%, 93%); /* Borde botones finales */
+
+    /* ================================================================= */
+    /* MÓDULO PERFIL (Modo Oscuro)                                      */
+    /* Colores específicos para la página de perfil de usuario          */
+    /* ================================================================= */
+    --perfil-container-color: #e0e0e0;               /* Texto principal */
+    --perfil-card-bg: #1e1e1e;                       /* Fondo tarjetas */
+    --perfil-card-border: #444;                      /* Borde tarjetas */
+    --perfil-card-title-color: #3498db;              /* Color títulos h2 */
+    --perfil-card-title-border: #555;                /* Borde inferior títulos */
+    --perfil-photo-bg: #333;                         /* Fondo foto placeholder */
+    --perfil-photo-border: #3498db;                  /* Borde foto */
+    --perfil-photo-text: #999;                       /* Texto placeholder foto */
+    --perfil-photo-hint: #888;                       /* Texto hint foto */
+    --perfil-info-row-bg: #252525;                   /* Fondo filas info */
+    --perfil-info-row-border: #444;                  /* Borde filas info */
+    --perfil-info-row-text: #e0e0e0;                 /* Texto filas info */
+    --perfil-form-border: #444;                      /* Borde superior formulario */
+    --perfil-input-bg: #2a2a2a;                      /* Fondo inputs */
+    --perfil-input-border: #555;                     /* Borde inputs */
+    --perfil-input-text: #e0e0e0;                    /* Texto inputs */
+    --perfil-input-focus-border: #3498db;            /* Borde focus inputs */
+    --perfil-label-color: #b0b0b0;                   /* Color labels */
+    --perfil-btn-update-bg: #3498db;                 /* Fondo botón actualizar */
+    --perfil-btn-update-text: #ffffff;               /* Texto botón actualizar */
+    --perfil-btn-update-hover: #2980b9;              /* Hover botón actualizar */
+    --perfil-btn-password-bg: #e67e22;               /* Fondo botón contraseña */
+    --perfil-btn-password-text: #ffffff;             /* Texto botón contraseña */
+    --perfil-btn-password-hover: #d35400;            /* Hover botón contraseña */
+    --perfil-btn-submit-bg: #27ae60;                 /* Fondo botón submit */
+    --perfil-btn-submit-text: #ffffff;               /* Texto botón submit */
+    --perfil-btn-submit-hover: #229954;              /* Hover botón submit */
+    --perfil-message-success-bg: rgba(39, 174, 96, 0.2);  /* Fondo mensaje éxito */
+    --perfil-message-success-text: #2ecc71;          /* Texto mensaje éxito */
+    --perfil-message-success-border: #27ae60;        /* Borde mensaje éxito */
+    --perfil-message-error-bg: rgba(231, 76, 60, 0.2);    /* Fondo mensaje error */
+    --perfil-message-error-text: #e74c3c;            /* Texto mensaje error */
+    --perfil-message-error-border: #c0392b;          /* Borde mensaje error */
     
 }
 /*----------------------------------------------------------------------------------------------------------*/
@@ -316,6 +354,44 @@ html.light-mode {
     --modal-btn-secondary-hover: #f3f4f6;            /* Hover botón secundario */
     --modal-btn-primary-bg: #3498db;                 /* Fondo botón primario */
     --modal-btn-primary-hover: #2980b9;              /* Hover botón primario */
+
+    /* ================================================================= */
+    /* MÓDULO PERFIL (Modo Claro)                                       */
+    /* Colores específicos para la página de perfil de usuario          */
+    /* ================================================================= */
+    --perfil-container-color: #1f2937;               /* Texto principal */
+    --perfil-card-bg: #ffffff;                       /* Fondo tarjetas */
+    --perfil-card-border: #e5e7eb;                   /* Borde tarjetas */
+    --perfil-card-title-color: #2b6cb0;              /* Color títulos h2 */
+    --perfil-card-title-border: #d1d5db;             /* Borde inferior títulos */
+    --perfil-photo-bg: #f3f4f6;                      /* Fondo foto placeholder */
+    --perfil-photo-border: #2b6cb0;                  /* Borde foto */
+    --perfil-photo-text: #6b7280;                    /* Texto placeholder foto */
+    --perfil-photo-hint: #9ca3af;                    /* Texto hint foto */
+    --perfil-info-row-bg: #f9fafb;                   /* Fondo filas info */
+    --perfil-info-row-border: #e5e7eb;               /* Borde filas info */
+    --perfil-info-row-text: #374151;                 /* Texto filas info */
+    --perfil-form-border: #e5e7eb;                   /* Borde superior formulario */
+    --perfil-input-bg: #f9fafb;                      /* Fondo inputs */
+    --perfil-input-border: #d1d5db;                  /* Borde inputs */
+    --perfil-input-text: #111827;                    /* Texto inputs */
+    --perfil-input-focus-border: #2b6cb0;            /* Borde focus inputs */
+    --perfil-label-color: #374151;                   /* Color labels */
+    --perfil-btn-update-bg: #2b6cb0;                 /* Fondo botón actualizar */
+    --perfil-btn-update-text: #ffffff;               /* Texto botón actualizar */
+    --perfil-btn-update-hover: #1e40af;              /* Hover botón actualizar */
+    --perfil-btn-password-bg: #ea580c;               /* Fondo botón contraseña */
+    --perfil-btn-password-text: #ffffff;             /* Texto botón contraseña */
+    --perfil-btn-password-hover: #c2410c;            /* Hover botón contraseña */
+    --perfil-btn-submit-bg: #16a34a;                 /* Fondo botón submit */
+    --perfil-btn-submit-text: #ffffff;               /* Texto botón submit */
+    --perfil-btn-submit-hover: #15803d;              /* Hover botón submit */
+    --perfil-message-success-bg: #d1fae5;            /* Fondo mensaje éxito */
+    --perfil-message-success-text: #065f46;          /* Texto mensaje éxito */
+    --perfil-message-success-border: #10b981;        /* Borde mensaje éxito */
+    --perfil-message-error-bg: #fee2e2;              /* Fondo mensaje error */
+    --perfil-message-error-text: #991b1b;            /* Texto mensaje error */
+    --perfil-message-error-border: #ef4444;          /* Borde mensaje error */
     
 }
 /*----------------------------------------------------------------------------------------------------------*/

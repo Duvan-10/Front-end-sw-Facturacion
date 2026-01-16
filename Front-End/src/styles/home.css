@@ -65,6 +65,8 @@
   height: 80px;
   border-radius: 50%;
   border: 2px solid var(--color-accent-teal);
+  object-fit: cover; /* Para que la imagen se ajuste bien */
+  background-color: var(--color-input-background); /* Fondo mientras carga */
 }
 
 .sidebar ul {

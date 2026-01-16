@@ -8,7 +8,7 @@
  *  - Manejar todas las rutas internas del sistema.
  * ============================================================
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Routes, Route, Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import '../styles/home.css';
@@ -38,6 +38,33 @@ const Home = () => {
   const { user, logout } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Estado para controlar el menú
   const location = useLocation(); // Hook para saber en qué ruta estamos
+  const [userData, setUserData] = useState({
+    name: user?.name || 'Usuario',
+    profile_photo: user?.profile_photo || null
+  });
+
+  // Actualizar datos del usuario desde sessionStorage cuando cambian
+  useEffect(() => {
+    const updateUserData = () => {
+      const storedUser = JSON.parse(sessionStorage.getItem('user'));
+      if (storedUser) {
+        setUserData({
+          name: storedUser.name || 'Usuario',
+          profile_photo: storedUser.profile_photo || null
+        });
+      }
+    };
+
+    // Actualizar al cargar
+    updateUserData();
+
+    // Escuchar evento personalizado cuando se actualiza el perfil
+    window.addEventListener('userUpdated', updateUserData);
+
+    return () => {
+      window.removeEventListener('userUpdated', updateUserData);
+    };
+  }, [user]);
 
   // Función para alternar el menú
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -55,10 +82,21 @@ const Home = () => {
       {/* --- SIDEBAR / MENÚ LATERAL --- */}
       <div className={`sidebar ${isSidebarOpen ? '' : 'collapsed'}`}>
 
-        <h2>{user?.name || 'Usuario'}</h2>
+        <h2>{userData.name}</h2>
 
         <div className="user-icon">
-          <img src="https://via.placeholder.com/80" alt="Foto del usuario" />
+          {userData.profile_photo ? (
+            <img 
+              src={`http://${window.location.hostname}:8080${userData.profile_photo}`}
+              alt="Foto del usuario" 
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'https://via.placeholder.com/80?text=Usuario';
+              }}
+            />
+          ) : (
+            <img src="https://via.placeholder.com/80?text=Usuario" alt="Foto del usuario" />
+          )}
         </div>
 
         <ul>

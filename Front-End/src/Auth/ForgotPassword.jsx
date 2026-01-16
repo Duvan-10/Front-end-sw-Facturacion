@@ -12,7 +12,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_URL } from '../api';
-import logo from '../assets/logo.png';
+import logo from '../Pictures/Auth/logo.png';
 import '../styles/Registro_Login.css';
 
 function ForgotPassword() {
