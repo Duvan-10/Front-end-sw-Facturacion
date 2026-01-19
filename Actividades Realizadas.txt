@@ -2,12 +2,62 @@
         REGISTRO DE ACTIVIDADES Y CAMBIOS - SISTEMA DE FACTURACIÓN PFEPS
 ================================================================================
 
-
-
-===============================================================================
-**Fecha:** 8 de Enero de 2026
+================================================================================
+**Fecha:** 19 de Enero de 2026
 ACTIVIDADES REALIZADAS:
 ================================================================================
+
+#### **1. IMPLEMENTACIÓN DE DESCUENTOS A NIVEL DE FACTURA**
+
+* **Backend:** Ajustado para detectar dinámicamente columna `descuento` o `descuento_porcentaje` en tabla facturas. Calcula descuento promedio de productos al crear factura.
+* **Frontend:** Eliminado campo "Descuento General (%)" del formulario. Descuentos ahora solo en "Desc.%" de detalles de productos.
+* **Base de Datos:** El valor de descuento se envía correctamente a la columna `descuento` en tabla `facturas`.
+
+#### **2. CREACIÓN DE ESTADO DE VENCIMIENTO (estado_vencimiento)**
+
+* **Columna Nueva:** Agregada columna `estado_vencimiento` con tres estados:
+  - **Vigente:** Fecha de vencimiento futura y estado de pago Pendiente
+  - **Vencida:** Fecha de vencimiento pasada y estado Pendiente o Parcial
+  - **Finalizada:** Factura pagada (sin importar fecha)
+* **Backend:** Lógica centralizada con función `computeEstadoVencimiento()` que calcula estado dinámicamente en listados, detalles y creación.
+* **Actualización de Pago:** Cuando estado cambia a "Pagada", `estado_vencimiento` se actualiza automáticamente a "Finalizada".
+
+#### **3. REFACTORIZACIÓN DE FORMULARIO**
+
+* **Botón Cancelar:** Mejorado para cerrar el formulario correctamente con `onCancel()` callback, manteniéndose en lista de facturas.
+* **Limpieza de Estado:** Eliminadas referencias innecesarias a `descuentoPorcentaje` en logica.js.
+* **Depuración:** Removido código duplicado relacionado con descuentos generales.
+
+#### **4. ALINEACIÓN DE TABLA DE FACTURAS**
+
+* **CSS:** Ajustados estilos en `Modules_clients_products_factures.css` para alineación correcta:
+  - Primeras 3 columnas (# Factura, Fecha, Cliente) alineadas a izquierda
+  - Resto de columnas (Total, Estado, Emisión, Acciones) centradas
+
+#### **5. REFACTORIZACIÓN DE LÓGICA DE ESTADOS**
+
+* **Centralización:** Creado `StateManager` con métodos para calcular estados de vencimiento, emisión inicial y validación de transiciones.
+* **Mejora de Mantenibilidad:** Lógica de estados consolidada en funciones reutilizables para consistencia en toda la aplicación.
+* **Normalización de Fechas:** Fechas se normalizan a medianoche para comparaciones correctas de vencimiento.
+
+#### **6. ENDPOINT PARA DATOS DEL EMISOR (PDF)**
+
+* **Ruta Nueva:** `GET /api/perfil/emisor` retorna datos del emisor (logo, NIT, dirección, teléfono) para PDFs.
+* **Fallback:** Controlador retorna datos por defecto si tabla `perfil_emisor` no existe.
+
+### **ESTADO FINAL DEL SISTEMA**
+
+✅ **Sistema de descuentos integrado:** Captura y guarda correctamente en BD
+✅ **Estados de vencimiento funcionales:** Cálculo automático y actualización en transiciones
+✅ **Formulario optimizado:** Cancelación mejorada, código limpio
+✅ **Tabla alineada:** Headers y celdas alineados correctamente
+✅ **Código refactorizado:** Lógica centralizada y depurada
+
+================================================================================
+
+
+================================================================================
+
 
 
 #### **1. SISTEMA DE AUTENTICACIÓN Y PERSISTENCIA**
