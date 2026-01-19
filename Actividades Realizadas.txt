@@ -234,3 +234,18 @@ Estado Final:
 ✅ Rutas y comentarios actualizados; código depurado.
 
 ================================================================================================================================================================
+**Fecha:** 19 de Enero de 2026
+
+**Resumen de Actividades:**
+
+#### **1. REFACTORIZACIÓN Y CENTRALIZACIÓN DE ESTILOS (MÓDULO REPORTES)**
+* **Migración a Global.css:** Traslado de la lógica de colores de `Reportes.css` a `global.css` para centralizar el control del tema.
+* **Variables Exclusivas:** Implementación de variables CSS con prefijo `--rep-*` para evitar conflictos y facilitar el mantenimiento.
+* **Soporte Modo Oscuro/Claro:** Configuración de valores dinámicos para las nuevas variables, asegurando compatibilidad automática con el cambio de tema.
+* **Limpieza de Código:** Optimización de `Reportes.css` para gestionar únicamente estructura y alineación.
+
+### **ESTADO FINAL DEL SISTEMA**
+
+✅ **Módulo de Reportes:** Integrado completamente al sistema de temas (Dark/Light mode).
+✅ **Estilos:** Separación eficiente entre estructura (local) y diseño visual (global).
+================================================================================================================================================================
