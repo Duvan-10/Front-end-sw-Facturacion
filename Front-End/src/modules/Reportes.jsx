@@ -1,130 +1,154 @@
 import React, { useState } from 'react';
 import '../styles/Reportes.css';
 
-// Datos de reporte simulados
-const initialReports = [
-  { id: 1, client: 'Cliente A', product: 'Licencia Premium', date: '2025-10-01', total: 150.00 },
-  { id: 2, client: 'Cliente B', product: 'Instalación HW', date: '2025-10-15', total: 85.50 },
-  { id: 3, client: 'Cliente C', product: 'Hosting Anual', date: '2025-11-05', total: 1200.00 },
-  { id: 4, client: 'Cliente A', product: 'Servicio Cloud', date: '2025-11-20', total: 45.99 },
-];
+const Reportes = () => {
+  const [view, setView] = useState('facturas');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [subType, setSubType] = useState('');
 
-function Reports() {
-  // Estado para los filtros de fecha
-  const [filters, setFilters] = useState({
-    fechaInicio: '',
-    fechaFin: '',
-  });
-
-  // Estado para los reportes mostrados (inicialmente todos)
-  const [filteredReports, setFilteredReports] = useState(initialReports);
-
-  // Maneja el cambio en los inputs de fecha
-  const handleFilterChange = (e) => {
-    const { id, value } = e.target;
-    setFilters({ ...filters, [id]: value });
-  };
-
-  // Maneja la generación del reporte (filtra la tabla)
-  const handleGenerateReport = (e) => {
-    e.preventDefault();
-    
-    // Convertir las fechas de filtro a objetos Date
-    const start = filters.fechaInicio ? new Date(filters.fechaInicio) : null;
-    const end = filters.fechaFin ? new Date(filters.fechaFin) : null;
-
-    if (!start || !end) {
-        alert("Por favor, selecciona tanto la fecha de inicio como la de fin.");
-        return;
+  // Datos maestros simulados
+  const config = {
+    facturas: {
+      title: "Análisis de Facturación",
+      subs: ["Todas las Facturas", "Facturas Pendientes", "IVA Recaudado"],
+      headers: ["Fecha", "Folio", "Cliente", "Estado", "Total", "Acciones"],
+      chart: [{h: '65%', l: 'Sem 1'}, {h: '90%', l: 'Sem 2'}, {h: '55%', l: 'Sem 3'}, {h: '80%', l: 'Sem 4'}],
+      data: [
+        ["2026-01-15", "F-101", "Inversiones Delta", "Pagada", "$1,250"],
+        ["2026-01-18", "F-102", "Juan Pérez", "Pendiente", "$450"]
+      ]
+    },
+    clientes: {
+      title: "Reporte de Clientes",
+      subs: ["Ranking de Ventas", "Clientes Inactivos", "Nuevos Registros"],
+      headers: ["Nombre Cliente", "Contacto", "Compras", "Inversión Total", "Acciones"],
+      chart: [{h: '100%', l: 'VIP'}, {h: '60%', l: 'Frecuente'}, {h: '25%', l: 'Ocasional'}],
+      data: [
+        ["Empresa ABC", "contacto@abc.com", "12", "$8,900"],
+        ["Tienda Local", "tienda@mail.com", "3", "$1,100"]
+      ]
+    },
+    productos: {
+      title: "Reporte de Productos",
+      subs: ["Más Vendidos ($)", "Mayor Rotación (Cant)", "Sin Ventas"],
+      headers: ["Producto", "Precio", "Cant. Vendida", "Total Bruto", "Acciones"],
+      chart: [{h: '40%', l: 'Serv. A'}, {h: '95%', l: 'Licencia X'}, {h: '70%', l: 'Soporte'}],
+      data: [
+        ["Consultoría Pro", "$100", "25", "$2,500"],
+        ["Soporte Anual", "$350", "10", "$3,500"]
+      ]
     }
-
-    // Filtrar los reportes
-    const results = initialReports.filter(report => {
-        const reportDate = new Date(report.date);
-        
-        // Comparación: fecha del reporte debe ser >= a inicio Y <= a fin
-        return reportDate >= start && reportDate <= end;
-    });
-
-    setFilteredReports(results);
-    alert(`Reporte generado. ${results.length} resultados encontrados entre ${filters.fechaInicio} y ${filters.fechaFin}.`);
   };
 
-  // Función para simular la exportación a CSV
-  const exportToCSV = () => {
-    // Aquí iría la lógica real para construir y descargar el archivo CSV
-    console.log('Exportando datos a CSV...');
-    // Ejemplo simple:
-    const header = Object.keys(filteredReports[0]).join(',');
-    const rows = filteredReports.map(report => Object.values(report).join(','));
-    const csvContent = [header, ...rows].join('\n');
-    
-    console.log(csvContent);
-    alert(`Se ha simulado la exportación de ${filteredReports.length} filas a CSV.`);
+  const current = config[view];
+
+  // Función para procesar el reporte basándose en los filtros
+  const handleGenerate = () => {
+    if (!dateFrom || !dateTo) {
+      alert("Por favor seleccione un rango de fechas para filtrar la tabla.");
+      return;
+    }
+    console.log(`Generando reporte de ${view} (${subType}) desde ${dateFrom} hasta ${dateTo}`);
+    // Aquí conectarías con tu API pasando estos parámetros
+    alert(`Reporte actualizado: Mostrando datos de ${view} del periodo seleccionado.`);
   };
 
   return (
-    <>
-      <header>Reportes e Informes</header>
+    <div className="report-main-wrapper">
+      <header className="report-top-header">
+        <h1>{current.title}</h1>
+      </header>
 
-      {/* --- Filtros --- */}
-      <section className="filter-section">
-        <h2>Filtrar reportes</h2>
-        <form onSubmit={handleGenerateReport}>
-          <label htmlFor="fechaInicio">Fecha inicio:</label>
-          <input 
-            type="date" 
-            id="fechaInicio" 
-            value={filters.fechaInicio}
-            onChange={handleFilterChange}
-            required 
-          />
+      {/* Selector de Módulo Principal */}
+      <div className="report-type-selector">
+        {Object.keys(config).map((key) => (
+          <button 
+            key={key} 
+            className={`selector-btn ${view === key ? 'active' : ''}`}
+            onClick={() => {
+                setView(key);
+                setSubType(config[key].subs[0]); // Resetear sub-filtro al cambiar módulo
+            }}
+          >
+            {key.charAt(0).toUpperCase() + key.slice(1)}
+          </button>
+        ))}
+      </div>
 
-          <label htmlFor="fechaFin">Fecha fin:</label>
-          <input 
-            type="date" 
-            id="fechaFin" 
-            value={filters.fechaFin}
-            onChange={handleFilterChange}
-            required 
-          />
+      <div className="report-grid-top">
+        {/* Gráfico Dinámico */}
+        <div className="report-panel">
+          <span className="panel-label">Resumen Visual del Periodo</span>
+          <div className="simple-bar-chart">
+            {current.chart.map((bar, i) => (
+              <div key={i} className="chart-bar" style={{ height: bar.h }} data-label={bar.l}></div>
+            ))}
+          </div>
+        </div>
 
-          <button type="submit" className="btn">Generar Reporte</button>
-        </form>
-      </section>
+        {/* Panel de Filtros de Fecha y Tipo */}
+        <div className="report-panel">
+          <span className="panel-label">Filtros de Reporte</span>
+          <div className="filter-form">
+            <label className="filter-hint">Tipo Específico:</label>
+            <select 
+              className="ui-input" 
+              value={subType} 
+              onChange={(e) => setSubType(e.target.value)}
+            >
+              {current.subs.map((s, i) => <option key={i} value={s}>{s}</option>)}
+            </select>
+            
+            <label className="filter-hint">Rango de Fechas:</label>
+            <div className="date-row">
+              <input 
+                type="date" 
+                className="ui-input" 
+                value={dateFrom} 
+                onChange={(e) => setDateFrom(e.target.value)} 
+              />
+              <input 
+                type="date" 
+                className="ui-input" 
+                value={dateTo} 
+                onChange={(e) => setDateTo(e.target.value)} 
+              />
+            </div>
+            
+            <button className="ui-btn-primary" onClick={handleGenerate}>
+              🔍 Generar Reporte y Actualizar Tabla
+            </button>
+          </div>
+        </div>
+      </div>
 
-      {/* --- Tabla de reportes --- */}
-      <section className="list-section">
-        <h2>Resultados ({filteredReports.length})</h2>
-        <table>
+      {/* Tabla de Resultados Final */}
+      <div className="report-panel table-full-width">
+        <div className="table-header-info">
+          <span>Mostrando: <strong>{subType || current.subs[0]}</strong></span>
+          {dateFrom && <span> Periodo: {dateFrom} a {dateTo}</span>}
+        </div>
+        <table className="ui-table">
           <thead>
-            <tr>
-              <th>#</th>
-              <th>Cliente</th>
-              <th>Producto</th>
-              <th>Fecha</th>
-              <th>Total</th>
-            </tr>
+            <tr>{current.headers.map((h, i) => <th key={i}>{h}</th>)}</tr>
           </thead>
           <tbody>
-            {filteredReports.map((report) => (
-              <tr key={report.id}>
-                <td>{report.id}</td>
-                <td>{report.client}</td>
-                <td>{report.product}</td>
-                <td>{report.date}</td>
-                <td>${Math.round(report.total).toLocaleString('es-CO')}</td>
+            {current.data.map((row, i) => (
+              <tr key={i}>
+                {row.map((cell, j) => <td key={j}>{cell}</td>)}
+                <td className="actions-cell">
+                  <button className="btn-table-excel" onClick={() => alert(`Descargando Excel detallado...`)}>
+                    Excel
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {/* El evento 'onclick' directo se reemplaza por una función de manejo en React */}
-        <button className="btn export-btn" onClick={exportToCSV}>Exportar a CSV</button>
-      </section>
-
-      {/* El script externo (informes.js) ha sido reemplazado por las funciones de React */}
-    </>
+      </div>
+    </div>
   );
-}
+};
 
-export default Reports;
+export default Reportes;

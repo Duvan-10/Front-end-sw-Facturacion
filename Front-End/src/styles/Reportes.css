@@ -1,86 +1,137 @@
-/* NOTA: Estos estilos deberían estar en un archivo CSS global (ej: index.css) */
-body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background-color: #1e1e1e;
-    color: #ffffff;
+.report-main-wrapper {
+  padding: 40px;
+  background-color: var(--rep-bg);
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: var(--rep-text-main);
 }
 
-header {
-    padding: 20px;
-    background-color: #2c2c2c;
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: bold;
+.report-top-header h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 25px;
 }
 
-.filter-section, .list-section {
-    padding: 20px;
+/* Selector de Pestañas */
+.report-type-selector {
+  display: inline-flex;
+  background: var(--rep-selector-bg);
+  padding: 4px;
+  border-radius: 10px;
+  margin-bottom: 30px;
 }
 
-form {
-    display: grid;
-    gap: 10px;
-    max-width: 400px;
-    margin: auto;
+.selector-btn {
+  padding: 8px 24px;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--rep-text-muted);
+  background: transparent;
+  transition: 0.2s;
 }
 
-/* Estilos de los inputs */
-input {
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    /* Importante para que el input de fecha y texto se vea bien en tema oscuro */
-    background-color: #3e3e3e; 
-    color: #ffffff;
-}
-input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1); /* Hace que el icono del calendario sea blanco */
+.selector-btn.active {
+  background: var(--rep-selector-active-bg);
+  color: var(--rep-primary);
+  box-shadow: 0 2px 4px var(--rep-shadow);
 }
 
-
-/* Estilos del botón */
-.btn {
-    background-color: #00c853;
-    color: #fff;
-    border: none;
-    padding: 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-top: 10px; /* Separación del input de fecha */
+.report-grid-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-bottom: 25px;
 }
 
-.btn:hover {
-    background-color: #00b44a;
+.report-panel {
+  background: var(--rep-card-bg);
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid var(--rep-border);
+  box-shadow: 0 2px 8px var(--rep-shadow);
 }
 
-/* Estilos de la tabla */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background-color: #2c2c2c; 
-    border-radius: 8px;
-    overflow: hidden; 
+.panel-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--rep-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 20px;
 }
 
-th, td {
-    padding: 10px;
-    text-align: center;
-    border-bottom: 1px solid #444;
+.filter-hint {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--rep-text-muted);
+  margin-bottom: 4px;
 }
 
-th {
-    background-color: #1e1e1e; 
-    font-weight: bold;
-    color: #00c853; 
+.simple-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 140px;
 }
 
-/* Ajuste adicional para el botón de exportar que está fuera de la tabla */
-.list-section .export-btn {
-    margin-top: 20px;
-    display: block; /* Para que ocupe su propia línea si es necesario */
-    margin-left: auto;
-    margin-right: auto;
+.chart-bar {
+  width: 35px;
+  background: var(--rep-primary);
+  border-radius: 4px;
+  position: relative;
+}
+
+.chart-bar::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+}
+
+.filter-form { display: flex; flex-direction: column; gap: 8px; }
+.date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ui-input { padding: 10px; border: 1px solid var(--rep-border); border-radius: 8px; outline: none; background: var(--rep-card-bg); color: var(--rep-text-main); }
+.ui-input:focus { border-color: var(--rep-primary); }
+
+.ui-btn-primary { 
+  background: var(--rep-primary); 
+  color: white; 
+  border: none; 
+  padding: 12px; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  font-weight: 700; 
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+.ui-btn-primary:hover { background: var(--rep-primary-hover); }
+
+/* Tabla y Acciones */
+.table-header-info {
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  color: var(--rep-text-muted);
+  border-bottom: 1px solid var(--rep-border);
+  padding-bottom: 10px;
+}
+
+.ui-table { width: 100%; border-collapse: collapse; }
+.ui-table th { text-align: left; padding: 16px; background: var(--rep-th-bg); color: var(--rep-text-muted); font-size: 0.8rem; border-bottom: 1px solid var(--rep-border); }
+.ui-table td { padding: 16px; border-bottom: 1px solid var(--rep-border); font-size: 0.95rem; }
+
+.actions-cell { text-align: right; }
+.btn-table-excel {
+  background-color: var(--rep-success);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
 }
