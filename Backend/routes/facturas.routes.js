@@ -72,8 +72,8 @@ router.post('/', async (req, res) => {
 
         // Insertar encabezado de factura
         const [resultFactura] = await connection.query(
-         `INSERT INTO facturas (numero_factura, cliente_id, fecha_emision, fecha_vencimiento, subtotal, iva, total, estado) 
-         VALUES (?, ?, NOW(), ?, ?, ?, ?, ?)`, 
+         `INSERT INTO facturas (numero_factura, cliente_id, fecha_creacion, fecha_vencimiento, subtotal, iva, total, estado, estado_emision, descuento_porcentaje) 
+         VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, 'pendiente', ?)`, 
         [
         numeroFactura, 
         cliente_id,
@@ -81,7 +81,8 @@ router.post('/', async (req, res) => {
         req.body.subtotal, 
         req.body.iva, 
         req.body.total, 
-        estadoFinal]
+        estadoFinal,
+        req.body.descuento_porcentaje || 0]
         );
 
         const facturaId = resultFactura.insertId;

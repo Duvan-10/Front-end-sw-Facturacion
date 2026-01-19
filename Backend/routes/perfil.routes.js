@@ -8,7 +8,8 @@ import {
     getUserProfile,
     updateUserProfile,
     changePassword,
-    uploadProfilePhoto
+    uploadProfilePhoto,
+    getEmisorProfile
 } from '../controllers/perfilController.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -48,6 +49,8 @@ const upload = multer({
 });
 
 // (Legacy eliminado) Perfil emisor ya no se usa; el perfil viene de tabla users
+// Endpoint para obtener datos del emisor (PDF): logo y datos fiscales
+router.get('/emisor', authMiddleware, getEmisorProfile);
 
 // Nuevas rutas para perfil de usuario
 router.get('/me', authMiddleware, getUserProfile);

@@ -194,7 +194,8 @@ export const sendPasswordResetEmail = async (userEmail, userName, resetToken) =>
  */
 const generateInvoiceHTML = (facturaData, emisorData) => {
     const formatCurrency = (val) => `$${Math.round(val || 0).toLocaleString('es-CO')}`;
-    const formatDate = (date) => new Date(date).toLocaleDateString('es-CO');
+    const formatDate = (date) => date ? new Date(date).toLocaleDateString('es-CO') : '';
+    const displayDate = facturaData.fecha_emision || facturaData.fecha_creacion;
 
     return `
         <!DOCTYPE html>
@@ -237,7 +238,7 @@ const generateInvoiceHTML = (facturaData, emisorData) => {
                 <div class="invoice-meta">
                     <h2>FACTURA DE VENTA</h2>
                     <p class="invoice-number">N° ${facturaData.numero_factura}</p>
-                    <p>Fecha: ${formatDate(facturaData.fecha_emision)}</p>
+                    <p>Fecha: ${formatDate(displayDate)}</p>
                 </div>
             </div>
 
@@ -323,6 +324,8 @@ export const sendInvoiceEmail = async (facturaData, emisorData, clientEmail) => 
         });
         await browser.close();
 
+        const displayDate = facturaData.fecha_emision || facturaData.fecha_creacion;
+
         // Configurar email
         const mailOptions = {
             from: `"${emisorData?.nombre_razon_social || 'Sistema de Facturación'}" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
@@ -356,7 +359,7 @@ export const sendInvoiceEmail = async (facturaData, emisorData, clientEmail) => 
                             
                             <div class="details">
                                 <p><strong>Factura N°:</strong> ${facturaData.numero_factura}</p>
-                                <p><strong>Fecha:</strong> ${new Date(facturaData.fecha_emision).toLocaleDateString('es-CO')}</p>
+                                <p><strong>Fecha:</strong> ${displayDate ? new Date(displayDate).toLocaleDateString('es-CO') : ''}</p>
                                 <p><strong>Total:</strong> $${Math.round(facturaData.total || 0).toLocaleString('es-CO')}</p>
                             </div>
                             

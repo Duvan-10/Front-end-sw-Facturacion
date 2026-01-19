@@ -227,3 +227,29 @@ export const uploadProfilePhoto = async (req, res) => {
 };
 
 // Exportaciones principales del módulo de perfil
+// Obtener perfil del emisor para PDF (logo, datos fiscales, contacto)
+export const getEmisorProfile = async (req, res) => {
+    try {
+        // Intentar leer desde una tabla dedicada si existe
+        const [rows] = await pool.query('SELECT * FROM perfil_emisor LIMIT 1');
+        if (rows.length) {
+            return res.status(200).json(rows[0]);
+        }
+
+        // Fallback: construir a partir de datos mínimos si no existe la tabla o registro
+        // Nota: Ajusta estos valores o la fuente según tu modelo real
+        const fallback = {
+            nombre_razon_social: 'Emisor',
+            nit: '',
+            direccion: '',
+            ciudad: '',
+            pais: '',
+            telefono: '',
+            logo_url: null
+        };
+        return res.status(200).json(fallback);
+    } catch (error) {
+        console.error('Error al obtener perfil emisor:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+};
