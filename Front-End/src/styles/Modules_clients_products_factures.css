@@ -148,6 +148,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  text-align: center;
 }
 
 .product-table th, .product-table td,
@@ -159,6 +160,48 @@
   vertical-align: middle;
   color: var(--u-text);
   background-color: var(--u-background);
+}
+
+.invoice-table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.invoice-table td:first-child,
+.invoice-table td:nth-child(2),
+.invoice-table td:nth-child(3),
+.invoice-table td:nth-child(4) {
+  text-align: left;
+}
+
+.invoice-table td:nth-child(5) {
+  text-align: center;
+}
+
+.invoice-table td:nth-child(6),
+.invoice-table td:nth-child(7) {
+  text-align: center;
+}
+
+.invoice-table td:last-child {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.invoice-table th {
+  text-align: center;
+}
+
+.invoice-table th:first-child,
+.invoice-table th:nth-child(2),
+.invoice-table th:nth-child(3)
+.invoice-table th:nth-child(3),
+.invoice-table th:nth-child(4) {
+  text-align: left;
+}
+
+.invoice-table th:nth-child(5) {
+  text-align: center;
 }
 
 .product-table th,
@@ -223,6 +266,7 @@ button.editar {
   padding: 6px 10px;
   border-radius: 6px;
   cursor: pointer;
+  margin: 0 2px;
 }
 
 button.editar:hover {
@@ -236,6 +280,7 @@ button.eliminar {
   padding: 6px 10px;
   border-radius: 6px;
   cursor: pointer;
+  margin: 0 2px;
 }
 
 button.eliminar:hover {
@@ -249,7 +294,7 @@ button.ver {
   padding: 6px 10px;
   border-radius: 6px;
   cursor: pointer;
-  margin-right: 4px;
+  margin: 0 2px;
 }
 
 button.ver:hover {
@@ -263,7 +308,7 @@ button.emitir {
   padding: 6px 10px;
   border-radius: 6px;
   cursor: pointer;
-  margin-left: 4px;
+  margin: 0 2px;
 }
 
 button.emitir:hover {
@@ -450,6 +495,53 @@ button.emitir:hover {
   }
 }
 
+/* ======================================================= */
+/* ESTILOS PARA ESTADO DE EMISIÓN DE FACTURAS */
+/* ======================================================= */
+
+.emision-status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.emision-emitida {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.emision-emitida:hover {
+  background-color: #c3e6cb;
+  transform: scale(1.05);
+}
+
+.emision-pendiente {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.emision-pendiente:hover {
+  background-color: #ffeaa7;
+  transform: scale(1.05);
+}
+
+.emision-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.emision-error:hover {
+  background-color: #f5c6cb;
+  transform: scale(1.05);
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .actions {
@@ -469,5 +561,9 @@ button.emitir:hover {
     width: 100%;
     text-align: center;
   }
-}
 
+  .emision-status {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}

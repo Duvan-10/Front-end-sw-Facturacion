@@ -63,7 +63,7 @@ const InvoicePDF = ({ data, emisor, onStatusChange, showControls = false }) => {
                     <View style={styles.invoiceMeta}>
                         <Text style={styles.title}>FACTURA DE VENTA</Text>
                         <Text style={styles.invoiceNumber}>N° {data.numero_factura}</Text>
-                        <Text>Fecha: {new Date(data.fecha_emision).toLocaleDateString()}</Text>
+                        <Text>Fecha: {new Date(data.fecha_emision || data.fecha_creacion).toLocaleDateString()}</Text>
                     </View>
                 </View>
 

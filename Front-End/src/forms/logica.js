@@ -52,10 +52,6 @@ export const useInvoiceLogic = () => {
                String(ahora.getDate()).padStart(2, '0');
     });
 
-
-    // ==========================================
-    // 2. DETALLES CLIENTE (Búsqueda, Selección, Registro)
-    // ==========================================
     const [identificacion, setIdentificacion] = useState('');
     const [sugerencias, setSugerencias] = useState([]);
     const [cliente, setCliente] = useState({ 
@@ -604,6 +600,11 @@ export const useInvoiceLogic = () => {
             });
         }
 
+        // Calcular descuento promedio de los productos (para guardar en facturas.descuento)
+        const descuentoPromedio = productosFactura.length > 0
+            ? productosFactura.reduce((sum, p) => sum + (parseFloat(p.descuento) || 0), 0) / productosFactura.length
+            : 0;
+
         // Preparar fecha con hora exacta de la PC
         const ahora = new Date();
         const horaExacta = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}:${String(ahora.getSeconds()).padStart(2, '0')}`;
@@ -616,10 +617,11 @@ export const useInvoiceLogic = () => {
                 body: JSON.stringify({
                     cliente_id: clienteIdActual,
                     fecha_vencimiento: fechaVencimiento,
-                    fecha_emision: fechaFinalFactura,
+                    fecha_creacion: fechaFinalFactura,
                     subtotal: subtotal,
                     iva: iva,
                     total: totalGeneral,
+                    descuento_porcentaje: descuentoPromedio,
                     productos: productosConIds
                 })
             });

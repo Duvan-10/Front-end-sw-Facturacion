@@ -8,8 +8,11 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
   const navigate = useNavigate(); 
   
   const handleCancel = () => {
-    onCancel();
-    navigate('/facturas');
+    if (onCancel) {
+      onCancel();
+    } else {
+      navigate('/home/facturas');
+    }
   }; 
 
   const { 
@@ -295,11 +298,8 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
                             
                       
 
-
-
                 {/*******************TOTALES************************/}
 
- 
                 <h2 className="section-totales">4. Totales</h2>
 
                 <div className="total-line">
@@ -330,13 +330,7 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
     <button 
         type="button" 
         className="btn btn-danger" 
-        onClick={() => {
-          if (onCancel) {
-            onCancel();
-          } else {
-            navigate('/home/facturas');
-          }
-        }}
+        onClick={handleCancel}
     >
         Cancelar
     </button>

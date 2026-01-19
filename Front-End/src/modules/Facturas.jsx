@@ -81,6 +81,37 @@ function Facturas() {
         return { status: statusMap[invoice.status] || invoice.status, className: `status-${invoice.status?.toLowerCase()}` };
     };
 
+    const getEmisionStatus = (invoice) => {
+        // Retorna el estado de emisión con color e ícono
+        const estadoEmision = invoice.estado_emision || 'pendiente';
+        
+        const emisionMap = {
+            'emitida': { 
+                text: '✅ Emitida', 
+                className: 'emision-emitida',
+                bgColor: '#d4edda',
+                textColor: '#155724',
+                borderColor: '#c3e6cb'
+            },
+            'pendiente': { 
+                text: '⏳ Pendiente', 
+                className: 'emision-pendiente',
+                bgColor: '#fff3cd',
+                textColor: '#856404',
+                borderColor: '#ffeaa7'
+            },
+            'error': { 
+                text: '❌ Error', 
+                className: 'emision-error',
+                bgColor: '#f8d7da',
+                textColor: '#721c24',
+                borderColor: '#f5c6cb'
+            }
+        };
+        
+        return emisionMap[estadoEmision] || emisionMap['pendiente'];
+    };
+
     const fetchInvoices = async () => {
         setLoading(true);
         try {
@@ -248,15 +279,23 @@ function Facturas() {
                 })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Error al emitir factura');
-            }
+            const responseData = await response.json();
 
-            alert('✅ Factura emitida y enviada al correo del cliente correctamente');
+            if (!response.ok) {
+                // Error al enviar
+                if (responseData.estado_emision === 'error') {
+                    alert(`❌ Error al emitir factura:\n\n${responseData.message}\n\nVerifique que el email del cliente sea válido.`);
+                } else {
+                    alert(`❌ Error: ${responseData.message || 'No se pudo emitir la factura'}`);
+                }
+            } else {
+                // Éxito
+                alert(`✅ ¡Factura emitida exitosamente!\n\nNúmero: ${responseData.numeroFactura}\nCliente: ${responseData.cliente}\nEmail: ${responseData.email}`);
+            }
+            
             fetchInvoices();
         } catch (err) {
-            alert('❌ Error al emitir factura: ' + err.message);
+            alert('❌ Error de conexión: ' + err.message);
         } finally {
             setIsGenerating(null);
         }
@@ -324,7 +363,8 @@ function Facturas() {
                                 <th>Cliente</th>
                                 <th>Identificación</th>
                                 <th>Total</th>
-                                <th>Estado</th> 
+                                <th>Estado</th>
+                                <th>Emisión</th>
                                 <th>Acciones</th> 
                             </tr>
                         </thead>
@@ -339,9 +379,27 @@ function Facturas() {
                                         <td>
                                             <strong>${Math.round(parseFloat(invoice.total || 0)).toLocaleString('es-CO')}</strong>
                                         </td>
+                                        
                                         <td>
                                             <span className={`invoice-status ${getInvoiceStatus(invoice).className}`}>
                                                 {getInvoiceStatus(invoice).status}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span 
+                                                className={`emision-status ${getEmisionStatus(invoice).className}`}
+                                                style={{
+                                                    backgroundColor: getEmisionStatus(invoice).bgColor,
+                                                    color: getEmisionStatus(invoice).textColor,
+                                                    borderRadius: '4px',
+                                                    padding: '4px 8px',
+                                                    display: 'inline-block',
+                                                    border: `1px solid ${getEmisionStatus(invoice).borderColor}`,
+                                                    fontWeight: '500',
+                                                    whiteSpace: 'nowrap'
+                                                }}
+                                            >
+                                                {getEmisionStatus(invoice).text}
                                             </span>
                                         </td>
                                         <td>
@@ -351,12 +409,12 @@ function Facturas() {
                                                 disabled={isGenerating === invoice.id_real}
                                                 title="Ver factura en PDF"
                                             >
-                                                {isGenerating === invoice.id_real ? '...' : '📄 Ver'}
+                                                {isGenerating === invoice.id_real ? '...' : '📄'}
                                             </button>
-                                            <button className="editar btn-warning" onClick={() => handleEdit(invoice)} disabled={loading} title="Editar factura">✏️ Editar</button>
-                                            <button className="emitir btn-success" onClick={() => handleEmit(invoice)} disabled={loading} title="Emitir factura">📤 Emitir</button>
+                                            <button className="editar btn-warning" onClick={() => handleEdit(invoice)} disabled={loading} title="Editar factura">✏️</button>
+                                            <button className="emitir btn-success" onClick={() => handleEmit(invoice)} disabled={loading} title="Emitir factura">📤</button>
                                             {isAdmin && (
-                                                <button className="eliminar btn-danger" onClick={() => handleDelete(invoice)} disabled={loading} title="Eliminar factura">🗑️ Eliminar</button>
+                                                <button className="eliminar btn-danger" onClick={() => handleDelete(invoice)} disabled={loading} title="Eliminar factura">🗑️</button>
                                             )}
                                         </td>
                                     </tr>
