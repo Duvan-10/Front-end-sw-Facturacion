@@ -74,16 +74,73 @@
     --u-error-text: #fc8181;                   /* Texto error claro */
     --u-error-border: #fc8181;
 
+   /* ================================================================= */
+    /* MÓDULO GESTIÓN (Productos, Clientes, Facturas) - Modo Oscuro     */
     /* ================================================================= */
-    /* MÓDULO CLIENTES Y PRODUCTOS */
-    /* Variables de color para tablas y componentes                      */
-    /* ================================================================= */
+
+    
+      /* Variables de color para tablas y componentes                      */
+  
     --cp-table-header-bg: #3498db;            /* Fondo encabezado tabla */
     --cp-table-header-text: #ffffff;          /* Texto encabezado tabla */
     --cp-table-border: #555555;               /* Borde de tabla */
     --cp-table-row-hover: rgba(52, 152, 219, 0.1); /* Hover fila tabla */
     --cp-badge-bg: rgba(52, 152, 219, 0.2);  /* Fondo badge */
     --cp-badge-text: #3498db;                 /* Texto badge */
+
+
+    --mod-card-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    
+    --btn-info-bg: #17a2b8;
+    --btn-info-hover: #138496;
+    
+    /* Estados Factura */
+    --status-pagada-bg: rgba(39, 174, 96, 0.2); --status-pagada-text: #27ae60;
+    --status-pendiente-bg: rgba(243, 156, 18, 0.2); --status-pendiente-text: #f39c12;
+    --status-vencida-bg: rgba(220, 53, 69, 0.2); --status-vencida-text: #dc3545;
+    --status-anulada-bg: rgba(108, 117, 125, 0.2); --status-anulada-text: #6c757d;
+    --status-parcial-bg: rgba(13, 110, 253, 0.2); --status-parcial-text: #0d6efd;
+
+    /* Estados Emisión */
+    --emision-emitida-bg: #1e4026; --emision-emitida-text: #d1e7dd; --emision-emitida-border: #2f6f44;
+    --emision-pendiente-bg: #423608; --emision-pendiente-text: #fff3cd; --emision-pendiente-border: #66530c;
+    --emision-error-bg: #58151c; --emision-error-text: #f8d7da; --emision-error-border: #842029;
+
+    /* Modales */
+    --modal-overlay-bg: lch(44% 82.11 36.85); /* Fondo oscuro semitransparente */
+    --modal-bg: lch(45.84% 87.04 37.69);                     /* Gris elevado (diferente al fondo base) */
+    --modal-text: hwb(129 9% 13%);
+    --modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); /* Sombra profunda */
+    --modal-scrollbar-track: #333333;
+    --modal-scrollbar-thumb: #555555;
+    --modal-scrollbar-thumb-hover: #777777;
+    --modal-close-hover: rgba(255, 255, 255, 0.1);
+    --modal-divider: #404040;
+
+    /* Variables de color EXCLUSIVAS para modal de cambio de estado Factura    */
+    /* ================================================================= */
+    --status-modal-bg: #2a2a2a;                      /* Coincide con modal-bg */
+    --status-modal-text: #f0f0f0;                    /* Texto principal */
+    --status-modal-border: #404040;                  /* Bordes sutiles */
+    --status-modal-header-border: #404040;              
+    --status-modal-footer-border: #404040;              
+    --status-modal-section-bg: #333333;              /* Ligeramente más claro que el fondo */
+    --status-modal-section-border: #4a4a4a;             
+    --status-modal-info-bg: #333333;                 
+    --status-modal-detail-bg: #222222;               /* Contraste para detalles */
+    --status-modal-detail-border: #4a4a4a;              
+    --status-modal-status-border: #555555;              
+    --status-modal-status-hover-bg: #404040;            
+    --status-modal-btn-secondary-border: #666666;       
+    --status-modal-btn-secondary-text: #e0e0e0;      /* Texto botón secundario */
+    --status-modal-btn-secondary-hover: #404040;     /* Hover botón secundario */
+    --status-modal-btn-primary-bg: #3b82f6;          /* Azul vibrante */
+    --status-modal-btn-primary-hover: #2563eb;       /* Hover botón primario */
+    
+    --invoice-total-final-border: #999;              /* Borde total final */
+    --invoice-total-final-label-color: lab(76.66% -74.89 69.8); /* Color label total final */
+    --invoice-total-final-value-color: hsl(110, 100%, 50%); /* Color valor total final */
+    --invoice-final-buttons-border: hsl(0, 0%, 93%); /* Borde botones finales */
 
     /* ================================================================= */
     /* FORMULARIOS - CLIENTES Y PRODUCTOS */
@@ -132,33 +189,8 @@
     --invoice-total-final-label-color: lab(76.66% -74.89 69.8); /* Color label total final */
     --invoice-total-final-value-color: hsl(110, 100%, 50%); /* Color valor total final */
     --invoice-final-buttons-border: hsl(0, 0%, 93%); /* Borde botones finales */
-
-    /* ================================================================= */
-    /* STATUS MODAL - CAMBIAR ESTADO DE FACTURA (Modo Oscuro)          */
-    /* Variables de color EXCLUSIVAS para modal de cambio de estado     */
-    /* ================================================================= */
-    --status-modal-bg: #1a1a1a;                      /* Fondo modal */
-    --status-modal-text: #e0e0e0;                    /* Texto principal */
-    --status-modal-border: #444;                     /* Bordes */
-    --status-modal-header-border: #555;              /* Borde header */
-    --status-modal-footer-border: #555;              /* Borde footer */
-    --status-modal-section-bg: #252525;              /* Fondo secciones */
-    --status-modal-section-border: #444;             /* Borde secciones */
-    --status-modal-info-bg: #2a2a2a;                 /* Fondo info */
-    --status-modal-detail-bg: #1f1f1f;               /* Fondo detalles */
-    --status-modal-detail-border: #444;              /* Borde detalles */
-    --status-modal-status-border: #444;              /* Borde opciones estado */
-    --status-modal-status-hover-bg: #333;            /* Hover opciones estado */
-    --status-modal-btn-secondary-border: #666;       /* Borde botón secundario */
-    --status-modal-btn-secondary-text: #e0e0e0;      /* Texto botón secundario */
-    --status-modal-btn-secondary-hover: #3a3a3a;     /* Hover botón secundario */
-    --status-modal-btn-primary-bg: #3498db;          /* Fondo botón primario */
-    --status-modal-btn-primary-hover: #2980b9;       /* Hover botón primario */
     
-    --invoice-total-final-border: #999;              /* Borde total final */
-    --invoice-total-final-label-color: lab(76.66% -74.89 69.8); /* Color label total final */
-    --invoice-total-final-value-color: hsl(110, 100%, 50%); /* Color valor total final */
-    --invoice-final-buttons-border: hsl(0, 0%, 93%); /* Borde botones finales */
+ 
 
     /* ================================================================= */
     /* MÓDULO PERFIL (Modo Oscuro)                                      */
@@ -215,6 +247,8 @@
     --rep-th-bg: #1e293b;               /* Fondo encabezado tabla */
     --rep-shadow: rgba(0, 0, 0, 0.3);   /* Sombra suave */
 }
+
+   
 /*----------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------*/
 
@@ -286,16 +320,64 @@ html.light-mode {
     --u-error-text: lab(59.41% 21.25 8.53);   /* Texto error oscuro */
     --u-error-border: #c53030;
 
+      /* ================================================================= */
+    /* MÓDULO GESTIÓN (Productos, Clientes, Facturas) - Modo Claro      */
     /* ================================================================= */
-    /* MÓDULO CLIENTES Y PRODUCTOS */
+    --mod-card-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    
+    --btn-info-bg: #0dcaf0;
+    --btn-info-hover: #0bb5d8;
+
     /* Variables de color para tablas y componentes (Modo Claro)         */
-    /* ================================================================= */
+
     --cp-table-header-bg: #2b6cb0;            /* Fondo encabezado tabla */
     --cp-table-header-text: #ffffff;          /* Texto encabezado tabla */
     --cp-table-border: #e5e7eb;               /* Borde de tabla */
     --cp-table-row-hover: rgba(43, 108, 176, 0.08); /* Hover fila tabla */
     --cp-badge-bg: #e0e7ff;                   /* Fondo badge */
     --cp-badge-text: #2b6cb0;                 /* Texto badge */
+
+    /* Estados Factura */
+    --status-pagada-bg: #d1e7dd; --status-pagada-text: #0f5132;
+    --status-pendiente-bg: #fff3cd; --status-pendiente-text: #664d03;
+    --status-vencida-bg: #f8d7da; --status-vencida-text: #842029;
+    --status-anulada-bg: #e2e3e5; --status-anulada-text: #41464b;
+    --status-parcial-bg: #cff4fc; --status-parcial-text: #055160;
+
+    /* Estados Emisión */
+    --emision-emitida-bg: #d4edda; --emision-emitida-text: #155724; --emision-emitida-border: #c3e6cb;
+    --emision-pendiente-bg: #fff3cd; --emision-pendiente-text: #856404; --emision-pendiente-border: #ffeaa7;
+    --emision-error-bg: #f8d7da; --emision-error-text: #721c24; --emision-error-border: #f5c6cb;
+
+    /* Modales */
+    --modal-overlay-bg: rgba(0, 0, 0, 0.5);  /* Semitransparente estándar */
+    --modal-bg: #ffffff;                     /* Blanco puro */
+    --modal-text: #111827;                   /* Texto casi negro */
+    --modal-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Sombra suave y difusa */
+    --modal-scrollbar-track: #f3f4f6;
+    --modal-scrollbar-thumb: #d1d5db;
+    --modal-scrollbar-thumb-hover: #9ca3af;
+    --modal-close-hover: rgba(0, 0, 0, 0.05);
+    --modal-divider: #e5e7eb;
+
+    /* Variables de color EXCLUSIVAS para modal de cambio de estado     */
+    --status-modal-bg: #ffffff;                      
+    --status-modal-text: #111827;                    
+    --status-modal-border: #e5e7eb;                  /* Bordes */
+    --status-modal-header-border: #f3f4f6;           /* Borde header */
+    --status-modal-footer-border: #f3f4f6;           /* Borde footer */
+    --status-modal-section-bg: #f9fafb;              /* Fondo secciones */
+    --status-modal-section-border: #e5e7eb;          /* Borde secciones */
+    --status-modal-info-bg: #f3f4f6;                 /* Fondo info */
+    --status-modal-detail-bg: #ffffff;               /* Fondo detalles */
+    --status-modal-detail-border: #e5e7eb;           /* Borde detalles */
+    --status-modal-status-border: #d1d5db;           /* Borde opciones estado */
+    --status-modal-status-hover-bg: #f9fafb;         /* Hover opciones estado */
+    --status-modal-btn-secondary-border: #d1d5db;    /* Borde botón secundario */
+    --status-modal-btn-secondary-text: #374151;      /* Texto botón secundario */
+    --status-modal-btn-secondary-hover: #f9fafb;     /* Hover botón secundario */
+    --status-modal-btn-primary-bg: #2563eb;          /* Azul estándar */
+    --status-modal-btn-primary-hover: #1d4ed8;       /* Hover botón primario */
 
     /* ================================================================= */
     /* FORMULARIOS - CLIENTES Y PRODUCTOS (Modo Claro)                  */
@@ -346,30 +428,8 @@ html.light-mode {
     --invoice-final-buttons-border: #e5e7eb;         /* Borde botones finales */
 
     /* ================================================================= */
-    /* STATUS MODAL - CAMBIAR ESTADO DE FACTURA (Modo Claro)           */
-    /* Variables de color EXCLUSIVAS para modal de cambio de estado     */
-    /* ================================================================= */
-    --status-modal-bg: #ffffff;                      /* Fondo modal */
-    --status-modal-text: #1f2937;                    /* Texto principal */
-    --status-modal-border: #e5e7eb;                  /* Bordes */
-    --status-modal-header-border: #d1d5db;           /* Borde header */
-    --status-modal-footer-border: #d1d5db;           /* Borde footer */
-    --status-modal-section-bg: #f9fafb;              /* Fondo secciones */
-    --status-modal-section-border: #e5e7eb;          /* Borde secciones */
-    --status-modal-info-bg: #f3f4f6;                 /* Fondo info */
-    --status-modal-detail-bg: #ffffff;               /* Fondo detalles */
-    --status-modal-detail-border: #e5e7eb;           /* Borde detalles */
-    --status-modal-status-border: #e5e7eb;           /* Borde opciones estado */
-    --status-modal-status-hover-bg: #f0f0f0;         /* Hover opciones estado */
-    --status-modal-btn-secondary-border: #d1d5db;    /* Borde botón secundario */
-    --status-modal-btn-secondary-text: #374151;      /* Texto botón secundario */
-    --status-modal-btn-secondary-hover: #f3f4f6;     /* Hover botón secundario */
-    --status-modal-btn-primary-bg: #3498db;          /* Fondo botón primario */
-    --status-modal-btn-primary-hover: #2980b9;       /* Hover botón primario */
-    --modal-btn-secondary-text: #374151;             /* Texto botón secundario */
-    --modal-btn-secondary-hover: #f3f4f6;            /* Hover botón secundario */
-    --modal-btn-primary-bg: #3498db;                 /* Fondo botón primario */
-    --modal-btn-primary-hover: #2980b9;              /* Hover botón primario */
+
+    
 
     /* ================================================================= */
     /* MÓDULO PERFIL (Modo Claro)                                       */
@@ -425,6 +485,7 @@ html.light-mode {
     --rep-selector-active-bg: #ffffff;  /* Fondo pestaña activa */
     --rep-th-bg: #f8fafc;               /* Fondo encabezado tabla claro */
     --rep-shadow: rgba(0, 0, 0, 0.05);  /* Sombra suave */
+
 }
 /*----------------------------------------------------------------------------------------------------------*/
 
@@ -433,6 +494,48 @@ html.light-mode {
 /* ------------------------------------- */
 /* 3. RESETEO Y ESTILOS BASE             */
 /* ------------------------------------- */
+body, html, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box; 
+    background-color: var(--color-background-dark); 
+}
+
+/* Fuente global */
+* {
+    font-family: Arial, sans-serif;
+}
+
+/* ------------------------------------- */
+/* 4. COMPONENTE GLOBAL: SWITCH DE TEMA */
+/* ------------------------------------- */
+
+.theme-switcher-global {
+    position: fixed; 
+    top: 20px;
+    right: 20px;
+    z-index: 1000; 
+}
+
+.theme-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    color: var(--color-text-muted); 
+    background-color: var(--color-card-dark); 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); 
+}
+
+.theme-button:hover {
+    color: var(--color-accent-teal); 
+    background-color: var(--color-input-background); 
+    box-shadow: 0 4px 8px hsl(0, 0%, 9%);
+}* ------------------------------------- */
 body, html, #root {
     margin: 0;
     padding: 0;

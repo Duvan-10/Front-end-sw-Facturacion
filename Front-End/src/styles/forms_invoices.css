@@ -32,7 +32,7 @@
 }
 
 /*--------------------------------------------------------*/
-/* N°FACTURA Y FECHA - LAYOUT Y ALINEACIÓN */
+/* N°FACTURA Y FECHA CREACION- LAYOUT Y ALINEACIÓN */
 /*--------------------------------------------------------*/
 
 .Subtitulo {
@@ -42,7 +42,7 @@
     box-sizing: border-box;
     justify-content: space-between;
     align-items: flex-start;
-    padding-bottom: 15px;
+    padding-bottom: 20px;
     border-bottom: 2px solid var(--invoice-form-border-color);
 }
 
@@ -78,34 +78,9 @@
 }
 
 /*--------------------------------------------------------*/
-/* PAGO - LAYOUT Y ALINEACIÓN */
+/* FECHAS VENCIMIENTO - LAYOUT Y ALINEACIÓN */
 /*--------------------------------------------------------*/
 
-.pago {
-    display: flex;
-    text-align: right;
-    gap: 20px;
-    font-weight: bold;
-    color: var(--invoice-pago-text);
-}
-
-.selected-Default,
-.selected-contado,
-.selected-credito {
-    font-weight: bold;
-}
-
-.selected-Default {
-    color: #999;
-}
-
-.selected-contado {
-    color: #28a745;
-}
-
-.selected-credito {
-    color: #007bff;
-}
 
 .fecha-vencimiento {
     margin-top: 15px;
@@ -121,10 +96,10 @@
     gap: 10px;
     font-weight: 600;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: px;
 }
 
-.fecha-vencimiento input[type="date"] {
+    .fecha-vencimiento input[type="date"] {
     padding: 8px 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -135,12 +110,23 @@
 /* DETALLES DE CLIENTES - LAYOUT Y ALINEACIÓN */
 /* ======================================================= */
 
+.section-title {
+    font-size: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--invoice-form-border-color);
+    text-align: center;
+    padding: 20px;
+    color: var(--invoice-select-title-color);
+}
+
+
 .section-group {
     display: flex;
     gap: 10px;
-    padding-bottom: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
     align-items: center;
-    margin-bottom: px;
     text-align: center;
     border-bottom: 2px solid var(--invoice-form-border-color);
 }
@@ -150,7 +136,7 @@
     height: 30px;
     padding: 5px;
     gap: 5px;
-    border-radius: 4px;
+
     font-size: 14px;
     box-sizing: border-box;
     text-align: center;
@@ -163,6 +149,11 @@
     padding: 8px;
     box-sizing: border-box;
     height: 32px;
+    width: 100%;
+ 
+    font-size: 14px;
+  
+    text-align: center;
     border-radius: 4px;
     text-align: center;
     background-color: var(--invoice-input-bg);
@@ -174,14 +165,26 @@
 /* PRODUCTOS - LAYOUT Y ALINEACIÓN */
 /* ======================================================= */
 
+.section-title.Product {
+ font-size: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--invoice-form-border-color);
+    text-align: center;
+    padding: 20px;
+    color: var(--invoice-select-title-color);
+}
+
+
 .product-grid {
     display: grid;
     grid-template-columns: 100px 60px 1fr 200px 150px 150px;
     gap: 25px;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 0px;
     word-break: break-word;
     overflow: hidden;
+ 
 }
 
 .product-header {
@@ -189,6 +192,7 @@
     font-size: 14px;
     text-transform: uppercase;
     text-align: center;
+    margin-bottom: 0px;
     color: var(--invoice-product-header-text);
 }
 
@@ -199,7 +203,7 @@
 }
 
 .product-row input {
-    margin-bottom: 10px;
+    margin-bottom: 0px;
     width: 100%;
     height: 30px;
     padding: 4px;
@@ -210,7 +214,7 @@
 }
 
 .v-total {
-    margin-bottom: 5px;
+    margin-bottom: 0px;
     width: 100%;
     height: 30px;
     padding: 5px;
@@ -238,6 +242,9 @@
     gap: 0px;
     margin-left:0px;
     font-weight: bold;
+    border-bottom: px solid var(--invoice-form-border-color);
+
+  
 }
 
 /* --- Botón Añadir (Hereda de btn-primary, pero ajustamos el tamaño) --- */
@@ -285,6 +292,12 @@
     transform: scale(0.95); /* Efecto de click */
 }
 
+
+.rayita {
+    border-top: 2px solid var(--invoice-form-border-color);
+    margin: 20px 0; 
+}
+
 /* ======================================================= */
 /* TOTALES - LAYOUT Y ALINEACIÓN */
 /* ======================================================= */
@@ -294,6 +307,7 @@
     font-weight: bold;
     margin: 16px 0 12px;
     color: var(--invoice-values-color);
+    border: 1px solid var(--invoice-form-border-color);
 }
 
 .section-totales {

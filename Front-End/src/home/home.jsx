@@ -111,7 +111,7 @@ const Home = () => {
 
           <li className={isActive('/home')}>
             <Link to="/home">
-              <FaHome /> <span>Dashboard</span>
+              <FaHome /> <span>Inicio</span>
             </Link>
           </li>
           

@@ -23,6 +23,8 @@ import { API_URL } from './api'; // Importamos la configuración local del Front
 
 // Importar componente protegido
 import Home from './home/home';
+import Invoicenewclient from './forms/Invoicenewclient';
+import InvoiceForm from './forms/InvoiceForm';
 
 // --- CONTEXTO GLOBAL PARA VERIFICACIÓN DE USUARIOS ---
 // Almacena el estado de si existen usuarios en el sistema
@@ -109,6 +111,8 @@ function App() {
 
                 {/* RUTAS PROTEGIDAS (requieren autenticación) */}
                 <Route path="/home/*" element={<ProtectedRoute />}>
+                    <Route path="facturas/crear-nuevo-cliente" element={<Invoicenewclient />} />
+                    <Route path="facturas/crear" element={<InvoiceForm />} />
                     <Route path="*" element={<Home />} />
                 </Route>
 

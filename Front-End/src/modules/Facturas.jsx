@@ -35,6 +35,7 @@ function Facturas() {
     const [refreshKey, setRefreshKey] = useState(0);
     const [showStatusModal, setShowStatusModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
+    const [showClientTypeModal, setShowClientTypeModal] = useState(false);
     const currentUser = (() => { try { return JSON.parse(sessionStorage.getItem('user')); } catch { return null; } })();
     const isAdmin = currentUser?.role === 'admin';
 
@@ -189,8 +190,17 @@ function Facturas() {
     };
 
     const handleCreateNew = () => {
-        // Navegar a la ruta de crear factura
-        navigate('/home/facturas/crear');
+        setShowClientTypeModal(true);
+    };
+
+    const handleClientTypeSelection = (type) => {
+        setShowClientTypeModal(false);
+        if (type === 'existing') {
+            navigate('/home/facturas/crear');
+        } else {
+            // Redirige al formulario para cliente nuevo (Invoicenewclient.jsx)
+            navigate('/home/facturas/crear-nuevo-cliente');
+        }
     };
 
     const closeForm = () => {
@@ -388,16 +398,6 @@ function Facturas() {
                                         <td>
                                             <span 
                                                 className={`emision-status ${getEmisionStatus(invoice).className}`}
-                                                style={{
-                                                    backgroundColor: getEmisionStatus(invoice).bgColor,
-                                                    color: getEmisionStatus(invoice).textColor,
-                                                    borderRadius: '4px',
-                                                    padding: '4px 8px',
-                                                    display: 'inline-block',
-                                                    border: `1px solid ${getEmisionStatus(invoice).borderColor}`,
-                                                    fontWeight: '500',
-                                                    whiteSpace: 'nowrap'
-                                                }}
                                             >
                                                 {getEmisionStatus(invoice).text}
                                             </span>
@@ -428,6 +428,32 @@ function Facturas() {
                             )}
                         </tbody>
                     </table>
+
+            {showClientTypeModal && (
+                <div className="modal-overlay">
+                    <div className="modal-body client-type-modal">
+                        <h3>Nueva Factura</h3>
+                        <p className="client-type-text">¿Desea facturar a un cliente existente o registrar uno nuevo?</p>
+                        <div className="client-type-buttons">
+                            <button 
+                                className="btn-primary" 
+                                onClick={() => handleClientTypeSelection('existing')}
+                            >
+                                👤 Cliente Existente
+                            </button>
+                            <button 
+                                className="btn-success" 
+                                onClick={() => handleClientTypeSelection('new')}
+                            >
+                                ➕ Cliente Nuevo
+                            </button>
+                            <button className="btn-danger client-type-cancel" onClick={() => setShowClientTypeModal(false)}>
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
         <InvoiceStatusModal 
             invoice={selectedInvoice} 

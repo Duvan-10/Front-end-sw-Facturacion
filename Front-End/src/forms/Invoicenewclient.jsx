@@ -92,6 +92,24 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
 
 
     <div className="client-data input">
+
+        <label>T.DC</label>
+
+        <select 
+            name="tipo_identificacion" 
+            value={cliente.tipo_identificacion} 
+            onChange={handleClienteChange}
+            
+            className="form-select">
+
+            <option value="C.C.">C.C.</option>
+            <option value="NIT">NIT</option>
+            <option value="C.E.">C.E.</option>
+        </select>
+    </div>
+
+
+    <div className="client-data input">
        <label>NIT/CC</label>
         <input 
         type="text" 
