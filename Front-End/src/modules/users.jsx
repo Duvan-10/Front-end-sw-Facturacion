@@ -381,10 +381,10 @@ export default function Users() {
                   
                   <td>
                     <button className="editar btn-warning" onClick={() => openEdit(r)} disabled={loading} title="Editar usuario">
-                      <FiEdit className="action-icon" /> <span className="sr-only">Editar</span>
+                      <FiEdit className="action-icon" /> <span className="sr-only"></span>
                     </button>
                     <button className="eliminar btn-danger" onClick={() => handleDelete(r)} disabled={loading} title="Eliminar usuario">
-                      <FiTrash2 className="action-icon" /> <span className="sr-only">Eliminar</span>
+                      <FiTrash2 className="action-icon" /> <span className="sr-only"></span>
                     </button>
                   </td>
                 </tr>

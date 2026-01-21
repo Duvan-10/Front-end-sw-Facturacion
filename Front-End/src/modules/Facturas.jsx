@@ -365,6 +365,7 @@ function Facturas() {
 
             {loading && <p>Cargando...</p>}
 
+            <div className="table-wrapper">
             <table className="invoice-table">
                         <thead>
                             <tr>
@@ -428,6 +429,7 @@ function Facturas() {
                             )}
                         </tbody>
                     </table>
+            </div>
 
             {showClientTypeModal && (
                 <div className="modal-overlay">

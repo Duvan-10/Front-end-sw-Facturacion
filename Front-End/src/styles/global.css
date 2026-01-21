@@ -336,8 +336,8 @@ html.light-mode {
     --cp-table-header-text: #ffffff;          /* Texto encabezado tabla */
     --cp-table-border: #e5e7eb;               /* Borde de tabla */
     --cp-table-row-hover: rgba(43, 108, 176, 0.08); /* Hover fila tabla */
-    --cp-badge-bg: lab(74.27% -70.92 61.67);                   /* Fondo badge */
-    --cp-badge-text: #2b6cb0;                 /* Texto badge */
+    --cp-badge-bg: lab(91.65% -2.08 3.64);                   /* Fondo badge */
+    --cp-badge-text: #363738;                 /* Texto badge */
 
     /* Estados Factura */
     --status-pagada-bg: #d1e7dd; --status-pagada-text: #0f5132;

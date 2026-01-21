@@ -209,6 +209,15 @@
   background: var(--btn-info-hover);
 }
 
+/* Contenedor para tablas con scroll */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
 /* ------------------------------------------------------- */
 /* 5. TABLAS DE DATOS (PRODUCTOS, CLIENTES, FACTURAS)      */
 /* ------------------------------------------------------- */
@@ -219,7 +228,9 @@
   border-collapse: collapse;
   font-size: 14px;
   text-align: center;
-  table-layout: fixed; /* Permite control de ancho de columnas */
+  table-layout: auto;
+  min-width: 900px;
+  display: table;
 }
 
 .product-table th, .product-table td,
@@ -293,7 +304,16 @@
 
 .invoice-table td:last-child {
   text-align: center;
-  white-space: nowrap;
+  white-space: normal;
+  overflow: visible;
+  display: table-cell;
+  min-width: 250px;
+  padding: 10px 8px;
+}
+
+.invoice-table th:last-child {
+  text-align: center;
+  min-width: 250px;
 }
 
 .invoice-table th {
@@ -389,44 +409,89 @@ button.eliminar {
   background: var(--u-danger);
   color: #fff;
   border: none;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
-  margin: 0 2px;
+  margin: 2px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 button.eliminar:hover {
   opacity: 0.85;
+  transform: translateY(-2px);
+}
+
+button.editar {
+  background: var(--u-warning);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 2px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+button.editar:hover {
+  opacity: 0.85;
+  transform: translateY(-2px);
 }
 
 button.ver {
   background: var(--btn-info-bg);
-  color: hwb(0 84% 13%);
+  color: #fff;
   border: none;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
-  margin: 0 2px;
+  margin: 2px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 button.ver:hover {
   opacity: 0.85;
+  transform: translateY(-2px);
 }
 
 button.emitir {
   background: var(--u-success);
   color: #fff;
   border: none;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
-  margin: 0 2px;
+  margin: 2px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 button.emitir:hover {
   opacity: 0.85;
+  transform: translateY(-2px);
 }
-
 /* ------------------------------------------------------- */
 /* 8. VENTANAS MODALES (ESTRUCTURA GENERAL)                */
 /* ------------------------------------------------------- */
