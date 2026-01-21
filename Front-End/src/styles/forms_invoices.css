@@ -77,6 +77,14 @@
     color: var(--invoice-input-text);
 }
 
+.Numero input:focus, .Fecha input:focus {
+    background-color: var(--invoice-input-bg);
+    color: var(--invoice-input-text);
+    border-color: var(--invoice-form-title-color);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--form-input-focus-shadow, rgba(52, 152, 219, 0.2));
+}
+
 /*--------------------------------------------------------*/
 /* FECHAS VENCIMIENTO - LAYOUT Y ALINEACIÓN */
 /*--------------------------------------------------------*/
@@ -161,6 +169,14 @@
     border: 1px solid var(--invoice-input-border);
 }
 
+.client-data input:focus {
+    background-color: var(--invoice-input-bg);
+    color: var(--invoice-input-text);
+    border-color: var(--invoice-form-title-color);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--form-input-focus-shadow, rgba(52, 152, 219, 0.2));
+}
+
 /* ======================================================= */
 /* PRODUCTOS - LAYOUT Y ALINEACIÓN */
 /* ======================================================= */
@@ -211,6 +227,14 @@
     background-color: var(--invoice-product-input-bg);
     color: var(--invoice-product-input-text);
     border: 1px solid var(--invoice-product-input-border);
+}
+
+.product-row input:focus {
+    background-color: var(--invoice-product-input-bg);
+    color: var(--invoice-product-input-text);
+    border-color: var(--invoice-form-title-color);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--form-input-focus-shadow, rgba(52, 152, 219, 0.2));
 }
 
 .v-total {

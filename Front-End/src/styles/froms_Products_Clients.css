@@ -59,11 +59,15 @@
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
+	margin-bottom: 12px;
 }
 
 .form-field span {
 	font-size: 14px;
 	font-weight: 600;
+	margin-bottom: 4px;
+	display: block;
+
 }
 
 .form-field input,

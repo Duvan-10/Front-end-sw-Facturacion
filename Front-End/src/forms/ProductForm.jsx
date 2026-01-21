@@ -124,11 +124,6 @@ const ProductForm = ({ productId = null, onSuccess, onCancel }) => {
                     </label>
                 </div>
 
-                <label className="form-field">
-                    <span>Descripción</span>
-                    <textarea value={productData.descripcion} onChange={(e) => setProductData({...productData, descripcion: e.target.value})} required />
-                </label>
-
                 <div className="form-grid">
                     <label className="form-field">
                         <span>Precio Unitario ($)</span>
@@ -139,6 +134,11 @@ const ProductForm = ({ productId = null, onSuccess, onCancel }) => {
                         <input type="number" value={productData.impuesto_porcentaje} onChange={(e) => setProductData({...productData, impuesto_porcentaje: e.target.value})} />
                     </label>
                 </div>
+
+                <label className="form-field">
+                    <span>Descripción</span>
+                    <textarea value={productData.descripcion} onChange={(e) => setProductData({...productData, descripcion: e.target.value})} required />
+                </label>
 
                 <div className="form-actions">
                     <button type="button" className="btn ghost" onClick={onCancel || (() => window.close())}>Cancelar</button>

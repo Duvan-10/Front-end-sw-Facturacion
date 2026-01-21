@@ -433,20 +433,23 @@ function Facturas() {
                 <div className="modal-overlay">
                     <div className="modal-body client-type-modal">
                         <h3>Nueva Factura</h3>
-                        <p className="client-type-text">¿Desea facturar a un cliente existente o registrar uno nuevo?</p>
+                        <p className="client-type-text">¿Facturar cliente existente o Factura para cliente nuevo?</p>
                         <div className="client-type-buttons">
+                            
                             <button 
                                 className="btn-primary" 
                                 onClick={() => handleClientTypeSelection('existing')}
                             >
                                 👤 Cliente Existente
                             </button>
+
                             <button 
                                 className="btn-success" 
                                 onClick={() => handleClientTypeSelection('new')}
                             >
                                 ➕ Cliente Nuevo
                             </button>
+
                             <button className="btn-danger client-type-cancel" onClick={() => setShowClientTypeModal(false)}>
                                 Cancelar
                             </button>

@@ -98,16 +98,76 @@
 /* ------------------------------------------------------- */
 .btn-primary {
   background: var(--u-primary);
-  color: hsl(0, 0%, 100%);
+  color: #ffffff;
   border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.btn-primary:hover {
+  background: var(--color-accent-darker);
+  color: #ffffff;
+}
+
+/* Evitar el "efecto blanco" de click manteniendo contraste en active */
+.btn-primary:active {
+  background: var(--color-accent-darker);
+  color: #ffffff;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+.actions .btn-primary {
+  background: var(--u-primary);
+  color: #ffffff;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  filter: none;
+  backdrop-filter: none;
+  appearance: none;
+  mix-blend-mode: normal;
+}
+
+.actions .btn-primary:hover {
+  background: var(--color-accent-darker);
+  color: #ffffff;
+  box-shadow: none !important;
+}
+
+.actions .btn-primary:active,
+.actions .btn-primary:focus,
+.actions .btn-primary:focus-visible {
+  background: var(--color-accent-darker);
+  color: #ffffff;
+  box-shadow: none !important;
+  outline: none;
+}
+
+/* Quitar resaltado/sombra blanca al enfocar (focus) */
+.btn-primary:focus,
+.btn-primary:focus-visible {
+  outline: none;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+.btn-secondary {
+  background: var(--u-background);
+  color: var(--u-text);
+  border: 1px solid var(--color-text-muted);
   padding: 10px 14px;
   border-radius: 8px;
   cursor: pointer;
 }
 
-.btn-primary:hover {
-  background: var(--u-primary-dark);
+.btn-secondary:hover {
+  background: var(--color-accent-darker);
 }
+
+
 
 .btn-warning {
   background: var(--u-warning);
@@ -304,7 +364,7 @@ button.eliminar:hover {
 
 button.ver {
   background: var(--btn-info-bg);
-  color: #fff;
+  color: hwb(0 84% 13%);
   border: none;
   padding: 6px 10px;
   border-radius: 6px;
@@ -597,7 +657,20 @@ button.emitir:hover {
 .modal-body.client-type-modal {
   max-width: 400px;
   text-align: center;
+  color: var(--modal-text);
+  background-color: var(--modal-background);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: var(--modal-shadow);
+  overflow-y: auto;
+  box-sizing: border-box; 
+  scrollbar-width: thin;
+  scrollbar-color: var(--modal-scrollbar-track) var(--modal-scrollbar-thumb);
+  
+
 }
+
+
 
 .client-type-text {
   margin: 15px 0;
@@ -607,6 +680,7 @@ button.emitir:hover {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  
 }
 
 .client-type-cancel {

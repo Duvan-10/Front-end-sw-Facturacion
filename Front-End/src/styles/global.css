@@ -36,7 +36,7 @@
 
     /* --- BOTONES Y ACENTOS (Welcome, Login, Register) --- */
     --color-accent-teal: hwb(151 0% 10%);      /* Color principal (Botones, Links) */
-    --color-accent-darker: #00b35b;            /* Color hover (Oscurecido) */
+    --color-accent-darker: hsl(153, 80%, 53%);            /* Color hover (Oscurecido) */
 
     /* --- ESTADOS Y FEEDBACK (Validaciones Login/Register) --- */
     --color-error-text: #e53e3e;               /* Texto de error */
@@ -92,7 +92,7 @@
     --mod-card-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
     
     --btn-info-bg: #17a2b8;
-    --btn-info-hover: #138496;
+    --btn-info-hover: lab(97.95% -0.01 1.06 / 0.31);
     
     /* Estados Factura */
     --status-pagada-bg: rgba(39, 174, 96, 0.2); --status-pagada-text: #27ae60;
@@ -109,12 +109,13 @@
     /* Modales */
     --modal-overlay-bg: lch(44% 82.11 36.85); /* Fondo oscuro semitransparente */
     --modal-bg: lch(45.84% 87.04 37.69);                     /* Gris elevado (diferente al fondo base) */
-    --modal-text: hwb(129 9% 13%);
+    --modal-text: lab(92.25% -0.51 0.36);                  /* Texto  */
+    --modal-background: lch(12.25% 0 296.81);             /* Fondo  */     
     --modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); /* Sombra profunda */
     --modal-scrollbar-track: #333333;
     --modal-scrollbar-thumb: #555555;
-    --modal-scrollbar-thumb-hover: #777777;
-    --modal-close-hover: rgba(255, 255, 255, 0.1);
+    --modal-scrollbar-thumb-hover: hsl(0, 73%, 50%);
+    --modal-close-hover: #e21c1c;
     --modal-divider: #404040;
 
     /* Variables de color EXCLUSIVAS para modal de cambio de estado Factura    */
@@ -277,12 +278,13 @@ html.light-mode {
     /* --- FORMULARIOS E INPUTS --- */
     --color-input-background: hsl(0, 9%, 85%); 
     --color-input-text: hsl(132, 100%, 1%); 
-    --color-input-hover: #f0f0f0;
-    --color-input-icon: #555555;
+    --color-input-hover: lch(76.84% 4.49 19.65 / 0.682);
+    --color-input-icon: #d21010;
 
     /* --- BOTONES Y ACENTOS --- */
     --color-accent-teal: oklch(26.305% 0.00232 146.108); 
-    --color-accent-darker: hsl(140, 9%, 7%);
+    /* Ajuste: usar un tono más oscuro del primario para hover/active en modo claro */
+    --color-accent-darker: #1e40af;
 
     /* --- ESTADOS Y FEEDBACK --- */
     --color-error-text: hsl(0, 55%, 46%); 
@@ -325,16 +327,16 @@ html.light-mode {
     /* ================================================================= */
     --mod-card-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
     
-    --btn-info-bg: #0dcaf0;
-    --btn-info-hover: #0bb5d8;
+    
 
     /* Variables de color para tablas y componentes (Modo Claro)         */
-
+    --btn-info-bg: oklch(64.909% 0.1253 241.695);
+    --btn-info-hover: lab(10.77% 0 0 / 0.889);
     --cp-table-header-bg: #2b6cb0;            /* Fondo encabezado tabla */
     --cp-table-header-text: #ffffff;          /* Texto encabezado tabla */
     --cp-table-border: #e5e7eb;               /* Borde de tabla */
     --cp-table-row-hover: rgba(43, 108, 176, 0.08); /* Hover fila tabla */
-    --cp-badge-bg: #e0e7ff;                   /* Fondo badge */
+    --cp-badge-bg: lab(74.27% -70.92 61.67);                   /* Fondo badge */
     --cp-badge-text: #2b6cb0;                 /* Texto badge */
 
     /* Estados Factura */
@@ -351,14 +353,15 @@ html.light-mode {
 
     /* Modales */
     --modal-overlay-bg: rgba(0, 0, 0, 0.5);  /* Semitransparente estándar */
-    --modal-bg: #ffffff;                     /* Blanco puro */
-    --modal-text: #111827;                   /* Texto casi negro */
-    --modal-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Sombra suave y difusa */
-    --modal-scrollbar-track: #f3f4f6;
-    --modal-scrollbar-thumb: #d1d5db;
-    --modal-scrollbar-thumb-hover: #9ca3af;
+    --modal-bg: #ad3e3e;                     /* Blanco puro */
+    --modal-text: hsl(240, 6%, 7%);
+    --modal-background: #eff0f3;                   /* Texto casi negro */
+    --modal-shadow: 0 20px 25px -5px hsl(0, 4%, 74%), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Sombra suave y difusa */
+    --modal-scrollbar-track: hsl(220, 81%, 46%);
+    --modal-scrollbar-thumb: hsl(240, 3%, 7%);
+    --modal-scrollbar-thumb-hover: #0a0a0a;
     --modal-close-hover: rgba(0, 0, 0, 0.05);
-    --modal-divider: #e5e7eb;
+    --modal-divider: #252627;
 
     /* Variables de color EXCLUSIVAS para modal de cambio de estado     */
     --status-modal-bg: #ffffff;                      
@@ -406,7 +409,7 @@ html.light-mode {
     --invoice-input-border: #d1d5db;                 /* Borde inputs */
     --invoice-input-text: #111827;                   /* Texto en inputs */
     --invoice-pago-text: #374151;                    /* Texto PAGO */
-    --invoice-select-bg: white;                      /* Fondo select */
+    --invoice-select-bg: hsl(0, 11%, 95%);                      /* Fondo select */
     --invoice-select-text: #333;                     /* Texto select */
     --invoice-select-border: #d1d5db;                /* Borde select */
     --invoice-product-header-text: #1f2937;          /* Texto encabezado productos */
@@ -494,48 +497,6 @@ html.light-mode {
 /* ------------------------------------- */
 /* 3. RESETEO Y ESTILOS BASE             */
 /* ------------------------------------- */
-body, html, #root {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100vh;
-    box-sizing: border-box; 
-    background-color: var(--color-background-dark); 
-}
-
-/* Fuente global */
-* {
-    font-family: Arial, sans-serif;
-}
-
-/* ------------------------------------- */
-/* 4. COMPONENTE GLOBAL: SWITCH DE TEMA */
-/* ------------------------------------- */
-
-.theme-switcher-global {
-    position: fixed; 
-    top: 20px;
-    right: 20px;
-    z-index: 1000; 
-}
-
-.theme-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 50%;
-    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
-    color: var(--color-text-muted); 
-    background-color: var(--color-card-dark); 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); 
-}
-
-.theme-button:hover {
-    color: var(--color-accent-teal); 
-    background-color: var(--color-input-background); 
-    box-shadow: 0 4px 8px hsl(0, 0%, 9%);
-}* ------------------------------------- */
 body, html, #root {
     margin: 0;
     padding: 0;
