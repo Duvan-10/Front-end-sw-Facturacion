@@ -24,16 +24,28 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
     identificacion, 
     seleccionarCliente, 
     autocompletarClienteConTab,
-    handleClienteChange, 
+    handleClienteChange,
+    handleIdentificacionChange,
     cliente, 
     sugerencias,
+    sugerenciasNombre,
+    seleccionarClientePorNombre,
+    verificarClienteExiste,
+    verificarNombreExiste,
+    erroresCliente,
     productosFactura, 
     handleInputChange, 
     autocompletarProductoConTab,
     agregarFilaProducto, 
     eliminarFilaProducto,
     buscarProductos, 
-    sugerenciasProd, 
+    sugerenciasProd,
+    sugerenciasProdNombre,
+    buscarProductosPorNombre,
+    verificarProductoExiste,
+    verificarProductoExistePorNombre,
+    seleccionarProductoPorNombre,
+    erroresProductos,
     subtotal, 
     iva, 
     totalGeneral,
@@ -92,21 +104,27 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
 
 
     <div className="client-data input">
-       <label>NIT/CC</label>
+       <label>identificacion</label>
         <input 
         type="text" 
         value={identificacion}
-        onChange={seleccionarCliente}
+        onChange={handleIdentificacionChange}
+        onBlur={verificarClienteExiste}
         onKeyDown={autocompletarClienteConTab}
-        list="clientes-sugerencias" 
-        placeholder="Escribe NIT o Nombre..."/>
+        list="clientes-sugerencias-id" 
+        placeholder="Escribe identificación..."
+        className={erroresCliente.identificacion ? 'input-error' : ''}
+        />
+        {erroresCliente.identificacion && (
+          <span className="error-message">{erroresCliente.identificacion}</span>
+        )}
 
-        <datalist id="clientes-sugerencias">
+        <datalist id="clientes-sugerencias-id">
           {sugerencias.map((c) => (
             <option 
                 key={c.id} 
-                value={c.nombre_razon_social}>
-                {c.identificacion}
+                value={c.identificacion}>
+                {c.nombre_razon_social}
             </option>
          ))}
        </datalist>
@@ -118,7 +136,26 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
         <input 
         name="nombre" 
         value={cliente.nombre} 
-        onChange={handleClienteChange} />
+        onChange={handleClienteChange}
+        onBlur={verificarNombreExiste}
+        list="clientes-sugerencias-nombre"
+        placeholder="Escribe nombre..."
+        className={erroresCliente.nombre ? 'input-error' : ''}
+        />
+        {erroresCliente.nombre && (
+          <span className="error-message">{erroresCliente.nombre}</span>
+        )}
+        
+        <datalist id="clientes-sugerencias-nombre">
+          {sugerenciasNombre.map((c) => (
+            <option 
+                key={c.id} 
+                value={c.nombre_razon_social}
+                onClick={() => seleccionarClientePorNombre(c)}>
+                {c.identificacion}
+            </option>
+         ))}
+       </datalist>
     </div>
 
 
@@ -128,7 +165,13 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
         <input 
         name="telefono" 
         value={cliente.telefono} 
-        onChange={handleClienteChange} />
+        onChange={handleClienteChange}
+        placeholder="Mínimo 7 dígitos"
+        className={erroresCliente.telefono ? 'input-error' : ''}
+        />
+        {erroresCliente.telefono && (
+          <span className="error-message">{erroresCliente.telefono}</span>
+        )}
     </div>
 
         
@@ -137,7 +180,13 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
         <input 
         name="direccion" 
         value={cliente.direccion} 
-        onChange={handleClienteChange} />
+        onChange={handleClienteChange}
+        placeholder="Calle, número, etc."
+        className={erroresCliente.direccion ? 'input-error' : ''}
+        />
+        {erroresCliente.direccion && (
+          <span className="error-message">{erroresCliente.direccion}</span>
+        )}
     </div>
 
 
@@ -145,8 +194,15 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
         <label>Correo</label>
         <input 
         name="correo" 
+        type="email"
         value={cliente.correo} 
-        onChange={handleClienteChange} />
+        onChange={handleClienteChange}
+        placeholder="usuario@dominio.com"
+        className={erroresCliente.correo ? 'input-error' : ''}
+        />
+        {erroresCliente.correo && (
+          <span className="error-message">{erroresCliente.correo}</span>
+        )}
     </div>
 
 
@@ -173,6 +229,7 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
 {productosFactura.map((prod, index) => (
     <div className="product-grid product-row" key={index}>
         {/* Código con búsqueda */}
+        <div className="product-field-container">
         <input 
             type="text" 
             value={prod.codigo} 
@@ -181,36 +238,66 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
                 buscarProductos(e.target.value);
             }}
             onKeyDown={(e) => autocompletarProductoConTab(e, index)}
+            onBlur={(e) => verificarProductoExiste(index, e.target.value)}
             list="lista-productos"
             placeholder="Código"
+            className={erroresProductos[index]?.codigo ? 'input-error' : ''}
         />
+        {erroresProductos[index]?.codigo && (
+          <span className="error-message">{erroresProductos[index].codigo}</span>
+        )}
+        </div>
         
         {/* Cantidad */}
+        <div className="product-field-container">
         <input 
             type="number" 
             value={prod.cantidad}
             onChange={(e) => handleInputChange(index, 'cantidad', e.target.value)}
             min="1"
             placeholder="Cant."
+            className={erroresProductos[index]?.cantidad ? 'input-error' : ''}
         />
+        {erroresProductos[index]?.cantidad && (
+          <span className="error-message">{erroresProductos[index].cantidad}</span>
+        )}
+        </div>
         
         {/* Detalle */}
+        <div className="product-field-container">
         <input 
             type="text" 
             value={prod.detalle}
-            onChange={(e) => handleInputChange(index, 'detalle', e.target.value)}
+            onChange={(e) => {
+                handleInputChange(index, 'detalle', e.target.value);
+                buscarProductosPorNombre(e.target.value);
+            }}
+            onBlur={(e) => verificarProductoExistePorNombre(index, e.target.value)}
+            list="lista-productos-nombre"
             placeholder="Detalle"
+            className={erroresProductos[index]?.detalle ? 'input-error' : ''}
         />
+        {erroresProductos[index]?.detalle && (
+          <span className="error-message">{erroresProductos[index].detalle}</span>
+        )}
+        </div>
         
         {/* V.Unitario */}
+        <div className="product-field-container">
         <input 
             type="number" 
             value={prod.vUnitario} 
             onChange={(e) => handleInputChange(index, 'vUnitario', e.target.value)}
             placeholder="Unitario"
+            className={erroresProductos[index]?.vUnitario ? 'input-error' : ''}
         />
+        {erroresProductos[index]?.vUnitario && (
+          <span className="error-message">{erroresProductos[index].vUnitario}</span>
+        )}
+        </div>
 
         {/* Descuento */}
+        <div className="product-field-container">
         <input 
             type="number" 
             value={prod.descuento} 
@@ -218,7 +305,12 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
             min="0"
             max="100"
             placeholder="%"
+            className={erroresProductos[index]?.descuento ? 'input-error' : ''}
         />
+        {erroresProductos[index]?.descuento && (
+          <span className="error-message">{erroresProductos[index].descuento}</span>
+        )}
+        </div>
 
         {/* Columna V.Total */}
         <span className="v-total">
@@ -263,6 +355,15 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
 {/* DATALIST: Debe estar FUERA del map y el ID debe ser 'lista-productos' */}
 <datalist id="lista-productos">
     {sugerenciasProd.map((p) => (
+        <option key={p.id} value={p.codigo}>
+            {p.nombre} - ${p.precio}
+        </option>
+    ))}
+</datalist>
+
+{/* DATALIST para búsqueda por nombre/detalle */}
+<datalist id="lista-productos-nombre">
+    {sugerenciasProdNombre.map((p) => (
         <option key={p.id} value={p.nombre}>
             {p.codigo} - ${p.precio}
         </option>

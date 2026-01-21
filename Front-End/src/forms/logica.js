@@ -12,11 +12,42 @@ import {
     formatearClienteParaBD,
     getMensajeDuplicado,
     esDetalleProductoValido,
-    getMensajeDetalleProductoIncorrecto
+    getMensajeDetalleProductoIncorrecto,
+    validarIdentificacionPorTipo,
+    getMensajeErrorIdentificacion,
+    normalizarTipoIdentificacion
 } from '../utils/validations.js';
 
 export const useInvoiceLogic = () => {
     const navigate = useNavigate();
+
+    // ==========================================
+    // CONSTANTES DE VALIDACIÓN
+    // ==========================================
+    const REGEX_PATTERNS = {
+        identificacion: /^[0-9\s.-]*$/,
+        nombre: /^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s.-]*$/,
+        telefono: /^[0-9]*$/,
+        direccion: /^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚüÜ\s#-]*$/,
+        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        codigo: /^[a-zA-Z0-9_-]*$/,
+        detalle: /^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚüÜ\s.,-]*$/,
+        numeroPositivo: /^[0-9]+(\.[0-9]+)?$/
+    };
+
+    const MENSAJE_ERROR = {
+        identificacion: '⚠️ Carácter inválido: solo números, espacios, puntos y guiones',
+        nombre: '⚠️ Carácter inválido: solo letras, espacios, puntos y guiones',
+        telefono: '⚠️ Carácter inválido: solo números',
+        telefonoMin: '⚠️ Mínimo 7 caracteres',
+        direccion: '⚠️ Carácter inválido: solo letras, números, espacios, # y guiones',
+        correo: '⚠️ Formato de correo inválido',
+        codigo: '⚠️ Carácter inválido: solo letras, números, guiones y _',
+        detalle: '⚠️ Carácter inválido: solo letras, números, espacios, puntos, comas y guiones',
+        numeroPositivo: '⚠️ Solo números positivos',
+        descuento: '⚠️ Descuento: 0-100%',
+        noExiste: '⚠️ No existe '
+    };
 
     // ==========================================
     // 1. NUMERO FACTURA Y FECHA
@@ -54,6 +85,7 @@ export const useInvoiceLogic = () => {
 
     const [identificacion, setIdentificacion] = useState('');
     const [sugerencias, setSugerencias] = useState([]);
+    const [sugerenciasNombre, setSugerenciasNombre] = useState([]);
     const [cliente, setCliente] = useState({ 
         id: '', 
         tipo_identificacion: 'C.C.',
@@ -63,8 +95,15 @@ export const useInvoiceLogic = () => {
         direccion: '' 
     });
     const [clienteModificado, setClienteModificado] = useState(false);
+    const [erroresCliente, setErroresCliente] = useState({
+        identificacion: '',
+        nombre: '',
+        telefono: '',
+        direccion: '',
+        correo: ''
+    });
 
-    // Autocompletado para clientes
+    // Autocompletado para clientes por identificación
     useEffect(() => {
         const buscarCoincidencias = async () => {
             if (identificacion.length > 2) {
@@ -73,13 +112,36 @@ export const useInvoiceLogic = () => {
                     const res = await fetch(`http://localhost:8080/api/clientes/buscar?term=${identificacion}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
-                    if (res.ok) setSugerencias(await res.json());
+                    if (res.ok) {
+                        const resultados = await res.json();
+                        setSugerencias(resultados);
+                    }
                 } catch (err) { console.error(err); }
             } else { setSugerencias([]); }
         };
         const timeoutId = setTimeout(buscarCoincidencias, 300);
         return () => clearTimeout(timeoutId);
     }, [identificacion]);
+
+    // Autocompletado para clientes por nombre
+    useEffect(() => {
+        const buscarPorNombre = async () => {
+            if (cliente.nombre.length > 2) {
+                try {
+                    const token = sessionStorage.getItem('token');
+                    const res = await fetch(`http://localhost:8080/api/clientes/buscar?term=${cliente.nombre}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (res.ok) {
+                        const resultados = await res.json();
+                        setSugerenciasNombre(resultados);
+                    }
+                } catch (err) { console.error(err); }
+            } else { setSugerenciasNombre([]); }
+        };
+        const timeoutId = setTimeout(buscarPorNombre, 300);
+        return () => clearTimeout(timeoutId);
+    }, [cliente.nombre]);
 
     // Validar que identificación no sea duplicada
     const validarIdentificacionDuplicada = async (idNumber) => {
@@ -94,35 +156,108 @@ export const useInvoiceLogic = () => {
         }
     };
 
-    // Selección de cliente sugerido
+    // Selección de cliente sugerido por identificación
     const seleccionarCliente = (e) => {
         const valorIngresado = e.target.value;
         setIdentificacion(valorIngresado);
+        setErroresCliente(prev => ({ ...prev, identificacion: '' }));
+        
         const encontrado = sugerencias.find(c => 
-            String(c.identificacion) === String(valorIngresado) || 
-            c.nombre_razon_social.toLowerCase().includes(valorIngresado.toLowerCase())
+            String(c.identificacion) === String(valorIngresado)
         );
+        
         if (encontrado) {
             setIdentificacion(encontrado.identificacion); 
             setCliente({
                 id: encontrado.id,
-                tipo_identificacion: encontrado.tipo_identificacion || 'C.C.',
+                tipo_identificacion: normalizarTipoIdentificacion(encontrado.tipo_identificacion),
                 nombre: encontrado.nombre_razon_social,
                 correo: encontrado.email,
                 telefono: encontrado.telefono,
                 direccion: encontrado.direccion
             });
             setClienteModificado(false);
-        } else {
-            setCliente({ 
-                id: '', 
-                tipo_identificacion: 'C.C.',
-                nombre: '', 
-                correo: '', 
-                telefono: '', 
-                direccion: '' 
+            setErroresCliente({
+                identificacion: '',
+                nombre: '',
+                telefono: '',
+                direccion: '',
+                correo: ''
             });
-            setClienteModificado(true);
+        } else {
+            // Cliente no existe: limpiar campos y notificar
+            if (valorIngresado.length > 0) {
+                setCliente({ 
+                    id: '', 
+                    tipo_identificacion: 'C.C.',
+                    nombre: '', 
+                    correo: '', 
+                    telefono: '', 
+                    direccion: '' 
+                });
+                setClienteModificado(true);
+            }
+        }
+    };
+
+    // Selección de cliente sugerido por nombre
+    const seleccionarClientePorNombre = (clienteSugerido) => {
+        setIdentificacion(clienteSugerido.identificacion);
+        setCliente({
+            id: clienteSugerido.id,
+            tipo_identificacion: normalizarTipoIdentificacion(clienteSugerido.tipo_identificacion),
+            nombre: clienteSugerido.nombre_razon_social,
+            correo: clienteSugerido.email,
+            telefono: clienteSugerido.telefono,
+            direccion: clienteSugerido.direccion
+        });
+        setClienteModificado(false);
+        setSugerenciasNombre([]);
+        setErroresCliente({
+            identificacion: '',
+            nombre: '',
+            telefono: '',
+            direccion: '',
+            correo: ''
+        });
+    };
+
+    // Verificar si cliente existe al perder foco en identificación
+    const verificarClienteExiste = async () => {
+        if (identificacion.trim().length > 0 && !cliente.id) {
+            const existe = await validarIdentificacionDuplicada(identificacion.trim());
+            if (!existe) {
+                setErroresCliente(prev => ({
+                    ...prev,
+                    identificacion: '⚠️ no existe '
+                }));
+            }
+        }
+    };
+
+    // Verificar si cliente existe al perder foco en nombre
+    const verificarNombreExiste = async () => {
+        if (cliente.nombre.trim().length > 0 && !cliente.id) {
+            try {
+                const token = sessionStorage.getItem('token');
+                const res = await fetch(`http://localhost:8080/api/clientes/buscar?term=${cliente.nombre}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const resultados = await res.json();
+                    const encontrado = resultados.find(c => 
+                        c.nombre_razon_social.toLowerCase() === cliente.nombre.toLowerCase()
+                    );
+                    if (!encontrado) {
+                        setErroresCliente(prev => ({
+                            ...prev,
+                            nombre: '⚠️ no existe'
+                        }));
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
         }
     };
 
@@ -146,11 +281,69 @@ export const useInvoiceLogic = () => {
         }
     };
 
-    // Caracteres válidos para campos del cliente
-    const regexSoloNumeros = /^[0-9]+$/;
-    const regexSoloLetras = /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s.'-]*$/;
-    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const regexTelefono = /^[0-9\-\+\(\)]*$/;
+    // Función auxiliar para limpiar errores de cliente
+    const limpiarErrorCliente = (campo) => {
+        setErroresCliente(prev => ({ ...prev, [campo]: '' }));
+    };
+
+    // Función auxiliar para establecer error de cliente
+    const establecerErrorCliente = (campo, mensaje) => {
+        setErroresCliente(prev => ({ ...prev, [campo]: mensaje }));
+    };
+
+    // Validar caracteres en tiempo real - CLIENTES
+    const validarCaracteresIdentificacion = (valor) => {
+        if (!REGEX_PATTERNS.identificacion.test(valor)) {
+            establecerErrorCliente('identificacion', MENSAJE_ERROR.identificacion);
+            return false;
+        }
+        limpiarErrorCliente('identificacion');
+        return true;
+    };
+
+    const validarCaracteresNombre = (valor) => {
+        if (!REGEX_PATTERNS.nombre.test(valor)) {
+            establecerErrorCliente('nombre', MENSAJE_ERROR.nombre);
+            return false;
+        }
+        limpiarErrorCliente('nombre');
+        return true;
+    };
+
+    const validarCaracteresTelefono = (valor) => {
+        if (!REGEX_PATTERNS.telefono.test(valor)) {
+            establecerErrorCliente('telefono', MENSAJE_ERROR.telefono);
+            return false;
+        }
+        if (valor.length > 0 && valor.length < 7) {
+            establecerErrorCliente('telefono', MENSAJE_ERROR.telefonoMin);
+            return false;
+        }
+        limpiarErrorCliente('telefono');
+        return true;
+    };
+
+    const validarCaracteresDireccion = (valor) => {
+        if (!REGEX_PATTERNS.direccion.test(valor)) {
+            establecerErrorCliente('direccion', MENSAJE_ERROR.direccion);
+            return false;
+        }
+        limpiarErrorCliente('direccion');
+        return true;
+    };
+
+    const validarCaracteresCorreo = (valor) => {
+        if (valor.trim() === '') {
+            limpiarErrorCliente('correo');
+            return true;
+        }
+        if (!REGEX_PATTERNS.email.test(valor)) {
+            establecerErrorCliente('correo', MENSAJE_ERROR.correo);
+            return false;
+        }
+        limpiarErrorCliente('correo');
+        return true;
+    };
 
     // Validación de datos del cliente
     const validarDatosCliente = async () => {
@@ -159,8 +352,10 @@ export const useInvoiceLogic = () => {
             alert("⚠️ Identificación obligatoria.");
             return false;
         }
-        if (!esIdentificacionValida(identificacion)) {
-            alert("⚠️ Identificación: solo números permitidos.");
+        
+        // Validar formato según tipo de documento
+        if (!validarIdentificacionPorTipo(identificacion, cliente.tipo_identificacion)) {
+            alert(getMensajeErrorIdentificacion(cliente.tipo_identificacion));
             return false;
         }
 
@@ -251,9 +446,12 @@ export const useInvoiceLogic = () => {
         { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, descuento: 0, vTotal: 0, ivaPorcentaje: 0 }
     ]);
     const [sugerenciasProd, setSugerenciasProd] = useState([]);
+    const [sugerenciasProdNombre, setSugerenciasProdNombre] = useState([]);
     const [productosNuevos, setProductosNuevos] = useState(new Set()); // Rastrear productos nuevos
+    const [productosModificados, setProductosModificados] = useState(new Set()); // Productos existentes modificados
+    const [erroresProductos, setErroresProductos] = useState({}); // Errores por producto {index: {campo: mensaje}}
 
-    // Búsqueda de productos existentes
+    // Búsqueda de productos existentes por código
     const buscarProductos = async (t) => {
         if (!t) {
             setSugerenciasProd([]);
@@ -268,10 +466,161 @@ export const useInvoiceLogic = () => {
         } catch (error) { console.error(error); }
     };
 
-    // Validar caracteres en campos de producto
+    // Búsqueda de productos por nombre/detalle
+    const buscarProductosPorNombre = async (t, index) => {
+        if (!t || t.length < 2) {
+            setSugerenciasProdNombre([]);
+            return;
+        }
+        try {
+            const token = sessionStorage.getItem('token');
+            const res = await fetch(`http://localhost:8080/api/facturas/buscar-productos?q=${t}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) setSugerenciasProdNombre(await res.json());
+        } catch (error) { console.error(error); }
+    };
+
+    // Funciones auxiliares para manejo de errores de productos
+    const limpiarErrorProducto = (index, campo) => {
+        setErroresProductos(prev => {
+            const newErrors = { ...prev };
+            if (newErrors[index]) {
+                delete newErrors[index][campo];
+                if (Object.keys(newErrors[index]).length === 0) delete newErrors[index];
+            }
+            return newErrors;
+        });
+    };
+
+    const establecerErrorProducto = (index, campo, mensaje) => {
+        setErroresProductos(prev => ({
+            ...prev,
+            [index]: { ...prev[index], [campo]: mensaje }
+        }));
+    };
+
+    // Validar caracteres en tiempo real - PRODUCTOS
+    const validarCaracteresCodigo = (valor, index) => {
+        if (!REGEX_PATTERNS.codigo.test(valor)) {
+            establecerErrorProducto(index, 'codigo', MENSAJE_ERROR.codigo);
+            return false;
+        }
+        limpiarErrorProducto(index, 'codigo');
+        return true;
+    };
+
+    const validarCaracteresDetalle = (valor, index) => {
+        if (!REGEX_PATTERNS.detalle.test(valor)) {
+            establecerErrorProducto(index, 'detalle', MENSAJE_ERROR.detalle);
+            return false;
+        }
+        limpiarErrorProducto(index, 'detalle');
+        return true;
+    };
+
+    const validarCaracteresNumero = (valor, campo, index) => {
+        if (valor === '' || valor === null || valor === undefined) {
+            limpiarErrorProducto(index, campo);
+            return true;
+        }
+        if (!REGEX_PATTERNS.numeroPositivo.test(valor) || parseFloat(valor) < 0) {
+            establecerErrorProducto(index, campo, MENSAJE_ERROR.numeroPositivo);
+            return false;
+        }
+        limpiarErrorProducto(index, campo);
+        return true;
+    };
+
+    const validarCaracteresCantidad = (valor, index) => validarCaracteresNumero(valor, 'cantidad', index);
+    const validarCaracteresVUnitario = (valor, index) => validarCaracteresNumero(valor, 'vUnitario', index);
+    
+    const validarCaracteresDescuento = (valor, index) => {
+        if (valor === '' || valor === null || valor === undefined) {
+            limpiarErrorProducto(index, 'descuento');
+            return true;
+        }
+        const num = parseFloat(valor);
+        if (!REGEX_PATTERNS.numeroPositivo.test(valor) || num < 0 || num > 100) {
+            establecerErrorProducto(index, 'descuento', MENSAJE_ERROR.descuento);
+            return false;
+        }
+        limpiarErrorProducto(index, 'descuento');
+        return true;
+    };
+
+    // Validar caracteres en campos de producto (compatibilidad con validations.js)
     const esCodigoValidoLocal = (codigo) => esCodigoValido(codigo);
     const esDetalleValidoLocal = (detalle) => esDetalleValido(detalle);
     const esValorValido = (valor) => !isNaN(parseFloat(valor)) && parseFloat(valor) > 0;
+
+    // Verificar si producto existe por código
+    const verificarProductoExiste = async (index, codigo) => {
+        if (!codigo || codigo.trim().length === 0) return;
+        const producto = productosFactura[index];
+        if (!producto.producto_id) {
+            const existe = await validarCodigoDuplicado(codigo.trim(), index);
+            if (!existe) {
+                establecerErrorProducto(index, 'codigo', MENSAJE_ERROR.noExiste);
+            }
+        }
+    };
+
+    // Verificar si producto existe por nombre/detalle
+    const verificarProductoExistePorNombre = async (index, detalle) => {
+        if (!detalle || detalle.trim().length < 2) return;
+        const producto = productosFactura[index];
+        if (!producto.producto_id) {
+            try {
+                const token = sessionStorage.getItem('token');
+                const res = await fetch(`http://localhost:8080/api/facturas/buscar-productos?q=${detalle}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const resultados = await res.json();
+                    const encontrado = resultados.find(p => 
+                        p.nombre.toLowerCase() === detalle.toLowerCase()
+                    );
+                    if (!encontrado) {
+                        establecerErrorProducto(index, 'detalle', MENSAJE_ERROR.noExiste);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    };
+
+    // Seleccionar producto desde sugerencias de nombre
+    const seleccionarProductoPorNombre = (productoSugerido, index) => {
+        const nuevos = [...productosFactura];
+        nuevos[index].codigo = productoSugerido.codigo;
+        nuevos[index].producto_id = productoSugerido.id;
+        nuevos[index].detalle = productoSugerido.nombre + 
+            (productoSugerido.descripcion ? ` - ${productoSugerido.descripcion}` : "");
+        nuevos[index].vUnitario = parseFloat(productoSugerido.precio) || 0;
+        nuevos[index].descuento = 0;
+        nuevos[index].ivaPorcentaje = parseFloat(productoSugerido.impuesto_porcentaje) || 0;
+        
+        const subtotalProd = (parseFloat(nuevos[index].cantidad) || 0) * (parseFloat(nuevos[index].vUnitario) || 0);
+        const descuentoProd = subtotalProd * ((parseFloat(nuevos[index].descuento) || 0) / 100);
+        nuevos[index].vTotal = subtotalProd - descuentoProd;
+        
+        setProductosFactura(nuevos);
+        setSugerenciasProdNombre([]);
+        
+        // Limpiar errores
+        setErroresProductos(prev => {
+            const newErrors = { ...prev };
+            delete newErrors[index];
+            return newErrors;
+        });
+        
+        // Marcar como producto existente
+        const nuevosProductos = new Set(productosNuevos);
+        nuevosProductos.delete(index);
+        setProductosNuevos(nuevosProductos);
+    };
 
     // Validar código duplicado
     const validarCodigoDuplicado = async (codigo, excluyendoIndex = null) => {
@@ -296,18 +645,19 @@ export const useInvoiceLogic = () => {
         }
     };
 
-    // Manejo de cambios en los inputs de productos
+    // Manejo de cambios en los inputs de productos con validación
     const handleInputChange = (index, campo, valor) => {
         const nuevos = [...productosFactura];
         const productoActual = nuevos[index];
 
         if (campo === 'codigo') {
+            // Validar caracteres
+            validarCaracteresCodigo(valor, index);
             productoActual.codigo = valor;
 
-            // Buscar producto en sugerencias por código o nombre
+            // Buscar producto en sugerencias por código
             const productoEncontrado = sugerenciasProd.find(p => 
-                String(p.codigo).toLowerCase() === String(valor).toLowerCase() ||
-                p.nombre.toLowerCase().includes(valor.toLowerCase())
+                String(p.codigo).toLowerCase() === String(valor).toLowerCase()
             );
             
             if (productoEncontrado) {
@@ -320,38 +670,50 @@ export const useInvoiceLogic = () => {
                 productoActual.descuento = 0;
                 productoActual.ivaPorcentaje = parseFloat(productoEncontrado.impuesto_porcentaje) || 0;
                 
+                // Limpiar errores
+                setErroresProductos(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors[index];
+                    return newErrors;
+                });
+                
                 // Marcar como producto existente
                 const nuevosProductos = new Set(productosNuevos);
                 nuevosProductos.delete(index);
                 setProductosNuevos(nuevosProductos);
-            } else {
+            } else if (valor.trim().length > 0) {
                 // Producto no existe en BD: limpiar campos de detalle
                 productoActual.producto_id = null;
                 productoActual.detalle = '';
                 productoActual.vUnitario = 0;
                 productoActual.descuento = 0;
                 productoActual.ivaPorcentaje = 0;
-                const subtotalProd = (parseFloat(productoActual.cantidad) || 0) * (parseFloat(productoActual.vUnitario) || 0);
-                const descuentoProd = subtotalProd * ((parseFloat(productoActual.descuento) || 0) / 100);
-                productoActual.vTotal = subtotalProd - descuentoProd;
-
-                // No marcar como nuevo automáticamente
-                const nuevosProductos = new Set(productosNuevos);
-                nuevosProductos.delete(index);
-                setProductosNuevos(nuevosProductos);
             }
         } else if (campo === 'cantidad') {
+            validarCaracteresCantidad(valor, index);
             productoActual.cantidad = valor;
         } else if (campo === 'detalle') {
+            validarCaracteresDetalle(valor, index);
             productoActual.detalle = valor;
-            // Validar que el detalle siga el patrón "nombre - descripción"
-            if (valor.trim() && !esDetalleProductoValido(valor)) {
-                // Mostrar advertencia visual (se validará completamente en handleSubmit)
-                console.warn(`Detalle incorrecto en producto: debe ser 'Nombre - Descripción'`);
+            
+            // Si hay producto_id, marcar como modificado
+            if (productoActual.producto_id) {
+                const nuevosModificados = new Set(productosModificados);
+                nuevosModificados.add(index);
+                setProductosModificados(nuevosModificados);
             }
         } else if (campo === 'vUnitario') {
+            validarCaracteresVUnitario(valor, index);
             productoActual.vUnitario = valor;
+            
+            // Si hay producto_id, marcar como modificado
+            if (productoActual.producto_id) {
+                const nuevosModificados = new Set(productosModificados);
+                nuevosModificados.add(index);
+                setProductosModificados(nuevosModificados);
+            }
         } else if (campo === 'descuento') {
+            validarCaracteresDescuento(valor, index);
             productoActual.descuento = valor;
         }
 
@@ -641,20 +1003,74 @@ export const useInvoiceLogic = () => {
         }
     };
     
+    // Manejo de cambios en campos de cliente con validación en tiempo real
+    const handleClienteChange = (e) => {
+        const { name, value } = e.target;
+        
+        // Validar caracteres según el campo
+        let esValido = true;
+        switch(name) {
+            case 'nombre':
+                esValido = validarCaracteresNombre(value);
+                break;
+            case 'telefono':
+                esValido = validarCaracteresTelefono(value);
+                break;
+            case 'direccion':
+                esValido = validarCaracteresDireccion(value);
+                break;
+            case 'correo':
+                esValido = validarCaracteresCorreo(value);
+                break;
+            default:
+                break;
+        }
+        
+        // Actualizar el valor incluso si no es válido (para mostrar el error)
+        setCliente(prev => ({ ...prev, [name]: value }));
+        setClienteModificado(true);
+    };
+
+    // Manejo de cambios en identificación con validación
+    const handleIdentificacionChange = (e) => {
+        const valor = e.target.value;
+        validarCaracteresIdentificacion(valor);
+        seleccionarCliente(e);
+    };
+
     // Retorno unificado para el componente
     return {
         // Numero/Fecha
         numeroFactura, fechaEmision, setFechaEmision, fechaVencimiento, setFechaVencimiento,
         // Cliente
-        identificacion, setIdentificacion, seleccionarCliente, cliente, sugerencias, autocompletarClienteConTab,
-        handleClienteChange: (e) => {
-            setCliente(prev => ({ ...prev, [e.target.name]: e.target.value }));
-            setClienteModificado(true);
-        },
+        identificacion, setIdentificacion, seleccionarCliente, cliente, sugerencias, sugerenciasNombre,
+        autocompletarClienteConTab, seleccionarClientePorNombre, verificarClienteExiste, verificarNombreExiste,
+        handleClienteChange, handleIdentificacionChange, erroresCliente,
         // Productos
-        productosFactura, sugerenciasProd, buscarProductos, handleInputChange, autocompletarProductoConTab,
-        agregarFilaProducto: () => setProductosFactura([...productosFactura, { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, descuento: 0, vTotal: 0, ivaPorcentaje: 0 }]),
-        eliminarFilaProducto: (i) => { if (productosFactura.length > 1) setProductosFactura(productosFactura.filter((_, idx) => idx !== i)) },
+        productosFactura, sugerenciasProd, sugerenciasProdNombre, buscarProductos, buscarProductosPorNombre,
+        handleInputChange, autocompletarProductoConTab, seleccionarProductoPorNombre,
+        verificarProductoExiste, verificarProductoExistePorNombre, erroresProductos,
+        agregarFilaProducto: () => {
+            setProductosFactura([...productosFactura, { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, descuento: 0, vTotal: 0, ivaPorcentaje: 0 }]);
+        },
+        eliminarFilaProducto: (i) => { 
+            if (productosFactura.length > 1) {
+                setProductosFactura(productosFactura.filter((_, idx) => idx !== i));
+                // Limpiar errores del producto eliminado
+                setErroresProductos(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors[i];
+                    // Reindexar errores
+                    const reindexedErrors = {};
+                    Object.keys(newErrors).forEach(key => {
+                        const oldIndex = parseInt(key);
+                        const newIndex = oldIndex > i ? oldIndex - 1 : oldIndex;
+                        reindexedErrors[newIndex] = newErrors[key];
+                    });
+                    return reindexedErrors;
+                });
+            }
+        },
         // Valores
         subtotal, iva, totalGeneral,
         // Acciones Finales

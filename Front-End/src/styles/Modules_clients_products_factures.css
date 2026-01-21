@@ -219,6 +219,7 @@
   border-collapse: collapse;
   font-size: 14px;
   text-align: center;
+  table-layout: fixed; /* Permite control de ancho de columnas */
 }
 
 .product-table th, .product-table td,
@@ -230,6 +231,42 @@
   vertical-align: middle;
   color: var(--u-text);
   background-color: var(--u-background);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+}
+
+/* Tooltip para texto truncado */
+.product-table td[title]:hover::after,
+.client-table td[title]:hover::after,
+.invoice-table td[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--u-card-bg);
+  color: var(--u-text);
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  white-space: normal;
+  max-width: 300px;
+  z-index: 1000;
+  font-size: 12px;
+  word-wrap: break-word;
+  border: 1px solid var(--color-text-muted);
+  pointer-events: none;
+}
+
+/* Clase auxiliar para texto truncable */
+.truncate-text {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 /* --- Ajustes Específicos para Tabla de Facturas --- */
@@ -626,29 +663,222 @@ button.emitir:hover {
 /* ------------------------------------------------------- */
 /* 12. RESPONSIVE DESIGN GENERAL                           */
 /* ------------------------------------------------------- */
+
+/* ========== TABLETS Y DISPOSITIVOS MEDIANOS ========== */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .product-management,
+  .client-management,
+  .invoice-management {
+    max-width: 95%;
+    padding: 18px;
+  }
+
+  .product-table,
+  .client-table,
+  .invoice-table {
+    font-size: 13px;
+  }
+
+  .product-table th, .product-table td,
+  .client-table th, .client-table td,
+  .invoice-table th, .invoice-table td {
+    padding: 10px 8px;
+  }
+
+  .actions {
+    gap: 10px;
+  }
+}
+
+/* ========== TABLETS PEQUEÑAS Y MÓVILES GRANDES ========== */
 @media (max-width: 768px) {
+  .product-management,
+  .client-management,
+  .invoice-management {
+    max-width: 100%;
+    margin: 10px;
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .product-management h2,
+  .client-management h2,
+  .invoice-management h2 {
+    font-size: 18px;
+  }
+
   .actions {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
   }
 
-  .actions input {
-    width: 100%;
-  }
-
+  .actions input,
   .actions select {
     width: 100%;
+    font-size: 14px;
   }
 
   .btn-primary {
     width: 100%;
     text-align: center;
+    padding: 12px 14px;
   }
 
-  .emision-status {
-    font-size: 12px;
-    padding: 4px 8px;
+  /* Tablas en móvil: scroll horizontal */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
+
+  .product-table,
+  .client-table,
+  .invoice-table {
+    font-size: 12px;
+    min-width: 600px; /* Forzar scroll horizontal si es necesario */
+  }
+
+  .product-table th, .product-table td,
+  .client-table th, .client-table td,
+  .invoice-table th, .invoice-table td {
+    padding: 8px 6px;
+  }
+
+  /* Botones de acción más pequeños en móvil */
+  button.editar,
+  button.eliminar,
+  button.ver,
+  button.emitir {
+    padding: 5px 8px;
+    font-size: 12px;
+    margin: 2px 1px;
+  }
+
+  .emision-status,
+  .invoice-status {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+}
+
+/* ========== MÓVILES PEQUEÑOS ========== */
+@media (max-width: 480px) {
+  .product-management,
+  .client-management,
+  .invoice-management {
+    margin: 5px;
+    padding: 10px;
+  }
+
+  .product-management h2,
+  .client-management h2,
+  .invoice-management h2 {
+    font-size: 16px;
+  }
+
+  .product-table,
+  .client-table,
+  .invoice-table {
+    font-size: 11px;
+  }
+
+  .product-table th, .product-table td,
+  .client-table th, .client-table td,
+  .invoice-table th, .invoice-table td {
+    padding: 6px 4px;
+  }
+
+  button.editar,
+  button.eliminar,
+  button.ver,
+  button.emitir {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .badge,
+  .invoice-status,
+  .emision-status {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+}
+
+/* ========== PANTALLAS GRANDES (LAPTOPS Y MONITORES) ========== */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .product-management,
+  .client-management,
+  .invoice-management {
+    max-width: 1200px;
+  }
+
+  .product-table,
+  .client-table,
+  .invoice-table {
+    font-size: 15px;
+  }
+}
+
+/* ========== PANTALLAS EXTRA GRANDES (MONITORES GRANDES Y TV) ========== */
+@media (min-width: 1441px) {
+  .product-management,
+  .client-management,
+  .invoice-management {
+    max-width: 1400px;
+    padding: 25px;
+  }
+
+  .product-management h2,
+  .client-management h2,
+  .invoice-management h2 {
+    font-size: 24px;
+  }
+
+  .product-table,
+  .client-table,
+  .invoice-table {
+    font-size: 16px;
+  }
+
+  .product-table th, .product-table td,
+  .client-table th, .client-table td,
+  .invoice-table th, .invoice-table td {
+    padding: 14px 12px;
+  }
+
+  button.editar,
+  button.eliminar,
+  button.ver,
+  button.emitir {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+/* ========== WRAPPER PARA SCROLL HORIZONTAL EN TABLAS ========== */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 15px;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: var(--modal-scrollbar-track);
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--modal-scrollbar-thumb);
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: var(--modal-scrollbar-thumb-hover);
 }
 
 /* ======================================================= */

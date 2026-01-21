@@ -188,9 +188,9 @@ function Productos() {
                                 <td>{Math.round(parseFloat(product.impuesto_porcentaje || 0))}%</td>
                                 <td>${calculateFinalPrice(product.precio, product.impuesto_porcentaje)}</td>
                                 <td>
-                                    <button className="editar btn-warning" onClick={() => handleEdit(product)} disabled={loading} title="Editar producto">✏️ Editar</button>
+                                    <button className="editar btn-warning" onClick={() => handleEdit(product)} disabled={loading} title="Editar producto">✏️</button>
                                     {isAdmin && (
-                                        <button className="eliminar btn-danger" onClick={() => handleDelete(product)} disabled={loading} title="Eliminar producto">🗑️ Eliminar</button>
+                                        <button className="eliminar btn-danger" onClick={() => handleDelete(product)} disabled={loading} title="Eliminar producto">🗑️</button>
                                     )}
                                 </td>
                             </tr>

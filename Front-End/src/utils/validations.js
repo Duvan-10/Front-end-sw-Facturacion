@@ -2,9 +2,79 @@
  * Funciones de validación reutilizables para formularios
  */
 
+/**
+ * Normaliza el tipo de identificación desde BD al formato abreviado del frontend
+ */
+export const normalizarTipoIdentificacion = (tipoDesdeDB) => {
+    const mapeoReverso = {
+        'Cédula de Ciudadanía': 'C.C.',
+        'NIT': 'NIT',
+        'Cédula de Extranjería': 'C.E.',
+        'C.C.': 'C.C.',
+        'C.E.': 'C.E.'
+    };
+    return mapeoReverso[tipoDesdeDB] || 'C.C.';
+};
+
+/**
+ * Expande el tipo de identificación abreviado a nombre completo
+ */
+export const expandirTipoIdentificacion = (tipoAbreviado) => {
+    const mapeo = {
+        'C.C.': 'Cédula de Ciudadanía',
+        'NIT': 'NIT',
+        'C.E.': 'Cédula de Extranjería'
+    };
+    return mapeo[tipoAbreviado] || tipoAbreviado;
+};
+
+/**
+ * Valida identificación según el tipo de documento
+ */
+export const validarIdentificacionPorTipo = (identificacion, tipoDoc) => {
+    const id = identificacion.trim();
+    
+    switch(tipoDoc) {
+        case 'C.C.':
+            // Cédula: solo números, sin puntos ni espacios
+            return /^[0-9]{6,10}$/.test(id);
+        
+        case 'NIT':
+            // NIT: números con puntos, guiones y espacios opcionales (hasta 12 dígitos)
+            // Formato: 900.123.456-7 o 900123456-7 o 9001234567
+            const nitLimpio = id.replace(/[\s.-]/g, '');
+            return /^[0-9]{9,12}$/.test(nitLimpio);
+        
+        case 'C.E.':
+            // Cédula Extranjera: números con guiones opcionales
+            const ceLimpio = id.replace(/[-]/g, '');
+            return /^[0-9]{6,12}$/.test(ceLimpio);
+        
+        default:
+            return REGEX.IDENTIFICACION.test(id);
+    }
+};
+
+/**
+ * Obtiene el mensaje de error específico por tipo de documento
+ */
+export const getMensajeErrorIdentificacion = (tipoDoc) => {
+    switch(tipoDoc) {
+        case 'C.C.':
+            return '⚠️ Cédula: debe contener entre 6 y 10 dígitos sin espacios ni puntos';
+        case 'NIT':
+            return '⚠️ NIT: formato inválido. Ejemplo: 900.123.456-7 o 9001234567';
+        case 'C.E.':
+            return '⚠️ Cédula Extranjera: debe contener entre 6 y 12 dígitos';
+        default:
+            return '⚠️ Identificación: formato inválido';
+    }
+};
+
 // Expresiones regulares para validaciones
 export const REGEX = {
     SOLO_NUMEROS: /^[0-9]+$/,
+    IDENTIFICACION: /^[0-9\s.-]+$/, // Números, espacios, puntos y guiones para NIT/CE
     SOLO_LETRAS: /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s.'-]*$/,
     EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     TELEFONO: /^[0-9\-\+\(\)]*$/,
@@ -13,10 +83,10 @@ export const REGEX = {
 };
 
 /**
- * Valida si un identificacion es válido (solo números)
+ * Valida si una identificación es válida (permite números, espacios, puntos y guiones)
  */
 export const esIdentificacionValida = (identificacion) => {
-    return identificacion && REGEX.SOLO_NUMEROS.test(identificacion.trim());
+    return identificacion && REGEX.IDENTIFICACION.test(identificacion.trim());
 };
 
 /**
@@ -129,7 +199,7 @@ export const formatearProductoParaBD = (producto) => {
  */
 export const formatearClienteParaBD = (cliente, identificacion) => {
     return {
-        tipo_identificacion: cliente.tipo_identificacion,
+        tipo_identificacion: expandirTipoIdentificacion(cliente.tipo_identificacion),
         identificacion: identificacion.trim(),
         nombre_razon_social: cliente.nombre.trim(),
         email: cliente.correo?.trim() || null,

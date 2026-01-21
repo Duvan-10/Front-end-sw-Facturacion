@@ -204,9 +204,9 @@ function Clientes() {
                                 <td>{client.telefono || '---'}</td>
                                 <td>{client.email || '---'}</td>
                                 <td>
-                                    <button className="editar btn-warning" onClick={() => handleEdit(client.id)} disabled={loading} title="Editar cliente">✏️ Editar</button>
+                                    <button className="editar btn-warning" onClick={() => handleEdit(client.id)} disabled={loading} title="Editar cliente">✏️</button>
                                     {isAdmin && (
-                                        <button className="eliminar btn-danger" onClick={() => handleDelete(client)} disabled={loading} title="Eliminar cliente">🗑️ Eliminar</button>
+                                        <button className="eliminar btn-danger" onClick={() => handleDelete(client)} disabled={loading} title="Eliminar cliente">🗑️</button>
                                     )}
                                 </td>
                             </tr>
