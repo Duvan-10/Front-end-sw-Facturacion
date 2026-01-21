@@ -64,9 +64,10 @@ function Facturas() {
         
         // Si tiene fecha de vencimiento y es crédito, verificar si está vencida
         if (invoice.fecha_vencimiento && invoice.status !== 'Pagada' && invoice.status !== 'Anulada') {
-            const today = new Date();
-            const vencimiento = new Date(invoice.fecha_vencimiento);
-            if (vencimiento < today) {
+            const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            const todayStart = startOfDay(new Date());
+            const dueStart = startOfDay(new Date(invoice.fecha_vencimiento));
+            if (todayStart > dueStart) {
                 return { status: '🔴 Vencida', className: 'status-vencida' };
             }
         }
@@ -245,9 +246,10 @@ function Facturas() {
         // Validar si está vencida
         let isExpired = false;
         if (invoice.fecha_vencimiento && invoice.status !== 'Pagada' && invoice.status !== 'Anulada') {
-            const today = new Date();
-            const vencimiento = new Date(invoice.fecha_vencimiento);
-            isExpired = vencimiento < today;
+            const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            const todayStart = startOfDay(new Date());
+            const dueStart = startOfDay(new Date(invoice.fecha_vencimiento));
+            isExpired = todayStart > dueStart;
         }
 
         if (isExpired) {

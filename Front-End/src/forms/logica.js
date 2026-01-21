@@ -25,7 +25,7 @@ export const useInvoiceLogic = () => {
     // CONSTANTES DE VALIDACIÓN
     // ==========================================
     const REGEX_PATTERNS = {
-        identificacion: /^[0-9\s.-]*$/,
+        identificacion: /^[0-9-]*$/,
         nombre: /^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s.-]*$/,
         telefono: /^[0-9]*$/,
         direccion: /^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚüÜ\s#-]*$/,
@@ -36,14 +36,14 @@ export const useInvoiceLogic = () => {
     };
 
     const MENSAJE_ERROR = {
-        identificacion: '⚠️ Carácter inválido: solo números, espacios, puntos y guiones',
-        nombre: '⚠️ Carácter inválido: solo letras, espacios, puntos y guiones',
-        telefono: '⚠️ Carácter inválido: solo números',
+        identificacion: '⚠️ Caracteres Invalidos',
+        nombre: '⚠️ Caracteres Invalidos',
+        telefono: '⚠️ Caracteres Invalidos',
         telefonoMin: '⚠️ Mínimo 7 caracteres',
-        direccion: '⚠️ Carácter inválido: solo letras, números, espacios, # y guiones',
+        direccion: '⚠️ Caracteres Invalidos',
         correo: '⚠️ Formato de correo inválido',
-        codigo: '⚠️ Carácter inválido: solo letras, números, guiones y _',
-        detalle: '⚠️ Carácter inválido: solo letras, números, espacios, puntos, comas y guiones',
+        codigo: '⚠️ Caracteres Invalidos',
+        detalle: '⚠️ Caracteres Invalidos',
         numeroPositivo: '⚠️ Solo números positivos',
         descuento: '⚠️ Descuento: 0-100%',
         noExiste: '⚠️ No existe '
@@ -77,7 +77,6 @@ export const useInvoiceLogic = () => {
 
     const [fechaVencimiento, setFechaVencimiento] = useState(() => {
         const ahora = new Date();
-        ahora.setDate(ahora.getDate() + 30); // 30 días por defecto
         return ahora.getFullYear() + "-" + 
                String(ahora.getMonth() + 1).padStart(2, '0') + "-" + 
                String(ahora.getDate()).padStart(2, '0');
@@ -160,7 +159,10 @@ export const useInvoiceLogic = () => {
     const seleccionarCliente = (e) => {
         const valorIngresado = e.target.value;
         setIdentificacion(valorIngresado);
-        setErroresCliente(prev => ({ ...prev, identificacion: '' }));
+        // No limpiar el error de identificación aquí para permitir mostrar "caracteres inválidos"
+        if (valorIngresado === '') {
+            limpiarErrorCliente('identificacion');
+        }
         
         const encontrado = sugerencias.find(c => 
             String(c.identificacion) === String(valorIngresado)
@@ -224,40 +226,69 @@ export const useInvoiceLogic = () => {
 
     // Verificar si cliente existe al perder foco en identificación
     const verificarClienteExiste = async () => {
-        if (identificacion.trim().length > 0 && !cliente.id) {
-            const existe = await validarIdentificacionDuplicada(identificacion.trim());
-            if (!existe) {
-                setErroresCliente(prev => ({
-                    ...prev,
-                    identificacion: '⚠️ no existe '
-                }));
+        const valor = identificacion.trim();
+        if (valor.length === 0) {
+            limpiarErrorCliente('identificacion');
+            return;
+        }
+        
+        try {
+            const token = sessionStorage.getItem('token');
+            const res = await fetch(`http://localhost:8080/api/clientes/buscar?term=${valor}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const datos = await res.json();
+                const valorNorm = normalizarIdentificacion(valor, cliente.tipo_identificacion);
+                const tipoSelAbrev = cliente.tipo_identificacion;
+                
+                const coincide = datos.some(c => {
+                    const tipoC = normalizarTipoIdentificacion(String(c.tipo_identificacion || ''));
+                    const idNorm = normalizarIdentificacion(String(c.identificacion || ''), tipoC);
+                    return idNorm === valorNorm && tipoC === tipoSelAbrev;
+                });
+                
+                if (!coincide && !cliente.id) {
+                    establecerErrorCliente('identificacion', '⚠️ Cliente no existe');
+                } else {
+                    limpiarErrorCliente('identificacion');
+                }
             }
+        } catch (err) {
+            console.error(err);
         }
     };
 
     // Verificar si cliente existe al perder foco en nombre
     const verificarNombreExiste = async () => {
-        if (cliente.nombre.trim().length > 0 && !cliente.id) {
+        const nombreValor = cliente.nombre.trim();
+        if (nombreValor.length === 0) {
+            limpiarErrorCliente('nombre');
+            return;
+        }
+        
+        if (!cliente.id) {
             try {
                 const token = sessionStorage.getItem('token');
-                const res = await fetch(`http://localhost:8080/api/clientes/buscar?term=${cliente.nombre}`, {
+                const res = await fetch(`http://localhost:8080/api/clientes/buscar?term=${nombreValor}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (res.ok) {
                     const resultados = await res.json();
                     const encontrado = resultados.find(c => 
-                        c.nombre_razon_social.toLowerCase() === cliente.nombre.toLowerCase()
+                        c.nombre_razon_social.toLowerCase() === nombreValor.toLowerCase()
                     );
                     if (!encontrado) {
-                        setErroresCliente(prev => ({
-                            ...prev,
-                            nombre: '⚠️ no existe'
-                        }));
+                        establecerErrorCliente('nombre', '⚠️ Cliente no existe');
+                    } else {
+                        limpiarErrorCliente('nombre');
                     }
                 }
             } catch (err) {
                 console.error(err);
             }
+        } else {
+            limpiarErrorCliente('nombre');
         }
     };
 
@@ -289,6 +320,21 @@ export const useInvoiceLogic = () => {
     // Función auxiliar para establecer error de cliente
     const establecerErrorCliente = (campo, mensaje) => {
         setErroresCliente(prev => ({ ...prev, [campo]: mensaje }));
+    };
+
+    // Normalizar identificación según tipo
+    const normalizarIdentificacion = (valor, tipo) => {
+        if (!valor) return '';
+        const limpio = String(valor).trim();
+        switch (tipo) {
+            case 'NIT':
+                return limpio.replace(/[\s.\-]/g, '');
+            case 'C.E.':
+                return limpio.replace(/[\s-]/g, '');
+            case 'C.C.':
+            default:
+                return limpio.replace(/[\s]/g, '');
+        }
     };
 
     // Validar caracteres en tiempo real - CLIENTES
@@ -374,23 +420,23 @@ export const useInvoiceLogic = () => {
             return false;
         }
         if (!esNombreValido(cliente.nombre)) {
-            alert("⚠️ Nombre: solo letras, espacios, puntos y apóstrofes permitidos.");
+            alert("⚠️ Caracteres Invalidos.");
             return false;
         }
 
         // Validar teléfono
         if (!cliente.telefono?.trim()) {
-            alert("⚠️ Teléfono obligatorio.");
+            alert("⚠️ Caracteres Invalidos.");
             return false;
         }
         if (!esTelefonoValido(cliente.telefono)) {
-            alert("⚠️ Teléfono: mínimo 7 dígitos, sin caracteres especiales (excepto +, -, ()).");
+            alert("⚠️ Caracteres Invalidos.");
             return false;
         }
 
         // Validar correo (opcional)
         if (!esEmailValido(cliente.correo)) {
-            alert("⚠️ Correo: formato incorrecto (ejemplo: usuario@dominio.com).");
+            alert("⚠️ formato incorrecto ");
             return false;
         }
 
@@ -648,13 +694,15 @@ export const useInvoiceLogic = () => {
         const productoActual = nuevos[index];
 
         if (campo === 'codigo') {
+            // Limpiar error de "no existe" al cambiar
+            limpiarErrorProducto(index, 'codigo');
             // Validar caracteres
             validarCaracteresCodigo(valor, index);
             productoActual.codigo = valor;
 
-            // Buscar producto en sugerencias por código
+            // Buscar producto en sugerencias por código - SOLO COINCIDENCIA EXACTA
             const productoEncontrado = sugerenciasProd.find(p => 
-                String(p.codigo).toLowerCase() === String(valor).toLowerCase()
+                String(p.codigo).toLowerCase() === String(valor).trim().toLowerCase()
             );
             
             if (productoEncontrado) {
@@ -688,8 +736,12 @@ export const useInvoiceLogic = () => {
             }
         } else if (campo === 'cantidad') {
             validarCaracteresCantidad(valor, index);
-            productoActual.cantidad = valor;
+            const numValor = parseFloat(valor);
+            // Cantidad debe ser mayor a 0
+            productoActual.cantidad = (isNaN(numValor) || numValor <= 0) ? 1 : numValor;
         } else if (campo === 'detalle') {
+            // Limpiar error de "no existe" al cambiar
+            limpiarErrorProducto(index, 'detalle');
             validarCaracteresDetalle(valor, index);
             productoActual.detalle = valor;
             
@@ -700,18 +752,24 @@ export const useInvoiceLogic = () => {
                 setProductosModificados(nuevosModificados);
             }
         } else if (campo === 'vUnitario') {
-            validarCaracteresVUnitario(valor, index);
-            productoActual.vUnitario = valor;
-            
-            // Si hay producto_id, marcar como modificado
+            // V.Unitario es de solo lectura cuando viene de un producto existente
             if (productoActual.producto_id) {
-                const nuevosModificados = new Set(productosModificados);
-                nuevosModificados.add(index);
-                setProductosModificados(nuevosModificados);
+                return; // No permitir edición si es producto de BD
             }
+            validarCaracteresVUnitario(valor, index);
+            const numValor = parseFloat(valor);
+            productoActual.vUnitario = (isNaN(numValor) || numValor < 0) ? 0 : numValor;
         } else if (campo === 'descuento') {
             validarCaracteresDescuento(valor, index);
-            productoActual.descuento = valor;
+            const numValor = parseFloat(valor);
+            // Descuento entre 0 y 100
+            if (isNaN(numValor) || numValor < 0) {
+                productoActual.descuento = 0;
+            } else if (numValor > 100) {
+                productoActual.descuento = 100;
+            } else {
+                productoActual.descuento = numValor;
+            }
         }
 
         // Calcular vTotal con descuento
@@ -832,7 +890,7 @@ export const useInvoiceLogic = () => {
 
             // Validar caracteres en código
             if (!esCodigoValidoLocal(p.codigo)) {
-                alert(`⚠️ Producto ${i + 1}: Código contiene caracteres inválidos. Solo se permiten letras, números, guiones y guiones bajos.`);
+                alert(`⚠️ Producto ${i + 1}: Código contiene . Solo se permiten letras, números, guiones y guiones bajos.`);
                 return false;
             }
 
@@ -850,7 +908,7 @@ export const useInvoiceLogic = () => {
 
             // Validar caracteres en detalle
             if (!esDetalleValidoLocal(p.detalle)) {
-                alert(`⚠️ Producto ${i + 1}: Detalle contiene caracteres inválidos. No se permiten caracteres especiales.`);
+                alert(`⚠️ Producto ${i + 1}: caracteres inválidos`);
                 return false;
             }
 
@@ -1004,6 +1062,23 @@ export const useInvoiceLogic = () => {
     const handleClienteChange = (e) => {
         const { name, value } = e.target;
         
+        // Limpiar error de "no existe" cuando el usuario escribe
+        if (name === 'nombre' && erroresCliente.nombre?.includes('no existe')) {
+            limpiarErrorCliente('nombre');
+        }
+        
+        // Si el campo es nombre, verificar si se seleccionó de la lista de sugerencias
+        if (name === 'nombre') {
+            const clienteEncontrado = sugerenciasNombre.find(c => 
+                c.nombre_razon_social === value
+            );
+            if (clienteEncontrado) {
+                // Autocompletar todos los datos del cliente
+                seleccionarClientePorNombre(clienteEncontrado);
+                return;
+            }
+        }
+        
         // Validar caracteres según el campo
         let esValido = true;
         switch(name) {
@@ -1031,6 +1106,10 @@ export const useInvoiceLogic = () => {
     // Manejo de cambios en identificación con validación
     const handleIdentificacionChange = (e) => {
         const valor = e.target.value;
+        // No sanitizar: permitir escribir cualquier caracter, solo marcar error si es inválido
+        if (erroresCliente.identificacion?.includes('no existe')) {
+            limpiarErrorCliente('identificacion');
+        }
         validarCaracteresIdentificacion(valor);
         seleccionarCliente(e);
     };

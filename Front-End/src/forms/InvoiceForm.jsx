@@ -104,7 +104,7 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
 
 
     <div className="client-data input">
-       <label>identificacion</label>
+       <label>N°Identificacion</label>
         <input 
         type="text" 
         value={identificacion}
@@ -113,11 +113,14 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
         onKeyDown={autocompletarClienteConTab}
         list="clientes-sugerencias-id" 
         placeholder="Escribe identificación..."
+        autoComplete="off"
         className={erroresCliente.identificacion ? 'input-error' : ''}
         />
+        <div className="field-messages">
         {erroresCliente.identificacion && (
           <span className="error-message">{erroresCliente.identificacion}</span>
         )}
+        </div>
 
         <datalist id="clientes-sugerencias-id">
           {sugerencias.map((c) => (
@@ -140,11 +143,14 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
         onBlur={verificarNombreExiste}
         list="clientes-sugerencias-nombre"
         placeholder="Escribe nombre..."
+        autoComplete="off"
         className={erroresCliente.nombre ? 'input-error' : ''}
         />
+        <div className="field-messages">
         {erroresCliente.nombre && (
           <span className="error-message">{erroresCliente.nombre}</span>
         )}
+        </div>
         
         <datalist id="clientes-sugerencias-nombre">
           {sugerenciasNombre.map((c) => (
@@ -167,11 +173,14 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
         value={cliente.telefono} 
         onChange={handleClienteChange}
         placeholder="Mínimo 7 dígitos"
+        autoComplete="off"
         className={erroresCliente.telefono ? 'input-error' : ''}
         />
+        <div className="field-messages">
         {erroresCliente.telefono && (
           <span className="error-message">{erroresCliente.telefono}</span>
         )}
+        </div>
     </div>
 
         
@@ -182,11 +191,14 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
         value={cliente.direccion} 
         onChange={handleClienteChange}
         placeholder="Calle, número, etc."
+        autoComplete="off"
         className={erroresCliente.direccion ? 'input-error' : ''}
         />
+        <div className="field-messages">
         {erroresCliente.direccion && (
           <span className="error-message">{erroresCliente.direccion}</span>
         )}
+        </div>
     </div>
 
 
@@ -198,11 +210,14 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
         value={cliente.correo} 
         onChange={handleClienteChange}
         placeholder="usuario@dominio.com"
+        autoComplete="off"
         className={erroresCliente.correo ? 'input-error' : ''}
         />
+        <div className="field-messages">
         {erroresCliente.correo && (
           <span className="error-message">{erroresCliente.correo}</span>
         )}
+        </div>
     </div>
 
 
@@ -218,7 +233,7 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
 
 <div className="product-grid product-header">
     <span>Código</span>
-    <span>Cant.</span>
+    <span>Unds</span>
     <span>Detalle</span>
     <span>V.Unitario</span>
     <span>Desc.%</span>
@@ -241,26 +256,32 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
             onBlur={(e) => verificarProductoExiste(index, e.target.value)}
             list="lista-productos"
             placeholder="Código"
+            autoComplete="off"
             className={erroresProductos[index]?.codigo ? 'input-error' : ''}
         />
+        <div className="field-messages">
         {erroresProductos[index]?.codigo && (
           <span className="error-message">{erroresProductos[index].codigo}</span>
         )}
+        </div>
         </div>
         
         {/* Cantidad */}
         <div className="product-field-container">
         <input 
-            type="number" 
+          type="number" 
             value={prod.cantidad}
             onChange={(e) => handleInputChange(index, 'cantidad', e.target.value)}
             min="1"
             placeholder="Cant."
+          autoComplete="off"
             className={erroresProductos[index]?.cantidad ? 'input-error' : ''}
         />
+        <div className="field-messages">
         {erroresProductos[index]?.cantidad && (
           <span className="error-message">{erroresProductos[index].cantidad}</span>
         )}
+        </div>
         </div>
         
         {/* Detalle */}
@@ -275,41 +296,51 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
             onBlur={(e) => verificarProductoExistePorNombre(index, e.target.value)}
             list="lista-productos-nombre"
             placeholder="Detalle"
+            autoComplete="off"
             className={erroresProductos[index]?.detalle ? 'input-error' : ''}
         />
+        <div className="field-messages">
         {erroresProductos[index]?.detalle && (
           <span className="error-message">{erroresProductos[index].detalle}</span>
         )}
+        </div>
         </div>
         
         {/* V.Unitario */}
         <div className="product-field-container">
         <input 
-            type="number" 
+          type="number" 
             value={prod.vUnitario} 
             onChange={(e) => handleInputChange(index, 'vUnitario', e.target.value)}
+            readOnly={!!prod.producto_id}
             placeholder="Unitario"
+          autoComplete="off"
             className={erroresProductos[index]?.vUnitario ? 'input-error' : ''}
         />
+        <div className="field-messages">
         {erroresProductos[index]?.vUnitario && (
           <span className="error-message">{erroresProductos[index].vUnitario}</span>
         )}
+        </div>
         </div>
 
         {/* Descuento */}
         <div className="product-field-container">
         <input 
-            type="number" 
+          type="number" 
             value={prod.descuento} 
             onChange={(e) => handleInputChange(index, 'descuento', e.target.value)}
             min="0"
             max="100"
             placeholder="%"
+          autoComplete="off"
             className={erroresProductos[index]?.descuento ? 'input-error' : ''}
         />
+        <div className="field-messages">
         {erroresProductos[index]?.descuento && (
           <span className="error-message">{erroresProductos[index].descuento}</span>
         )}
+        </div>
         </div>
 
         {/* Columna V.Total */}

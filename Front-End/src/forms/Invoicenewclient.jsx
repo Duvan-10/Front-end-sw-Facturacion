@@ -55,7 +55,6 @@ function useInvoiceLogicNew() {
 
   const [fechaVencimiento, setFechaVencimiento] = useState(() => {
     const ahora = new Date();
-    ahora.setDate(ahora.getDate() + 30);
     return (
       ahora.getFullYear() +
       '-' +
@@ -879,13 +878,14 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
 
     {/* Campo de identificación con autocompletado y notificaciones */}
     <div className="client-data input">
-       <label>NIT/CC</label>
+       <label>N° Identificación</label>
         <input 
         type="text" 
         value={identificacion}
         onChange={handleIdentificacionChange}
         onBlur={verificarClientePorIdentificacion}
         placeholder="Escribe NIT, C.C. o C.E..."
+        autoComplete="off"
         className={erroresValidacion.identificacion ? 'input-error' : ''}
         />
 
@@ -911,6 +911,7 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
         onChange={handleClienteChange}
         onBlur={verificarClientePorIdentificacion}
         placeholder="Nombre completo o razón social"
+        autoComplete="off"
         className={erroresValidacion.nombre ? 'input-error' : ''}
         />
 
@@ -933,6 +934,7 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
         value={cliente.telefono} 
         onChange={handleClienteChange}
         placeholder="Mínimo 7 dígitos"
+            autoComplete="off"
           className={erroresValidacion.telefono ? 'input-error' : ''}
         />
         <div className="field-messages">
@@ -950,6 +952,7 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
         value={cliente.direccion} 
         onChange={handleClienteChange}
         placeholder="Calle, número, etc."
+            autoComplete="off"
           className={erroresValidacion.direccion ? 'input-error' : ''}
         />
         <div className="field-messages">
@@ -968,6 +971,7 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
         value={cliente.correo} 
         onChange={handleClienteChange}
         placeholder="usuario@dominio.com"
+            autoComplete="off"
           className={erroresValidacion.correo ? 'input-error' : ''}
         />
         <div className="field-messages">
@@ -1013,6 +1017,7 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
             onBlur={(e) => verificarProductoExiste(index, e.target.value)}
             list="lista-productos"
             placeholder="Código"
+                        autoComplete="off"
             className={erroresProductos[index]?.codigo ? 'input-error' : ''}
         />
             <div className="field-messages">
@@ -1025,11 +1030,12 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
         {/* Cantidad */}
         <div className="product-field-container">
         <input 
-            type="number" 
+          type="number" 
             value={prod.cantidad}
             onChange={(e) => handleInputChange(index, 'cantidad', e.target.value)}
             min="1"
             placeholder="Cant."
+          autoComplete="off"
             className={erroresProductos[index]?.cantidad ? 'input-error' : ''}
         />
             <div className="field-messages">
@@ -1051,6 +1057,7 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
             onBlur={(e) => verificarProductoExistePorNombre(index, e.target.value)}
             list="lista-productos-nombre"
             placeholder="Detalle"
+                        autoComplete="off"
             className={erroresProductos[index]?.detalle ? 'input-error' : ''}
         />
             <div className="field-messages">
@@ -1067,6 +1074,7 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
             value={prod.vUnitario} 
           readOnly
             placeholder="Unitario"
+            autoComplete="off"
             className={erroresProductos[index]?.vUnitario ? 'input-error' : ''}
         />
             <div className="field-messages">
@@ -1079,12 +1087,13 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
         {/* Descuento */}
         <div className="product-field-container">
         <input 
-            type="number" 
+          type="number" 
             value={prod.descuento} 
             onChange={(e) => handleInputChange(index, 'descuento', e.target.value)}
             min="0"
             max="100"
             placeholder="%"
+          autoComplete="off"
             className={erroresProductos[index]?.descuento ? 'input-error' : ''}
         />
             <div className="field-messages">
