@@ -443,13 +443,17 @@ export const useInvoiceLogic = () => {
     // 4. DETALLES PRODUCTO
     // ==========================================
     const [productosFactura, setProductosFactura] = useState([
-        { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, descuento: 0, vTotal: 0, ivaPorcentaje: 0 }
+        { producto_id: null, codigo: '', cantidad: 1, detalle: '', vUnitario: 0, descuento: 0, vTotal:0, ivaPorcentaje: 0 }
     ]);
     const [sugerenciasProd, setSugerenciasProd] = useState([]);
     const [sugerenciasProdNombre, setSugerenciasProdNombre] = useState([]);
     const [productosNuevos, setProductosNuevos] = useState(new Set()); // Rastrear productos nuevos
     const [productosModificados, setProductosModificados] = useState(new Set()); // Productos existentes modificados
-    const [erroresProductos, setErroresProductos] = useState({}); // Errores por producto {index: {campo: mensaje}}
+    const [erroresProductos, setErroresProductos] = useState([]); // Errores por producto [index: {campo: mensaje}]
+
+    useEffect(() => {
+      setErroresProductos((prev) => productosFactura.map((_, i) => prev[i] || {}));
+    }, [productosFactura]);
 
     // Búsqueda de productos existentes por código
     const buscarProductos = async (t) => {
@@ -467,7 +471,7 @@ export const useInvoiceLogic = () => {
     };
 
     // Búsqueda de productos por nombre/detalle
-    const buscarProductosPorNombre = async (t, index) => {
+    const buscarProductosPorNombre = async (t) => {
         if (!t || t.length < 2) {
             setSugerenciasProdNombre([]);
             return;
@@ -484,20 +488,21 @@ export const useInvoiceLogic = () => {
     // Funciones auxiliares para manejo de errores de productos
     const limpiarErrorProducto = (index, campo) => {
         setErroresProductos(prev => {
-            const newErrors = { ...prev };
+            const newErrors = [...prev];
             if (newErrors[index]) {
                 delete newErrors[index][campo];
-                if (Object.keys(newErrors[index]).length === 0) delete newErrors[index];
             }
             return newErrors;
         });
     };
 
     const establecerErrorProducto = (index, campo, mensaje) => {
-        setErroresProductos(prev => ({
-            ...prev,
-            [index]: { ...prev[index], [campo]: mensaje }
-        }));
+        setErroresProductos(prev => {
+            const newErrors = [...prev];
+            if (!newErrors[index]) newErrors[index] = {};
+            newErrors[index][campo] = mensaje;
+            return newErrors;
+        });
     };
 
     // Validar caracteres en tiempo real - PRODUCTOS
@@ -611,8 +616,8 @@ export const useInvoiceLogic = () => {
         
         // Limpiar errores
         setErroresProductos(prev => {
-            const newErrors = { ...prev };
-            delete newErrors[index];
+            const newErrors = [...prev];
+            newErrors[index] = {};
             return newErrors;
         });
         
@@ -626,23 +631,15 @@ export const useInvoiceLogic = () => {
     const validarCodigoDuplicado = async (codigo, excluyendoIndex = null) => {
         if (!codigo.trim()) return false;
         
-        // Validar en la lista de productos de la factura
+        // Validar solo en la lista de productos de la factura actual
         for (let i = 0; i < productosFactura.length; i++) {
             if (i !== excluyendoIndex && productosFactura[i].codigo === codigo.trim() && productosFactura[i].codigo) {
                 return true; // Está duplicado en el formulario
             }
         }
 
-        // Validar en la base de datos
-        try {
-            const token = sessionStorage.getItem('token');
-            const res = await fetch(`http://localhost:8080/api/productos/codigo/${codigo.trim()}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            return res.ok; // true si existe en BD
-        } catch (err) {
-            return false;
-        }
+        // No validar contra BD: permitir crear nuevos productos
+        return false;
     };
 
     // Manejo de cambios en los inputs de productos con validación
@@ -672,8 +669,8 @@ export const useInvoiceLogic = () => {
                 
                 // Limpiar errores
                 setErroresProductos(prev => {
-                    const newErrors = { ...prev };
-                    delete newErrors[index];
+                    const newErrors = [...prev];
+                    newErrors[index] = {};
                     return newErrors;
                 });
                 
@@ -1057,18 +1054,7 @@ export const useInvoiceLogic = () => {
             if (productosFactura.length > 1) {
                 setProductosFactura(productosFactura.filter((_, idx) => idx !== i));
                 // Limpiar errores del producto eliminado
-                setErroresProductos(prev => {
-                    const newErrors = { ...prev };
-                    delete newErrors[i];
-                    // Reindexar errores
-                    const reindexedErrors = {};
-                    Object.keys(newErrors).forEach(key => {
-                        const oldIndex = parseInt(key);
-                        const newIndex = oldIndex > i ? oldIndex - 1 : oldIndex;
-                        reindexedErrors[newIndex] = newErrors[key];
-                    });
-                    return reindexedErrors;
-                });
+                setErroresProductos(prev => prev.filter((_, idx) => idx !== i));
             }
         },
         // Valores

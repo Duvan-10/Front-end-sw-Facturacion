@@ -14,7 +14,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Ajustes para formularios dentro de modal */
+/* Ajustes para formularios dentro de modal */ 
 .modal-body .app-form {
     max-width: 100%;
     padding: 0;
@@ -132,7 +132,7 @@
 .section-group {
     display: flex;
     gap: 10px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     padding-bottom: 30px;
     align-items: center;
     text-align: center;
@@ -141,16 +141,17 @@
 
 .form-select {
     width: 100%;
-    height: 30px;
+    height: 32px;
+    margin-bottom: 20px;
     padding: 5px;
-    gap: 5px;
-
+    gap: 20px;
     font-size: 14px;
     box-sizing: border-box;
     text-align: center;
     background-color: var(--invoice-select-bg);
     color: var(--invoice-select-text);
     border: 1px solid var(--invoice-select-border);
+    border-radius: 4px;
 }
 
 .client-data input {
@@ -204,7 +205,7 @@
 /* ======================================================= */
 
 .section-title.Product {
- font-size: 20px;
+    font-size: 20px;
     padding-bottom: 20px;
     margin-bottom: 20px;
     border-bottom: 2px solid var(--invoice-form-border-color);
@@ -287,16 +288,27 @@
 }
 
 .v-total {
-    margin-bottom: 0px;
-    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 30px;
-    padding: 5px;
+    padding: 4px;
+    margin-bottom: 0px;
+    font-size: 14px;
+    font-weight: 600;
     border-radius: 4px;
     text-align: center;
     background-color: var(--invoice-vtotal-bg);
     color: var(--invoice-vtotal-text);
     border: 1px solid var(--invoice-form-border-color);
 }
+
+
+
+.total span {
+    font-weight: bold;
+}
+
 
 .product-row input[type="number"],
 .product-row input[disabled] {
@@ -537,3 +549,23 @@
         font-size: 28px;
     }
 }
+
+    /* Mantiene alineación de inputs al mostrar/ocultar mensajes de error o aviso */
+    .field-messages {
+        min-height: 18px;
+        display: block;
+        line-height: 16px;
+        margin-top: 4px;
+    }
+
+    .success-message {
+        color: var(--form-success-text);
+    }
+
+    .warning-message {
+        color: var(--form-warning-text);
+    }
+
+    .error-message {
+        color: var(--form-error-text);
+    }

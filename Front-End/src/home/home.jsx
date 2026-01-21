@@ -33,6 +33,7 @@ import Reportes from '../modules/Reportes';
 import Perfil from '../modules/Perfil';
 import GestionUsuarios from '../modules/users';
 import InvoiceForm from '../forms/InvoiceForm';
+import Invoicenewclient from '../forms/Invoicenewclient';
 
 const Home = () => {
   const { user, logout } = useAuth();
@@ -201,19 +202,18 @@ const DashboardHome = () => {
 
 // Componente para manejar las rutas anidadas de facturas
 const FacturasRoute = () => {
-  const navigate = useNavigate || Navigate; // fallback
-  
   return (
     <Routes>
       <Route index element={<Facturas />} />
       <Route path="crear" element={<InvoiceFormWrapper />} />
+      <Route path="crear-nuevo-cliente" element={<InvoiceNewClientWrapper />} />
     </Routes>
   );
 };
 
 // Wrapper para InvoiceForm que maneja los callbacks
 const InvoiceFormWrapper = () => {
-  const navigate = useNavigate || Navigate;
+  const navigate = useNavigate();
   
   const handleFormSuccess = () => {
     navigate('/home/facturas');
@@ -225,5 +225,12 @@ const InvoiceFormWrapper = () => {
 
   return <InvoiceForm onSuccess={handleFormSuccess} onCancel={handleFormCancel} />;
 };
+
+function InvoiceNewClientWrapper() {
+  const navigate = useNavigate();
+  const handleBackToFacturas = () => navigate('/home/facturas');
+
+  return <Invoicenewclient onCancel={handleBackToFacturas} />;
+}
 
 export default Home;

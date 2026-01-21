@@ -150,6 +150,10 @@
     --form-error-bg: rgba(239, 68, 68, 0.15); /* Fondo error */
     --form-error-text: #fc8181;               /* Texto error */
     --form-error-border: #fc8181;             /* Borde error */
+    --form-success-text: #2e7d32;             /* Texto éxito */
+    --form-success-bg: rgba(46, 125, 50, 0.12); /* Fondo éxito suave */
+    --form-warning-text: #f59e0b;             /* Texto advertencia */
+    --form-warning-bg: rgba(245, 158, 11, 0.12); /* Fondo advertencia */
     --form-subtitle-text: #b0b0b0;            /* Texto subtítulo */
     --form-input-border: #555555;             /* Borde input */
     --form-input-border-focus: #3498db;       /* Borde input focus */
@@ -389,6 +393,10 @@ html.light-mode {
     --form-error-bg: #fef2f2;                 /* Fondo error */
     --form-error-text: #b91c1c;               /* Texto error */
     --form-error-border: #fecdd3;             /* Borde error */
+    --form-success-text: #166534;             /* Texto éxito */
+    --form-success-bg: #dcfce7;               /* Fondo éxito suave */
+    --form-warning-text: #b45309;             /* Texto advertencia */
+    --form-warning-bg: #fef3c7;               /* Fondo advertencia suave */
     --form-subtitle-text: #6b7280;            /* Texto subtítulo */
     --form-input-border: #d1d5db;             /* Borde input */
     --form-input-border-focus: #2b6cb0;       /* Borde input focus */
