@@ -247,7 +247,7 @@
     padding: 4px;
     border-radius: 4px;
     background-color: var(--invoice-product-input-bg);
-    color: var(--invoice-product-input-text);
+    color: var(--invoice-product-input-text);   
     border: 1px solid var(--invoice-product-input-border);
 }
 
@@ -261,8 +261,8 @@
 
 /* Estilos para inputs con error en productos */
 .product-row input.input-error {
-    border-color: #dc3545;
-    background-color: rgba(220, 53, 69, 0.05);
+    border-color: var(--borde-codeproduct-error);
+    background-color: var(--background-codeproduct-error-border);
 }
 
 /* Contenedor de campo con error para mantener alineación */

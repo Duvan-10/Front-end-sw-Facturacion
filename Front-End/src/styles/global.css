@@ -180,7 +180,7 @@
     --invoice-product-header-text: #e3ebe3;          /* Texto encabezado productos */
     --invoice-product-input-bg: oklch(90.28% 0.00394 106.88); /* Fondo inputs productos */
     --invoice-product-input-border: oklch(80.41% 0.23969 140.806); /* Borde inputs productos */
-    --invoice-product-input-text: lab(21.25% 0 0);   /* Texto inputs productos */
+    --invoice-product-input-text: oklch(17.882% 0.00164 16.627);   /* Texto inputs productos */
     --invoice-vtotal-bg: #88e690;                    /* Fondo V.Total */
     --invoice-vtotal-text: black;                    /* Texto V.Total */
     --invoice-values-title-color: lab(90.3% 3.4 1.2); /* Títulos valores */
@@ -194,6 +194,8 @@
     --invoice-total-final-label-color: lab(76.66% -74.89 69.8); /* Color label total final */
     --invoice-total-final-value-color: hsl(110, 100%, 50%); /* Color valor total final */
     --invoice-final-buttons-border: hsl(0, 0%, 93%); /* Borde botones finales */
+    --borde-codeproduct-error: #f8d7da;               /* Borde inputs con error en productos Formulario Facturas */
+    --background-codeproduct-error-border: oklch(95.076% 0.00645 16.348);   /* Fondo inputs con error en productos Formulario Facturas */
     
  
 
@@ -437,6 +439,9 @@ html.light-mode {
     --invoice-total-final-label-color: #1f2937;     /* Color label total final */
     --invoice-total-final-value-color: #16a34a;     /* Color valor total final */
     --invoice-final-buttons-border: #e5e7eb;         /* Borde botones finales */
+    --borde-codeproduct-error: #f8d7da;               /* Borde inputs con error en productos Formulario Facturas */
+    --background-codeproduct-error-border: #d3cbcb00;   /* Fondo inputs con error en productos Formulario Facturas */
+    
 
     /* ================================================================= */
 
