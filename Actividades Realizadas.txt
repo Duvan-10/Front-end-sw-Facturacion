@@ -58,6 +58,88 @@ ACTIVIDADES REALIZADAS:
 
 ================================================================================
 
+================================================================================
+**Fecha:** 20 de Enero de 2026
+ACTIVIDADES REALIZADAS:
+================================================================================
+
+### **SISTEMA DE VALIDACIÓN Y OPTIMIZACIÓN INTEGRAL**
+
+#### **1. CORRECCIÓN DE BOTÓN EN MODO CLARO**
+* **Problema:** Botón "+ crear nueva factura" mostraba texto cubierto por efecto blanco en modo claro
+* **Solución:** Ajustado `--color-accent-darker` en `global.css` de `hsl(140, 9%, 7%)` a `#1e40af`
+* **CSS:** Agregados estados `:active/:focus` con `box-shadow: none` y selectores específicos usando `!important`
+
+#### **2. SISTEMA DE VALIDACIÓN DE FORMULARIOS (CLIENTES Y PRODUCTOS)**
+* **Validación en Tiempo Real:** 6 funcionalidades implementadas para campos de clientes:
+  - Autocompletar por identificación o nombre
+  - Sugerencias dinámicas con debounce (300ms)
+  - Notificación cuando cliente/producto no existe
+  - Limpieza automática de campos
+  - Edición con actualización automática
+  - Validación de caracteres inválidos con mensajes específicos
+* **Regex Patterns:** Centralizados en constantes `REGEX_PATTERNS` y `MENSAJE_ERROR`
+* **Estados de Error:** Objeto `erroresCliente` y `erroresProductos` indexados por campo/índice
+* **Dual Autocomplete:** Sistema de búsqueda por código Y por nombre para clientes y productos
+
+#### **3. REFACTORIZACIÓN DE LÓGICA DE VALIDACIÓN**
+* **Funciones Auxiliares:** Creadas `limpiarErrorCliente()`, `establecerErrorCliente()`, `limpiarErrorProducto()`, `establecerErrorProducto()`
+* **Eliminación de Duplicación:** Regex definidas una sola vez en objeto central
+* **Validación por Tipo de Documento:**
+  - C.C.: 6-10 dígitos, solo números
+  - NIT: 9-12 dígitos, permite espacios, puntos y guiones
+  - C.E.: 6-12 dígitos, permite guiones
+* **Expansión de Tipos:** Función `expandirTipoIdentificacion()` convierte abreviaciones a nombres completos para BD
+
+#### **4. CORRECCIÓN DE GRID DE PRODUCTOS**
+* **Desalineamiento:** Agregada séptima columna al grid (`grid-template-columns: 100px 60px 1fr 200px 150px 150px 80px`)
+* **Contenedores:** Clase `.product-field-container` mantiene alineación con mensajes de error
+* **Datalists:** Corregido para usar `value={p.codigo}` en lugar de `value={p.nombre}`
+
+#### **5. FORMULARIO CLIENTE NUEVO (Invoicenewclient.jsx)**
+* **Funcionalidad Específica:** Formulario dedicado para crear factura con cliente nuevo
+* **Sin Verificación de Existencia:** Removidos `onBlur` de verificación (propósito del formulario)
+* **Advertencia Pre-Creación:** Confirmación con preview de datos antes de crear cliente y factura
+* **Validación de Campos Obligatorios:** Verifica identificación, nombre y teléfono antes de mostrar confirmación
+
+#### **6. VALIDACIONES ESPECÍFICAS POR TIPO DE IDENTIFICACIÓN**
+* **Implementación:** Funciones `validarIdentificacionPorTipo()` y `getMensajeErrorIdentificacion()`
+* **Normalización:** Funciones `normalizarTipoIdentificacion()` (BD → Frontend) y `expandirTipoIdentificacion()` (Frontend → BD)
+* **Guardado en BD:** Tipos expandidos correctamente ("Cédula de Ciudadanía", "NIT", "Cédula de Extranjería")
+
+#### **7. SISTEMA DE TABLAS RESPONSIVAS**
+* **Truncamiento de Texto:** Implementado `text-overflow: ellipsis` con `table-layout: fixed`
+* **Tooltips:** CSS pseudo-elemento `::after` muestra texto completo en hover
+* **Media Queries:** 5 breakpoints configurados:
+  - Tablets (1024px - 769px)
+  - Móviles grandes (768px - 481px)
+  - Móviles pequeños (480px)
+  - Laptops/Monitores (1025px - 1440px)
+  - Pantallas grandes/TV (1441px+)
+* **Scroll Horizontal:** Wrapper `.table-responsive` para dispositivos móviles
+
+#### **8. UTILIDADES PARA TABLAS (tableHelpers.js)**
+* **Funciones Creadas:**
+  - `truncateText()`: Trunca texto con ellipsis
+  - `getTruncatedCellProps()`: Props para celdas con tooltip
+  - `formatCurrency()`: Formato moneda colombiana
+  - `formatDate()`: Formato DD/MM/YYYY
+  - `getInvoiceStatusClass()`, `getEmissionStatusClass()`: Clases CSS dinámicas
+  - `filterTableData()`: Filtrado de datos
+  - `sortTableData()`: Ordenamiento
+  - `getResponsiveCellProps()`: Props completos para celdas responsive
+
+### **ESTADO FINAL DEL SISTEMA**
+✅ **Validaciones completas:** Tiempo real con regex específicos por tipo
+✅ **Formularios optimizados:** InvoiceForm.jsx e Invoicenewclient.jsx con lógica diferenciada
+✅ **Código refactorizado:** Funciones auxiliares, constantes centralizadas, eliminación de duplicación
+✅ **Responsive design:** 5 breakpoints con ajustes específicos por dispositivo
+✅ **Tablas optimizadas:** Truncamiento automático, tooltips, scroll horizontal
+✅ **Tipos de documento:** Validación específica y guardado con nombre completo
+✅ **Utilidades reutilizables:** 12 funciones en tableHelpers.js para manejo de tablas
+
+================================================================================
+
 
 
 #### **1. SISTEMA DE AUTENTICACIÓN Y PERSISTENCIA**
