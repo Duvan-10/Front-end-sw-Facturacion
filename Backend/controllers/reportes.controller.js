@@ -117,6 +117,15 @@ export const getDatosReporte = async (req, res) => {
       
     } else if (reporte.reporte === 'RP_CL') {
       // Reporte de Clientes
+      let whereClause = '1=1';
+      const hoy = new Date();
+      const hace30Dias = new Date(hoy.getTime() - 30 * 24 * 60 * 60 * 1000);
+      
+      if (subTipo === 'Clientes Nuevos') whereClause = `c.fecha_creacion >= '${hace30Dias.toISOString().split('T')[0]}'`;
+      else if (subTipo === 'Clientes Antiguos') whereClause = `c.fecha_creacion < '${hace30Dias.toISOString().split('T')[0]}'`;
+      else if (subTipo === 'Compraron') whereClause = 'c.id IN (SELECT DISTINCT cliente_id FROM facturas)';
+      else if (subTipo === 'No Compraron') whereClause = 'c.id NOT IN (SELECT DISTINCT cliente_id FROM facturas WHERE cliente_id IS NOT NULL)';
+      
       const [clientes] = await db.query(
         `SELECT c.identificacion AS 'Identificación',
                 c.nombre_razon_social AS 'Nombre/Razón Social',
@@ -127,6 +136,7 @@ export const getDatosReporte = async (req, res) => {
                 COALESCE(SUM(f.total), 0) AS 'Total Comprado'
          FROM clientes c
          LEFT JOIN facturas f ON c.id = f.cliente_id
+         WHERE ${whereClause}
          GROUP BY c.id
          ORDER BY c.nombre_razon_social`
       );
@@ -134,6 +144,13 @@ export const getDatosReporte = async (req, res) => {
       
     } else if (reporte.reporte === 'RP_PD') {
       // Reporte de Productos
+      let orderClause = 'p.nombre';
+      let whereClause = '1=1';
+      
+      if (subTipo === 'Mas Vendidos') orderClause = 'COALESCE(SUM(fd.cantidad), 0) DESC';
+      else if (subTipo === 'Menos Vendidos') orderClause = 'COALESCE(SUM(fd.cantidad), 0) ASC';
+      else if (subTipo === 'Sin Ventas') whereClause = 'p.id NOT IN (SELECT DISTINCT producto_id FROM factura_detalles WHERE producto_id IS NOT NULL)';
+      
       const [productos] = await db.query(
         `SELECT p.codigo AS 'Código',
                 p.nombre AS 'Nombre',
@@ -144,8 +161,9 @@ export const getDatosReporte = async (req, res) => {
                 COALESCE(SUM(fd.cantidad), 0) AS 'Cantidad Total'
          FROM productos p
          LEFT JOIN factura_detalles fd ON p.id = fd.producto_id
+         WHERE ${whereClause}
          GROUP BY p.id
-         ORDER BY p.nombre`
+         ORDER BY ${orderClause}`
       );
       datos = productos;
     }
