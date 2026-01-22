@@ -13,6 +13,7 @@ import productoRoutes from './routes/producto.routes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js'; 
 import perfilRoutes from './routes/perfil.routes.js';
 import userRoutes from './routes/user.routes.js';
+import reportesRoutes from './routes/reportes.routes.js';
 
 
 
@@ -39,6 +40,7 @@ app.use('/api/productos', productoRoutes);
 app.use('/api/perfil', perfilRoutes);
 app.use('/api/facturas', invoiceRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/reportes', reportesRoutes);
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => res.status(204).end());
 
 
