@@ -363,7 +363,7 @@ export default function Users() {
           <table className="user-table" id="tablaUsuarios">
             <thead>
               <tr>
-                <th>Nit/Cc</th>
+                <th>Identificación</th>
                 <th>Nombre</th>
                 <th>Correo</th>
                 <th>Rol</th>
@@ -413,7 +413,7 @@ export default function Users() {
           )}
 
           <form id="formUsuario" autoComplete="off" onSubmit={handleSubmit}>
-            <label htmlFor="nit">Nit/Cc</label>
+            <label htmlFor="nit">Identificacion</label>
             <input
               id="nit"
               ref={nitRef}

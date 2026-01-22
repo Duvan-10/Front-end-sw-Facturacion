@@ -71,6 +71,12 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
     }
     // Si result === false, simplemente no hacer nada (el usuario ya vio los alerts de error)
   };
+
+  // Calcular fecha local actual (no UTC)
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + 
+                   String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(today.getDate()).padStart(2, '0');
   
   return (
     <form className="app-form card" onSubmit={handleSubmit}>
@@ -86,10 +92,10 @@ const InvoiceForm = ({ onSuccess, onCancel }) => {
                  <input type="text" value={numeroFactura} readOnly /> Número de Factura</label>
                  
                  <label className='Fecha'>
-                 <input type="date" value={fechaEmision} onChange={(e) => setFechaEmision(e.target.value)} /> Fecha Emisión</label>
-
+<input type="date" value={fechaEmision} min={todayStr} onChange={(e) => setFechaEmision(e.target.value)} /> Fecha Emisión</label>
+ 
                  <label className='Fecha'>
-                 <input type="date" value={fechaVencimiento} onChange={(e) => setFechaVencimiento(e.target.value)} /> Fecha Vencimiento</label>
+                 <input type="date" value={fechaVencimiento} min={todayStr} onChange={(e) => setFechaVencimiento(e.target.value)} /> Fecha Vencimiento</label>
                  
                 </div>
             </div>    

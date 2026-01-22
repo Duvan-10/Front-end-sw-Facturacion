@@ -6,14 +6,24 @@
  * Normaliza el tipo de identificación desde BD al formato abreviado del frontend
  */
 export const normalizarTipoIdentificacion = (tipoDesdeDB) => {
+    const clave = (tipoDesdeDB || '').trim();
+    const claveUpper = clave.toUpperCase();
     const mapeoReverso = {
         'Cédula de Ciudadanía': 'C.C.',
+        'CEDULA DE CIUDADANIA': 'C.C.',
         'NIT': 'NIT',
         'Cédula de Extranjería': 'C.E.',
+        'CEDULA DE EXTRANJERIA': 'C.E.',
         'C.C.': 'C.C.',
         'C.E.': 'C.E.'
     };
-    return mapeoReverso[tipoDesdeDB] || 'C.C.';
+
+    if (mapeoReverso[clave]) return mapeoReverso[clave];
+    if (mapeoReverso[claveUpper]) return mapeoReverso[claveUpper];
+    if (claveUpper.includes('NIT')) return 'NIT';
+    if (claveUpper.includes('EXTRAN')) return 'C.E.';
+    if (claveUpper.includes('CIUDA') || claveUpper.includes('CEDULA')) return 'C.C.';
+    return 'C.C.';
 };
 
 /**
@@ -33,25 +43,26 @@ export const expandirTipoIdentificacion = (tipoAbreviado) => {
  */
 export const validarIdentificacionPorTipo = (identificacion, tipoDoc) => {
     const id = identificacion.trim();
-    
+    const soloDigitos = id.replace(/[^0-9]/g, '');
+
     switch(tipoDoc) {
         case 'C.C.':
-            // Cédula: solo números, sin puntos ni espacios
-            return /^[0-9]{6,10}$/.test(id);
-        
-        case 'NIT':
-            // NIT: números con puntos, guiones y espacios opcionales (hasta 12 dígitos)
-            // Formato: 900.123.456-7 o 900123456-7 o 9001234567
-            const nitLimpio = id.replace(/[\s.-]/g, '');
-            return /^[0-9]{9,12}$/.test(nitLimpio);
-        
+            // Cédula: exactamente 10 dígitos
+            return /^\d{10}$/.test(soloDigitos);
+
         case 'C.E.':
-            // Cédula Extranjera: números con guiones opcionales
-            const ceLimpio = id.replace(/[-]/g, '');
-            return /^[0-9]{6,12}$/.test(ceLimpio);
-        
+            // Cédula de Extranjería: exactamente 10 dígitos
+            return /^\d{10}$/.test(soloDigitos);
+
+        case 'NIT': {
+            // NIT: un guion obligatorio antes del dígito verificador, máximo 12 caracteres totales
+            // Ejemplos válidos: 900123456-7, 1234567-8
+            const patronNit = /^\d{6,11}-\d$/; // parte inicial 6-11 dígitos + '-' + dígito verificador
+            return patronNit.test(id) && id.length <= 12;
+        }
+
         default:
-            return REGEX.IDENTIFICACION.test(id);
+            return soloDigitos.length >= 6 && soloDigitos.length <= 12;
     }
 };
 
@@ -61,11 +72,11 @@ export const validarIdentificacionPorTipo = (identificacion, tipoDoc) => {
 export const getMensajeErrorIdentificacion = (tipoDoc) => {
     switch(tipoDoc) {
         case 'C.C.':
-            return '⚠️ Cédula: debe contener entre 6 y 10 dígitos sin espacios ni puntos';
-        case 'NIT':
-            return '⚠️ NIT: formato inválido. Ejemplo: 900.123.456-7 o 9001234567';
+            return '⚠️ Cédula: debe contener exactamente 10 dígitos';
         case 'C.E.':
-            return '⚠️ Cédula Extranjera: debe contener entre 6 y 12 dígitos';
+            return '⚠️ Cédula de Extranjería: debe contener exactamente 10 dígitos';
+        case 'NIT':
+            return '⚠️ NIT: debe tener un guion antes del dígito verificador y máximo 12 caracteres (ej: 900123456-7)';
         default:
             return '⚠️ Identificación: formato inválido';
     }

@@ -179,7 +179,7 @@ const DashboardHome = () => {
   return (
     <>
       <div className="header">
-        <h1>Bienvenido al sistema de Facturación Electrónica</h1>
+        <h1>Sistema de Facturación Electrónica</h1>
       </div>
 
       <div className="cards">

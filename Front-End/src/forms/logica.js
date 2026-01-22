@@ -25,7 +25,7 @@ export const useInvoiceLogic = () => {
     // CONSTANTES DE VALIDACIÓN
     // ==========================================
     const REGEX_PATTERNS = {
-        identificacion: /^[0-9-]*$/,
+        identificacion: /^[0-9.-]*$/,
         nombre: /^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s.-]*$/,
         telefono: /^[0-9]*$/,
         direccion: /^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚüÜ\s#-]*$/,
@@ -301,7 +301,7 @@ export const useInvoiceLogic = () => {
             setIdentificacion(clienteSugerido.identificacion);
             setCliente({
                 id: clienteSugerido.id,
-                tipo_identificacion: clienteSugerido.tipo_identificacion || 'C.C.',
+                tipo_identificacion: normalizarTipoIdentificacion(clienteSugerido.tipo_identificacion) || 'C.C.',
                 nombre: clienteSugerido.nombre_razon_social,
                 correo: clienteSugerido.email,
                 telefono: clienteSugerido.telefono,
@@ -326,14 +326,13 @@ export const useInvoiceLogic = () => {
     const normalizarIdentificacion = (valor, tipo) => {
         if (!valor) return '';
         const limpio = String(valor).trim();
+        const soloDigitos = limpio.replace(/[^0-9]/g, '');
         switch (tipo) {
             case 'NIT':
-                return limpio.replace(/[\s.\-]/g, '');
             case 'C.E.':
-                return limpio.replace(/[\s-]/g, '');
             case 'C.C.':
             default:
-                return limpio.replace(/[\s]/g, '');
+                return soloDigitos;
         }
     };
 
@@ -399,10 +398,12 @@ export const useInvoiceLogic = () => {
             return false;
         }
         
-        // Validar formato según tipo de documento
-        if (!validarIdentificacionPorTipo(identificacion, cliente.tipo_identificacion)) {
-            alert(getMensajeErrorIdentificacion(cliente.tipo_identificacion));
-            return false;
+        // Validar formato según tipo de documento solo para clientes nuevos o editados manualmente
+        if (!cliente.id || clienteModificado) {
+            if (!validarIdentificacionPorTipo(identificacion, cliente.tipo_identificacion)) {
+                alert(getMensajeErrorIdentificacion(cliente.tipo_identificacion));
+                return false;
+            }
         }
 
         // Validar si identificación existe y es nuevo cliente

@@ -11,37 +11,34 @@ const Reportes = () => {
   const config = {
     facturas: {
       title: "Análisis de Facturación",
-      subs: ["Todas las Facturas", "Facturas Pendientes", "IVA Recaudado"],
-      headers: ["Fecha", "Folio", "Cliente", "Estado", "Total", "Acciones"],
+      subs: ["Todas las Facturas", "Pendientes", "Pagadas", "Anuladas","Vencidas","Parcial","Emitidas","No Emitidas"],
+      headers: ["N° Reporte", "Fecha", "Archivo", "Acciones"],
       chart: [{h: '65%', l: 'Sem 1'}, {h: '90%', l: 'Sem 2'}, {h: '55%', l: 'Sem 3'}, {h: '80%', l: 'Sem 4'}],
-      data: [
-        ["2026-01-15", "F-101", "Inversiones Delta", "Pagada", "$1,250"],
-        ["2026-01-18", "F-102", "Juan Pérez", "Pendiente", "$450"]
-      ]
+      data: []
     },
     clientes: {
       title: "Reporte de Clientes",
-      subs: ["Ranking de Ventas", "Clientes Inactivos", "Nuevos Registros"],
-      headers: ["Nombre Cliente", "Contacto", "Compras", "Inversión Total", "Acciones"],
+      subs: ["Todos los Clientes", "Clientes Nuevos", "Clientes Antiguos","Compraron","No Compraron"],
+      headers: ["N° Reporte", "Fecha", "Archivo", "Acciones"],
       chart: [{h: '100%', l: 'VIP'}, {h: '60%', l: 'Frecuente'}, {h: '25%', l: 'Ocasional'}],
-      data: [
-        ["Empresa ABC", "contacto@abc.com", "12", "$8,900"],
-        ["Tienda Local", "tienda@mail.com", "3", "$1,100"]
-      ]
+      data: []
     },
     productos: {
       title: "Reporte de Productos",
-      subs: ["Más Vendidos ($)", "Mayor Rotación (Cant)", "Sin Ventas"],
-      headers: ["Producto", "Precio", "Cant. Vendida", "Total Bruto", "Acciones"],
+      subs: ["Todos los Productos", "Mas Vendidos", "Menos Vendidos", "Sin Ventas"],
+      headers: ["N° Reporte", "Fecha", "Archivo", "Acciones"],
       chart: [{h: '40%', l: 'Serv. A'}, {h: '95%', l: 'Licencia X'}, {h: '70%', l: 'Soporte'}],
-      data: [
-        ["Consultoría Pro", "$100", "25", "$2,500"],
-        ["Soporte Anual", "$350", "10", "$3,500"]
-      ]
+      data: [ ]
     }
   };
 
   const current = config[view];
+
+  // Calcular fecha local actual (no UTC) para restricción de reportes
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + 
+                   String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(today.getDate()).padStart(2, '0');
 
   // Función para procesar el reporte basándose en los filtros
   const handleGenerate = () => {
@@ -74,25 +71,16 @@ const Reportes = () => {
             {key.charAt(0).toUpperCase() + key.slice(1)}
           </button>
         ))}
+        
       </div>
 
       <div className="report-grid-top">
-        {/* Gráfico Dinámico */}
-        <div className="report-panel">
-          <span className="panel-label">Resumen Visual del Periodo</span>
-          <div className="simple-bar-chart">
-            {current.chart.map((bar, i) => (
-              <div key={i} className="chart-bar" style={{ height: bar.h }} data-label={bar.l}></div>
-            ))}
-          </div>
-        </div>
+        
 
         {/* Panel de Filtros de Fecha y Tipo */}
         <div className="report-panel">
           <span className="panel-label">Filtros de Reporte</span>
-          <div className="filter-form">
-            <label className="filter-hint">Tipo Específico:</label>
-            <select 
+          <div className="filter-form">            <select 
               className="ui-input" 
               value={subType} 
               onChange={(e) => setSubType(e.target.value)}
@@ -105,19 +93,21 @@ const Reportes = () => {
               <input 
                 type="date" 
                 className="ui-input" 
-                value={dateFrom} 
+                value={dateFrom}
+                max={todayStr}
                 onChange={(e) => setDateFrom(e.target.value)} 
               />
               <input 
                 type="date" 
                 className="ui-input" 
-                value={dateTo} 
+                value={dateTo}
+                max={todayStr}
                 onChange={(e) => setDateTo(e.target.value)} 
               />
             </div>
             
             <button className="ui-btn-primary" onClick={handleGenerate}>
-              🔍 Generar Reporte y Actualizar Tabla
+              🔍 Generar Reporte
             </button>
           </div>
         </div>
@@ -139,7 +129,7 @@ const Reportes = () => {
                 {row.map((cell, j) => <td key={j}>{cell}</td>)}
                 <td className="actions-cell">
                   <button className="btn-table-excel" onClick={() => alert(`Descargando Excel detallado...`)}>
-                    Excel
+                    ⬇️Descargar
                   </button>
                 </td>
               </tr>

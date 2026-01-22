@@ -53,6 +53,12 @@ function useInvoiceLogicNew() {
     obtenerProximoNumero();
   }, []);
 
+  // Calcular fecha local actual (no UTC)
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + 
+                   String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(today.getDate()).padStart(2, '0');
+
   const [fechaVencimiento, setFechaVencimiento] = useState(() => {
     const ahora = new Date();
     return (
@@ -84,27 +90,23 @@ function useInvoiceLogicNew() {
   const getIdentificacionValidador = (tipo) => {
     switch (tipo) {
       case 'C.C.':
-        return { regex: /^[0-9]*$/, mensaje: 'caracter invalido' };
       case 'NIT':
-        return { regex: /^[0-9\-]*$/, mensaje: 'caracter invalido' };
       case 'C.E.':
-        return { regex: /^[0-9\-]*$/, mensaje: 'caracter invalido' };
       default:
-        return { regex: /^[0-9\s\-]*$/, mensaje: 'caracter invalido ' };
+        return { regex: /^[0-9..-]*$/, mensaje: 'caracter invalido' };
     }
   };
 
   const normalizarIdentificacionPorTipo = (tipoAbreviado, valor) => {
     if (!valor) return '';
     const limpio = String(valor).trim();
+    const soloDigitos = limpio.replace(/[^0-9]/g, '');
     switch (tipoAbreviado) {
       case 'NIT':
-        return limpio.replace(/[\s.\-]/g, '');
       case 'C.E.':
-        return limpio.replace(/[\s-]/g, '');
       case 'C.C.':
       default:
-        return limpio.replace(/[\s]/g, '');
+        return soloDigitos;
     }
   };
 
@@ -826,10 +828,16 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
       }
     }
   };
+
+  // Calcular fecha local actual (no UTC)
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + 
+                   String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(today.getDate()).padStart(2, '0');
   
   return (
     <form className="app-form card" onSubmit={handleSubmit}>
-      <h2 className="module-title">Registrar Nueva Factura</h2>
+      <h2 className="module-title">Registrar Nueva Factura Cliente Nuevo</h2>
 
  {/*********************** N°FACTURA Y FECHA*****************************/}
     
@@ -841,10 +849,10 @@ const InvoiceNewClientForm = ({ onSuccess, onCancel }) => {
                  <input type="text" value={numeroFactura} readOnly /> Número de Factura</label>
                  
                  <label className='Fecha'>
-                 <input type="date" value={fechaEmision} onChange={(e) => setFechaEmision(e.target.value)} /> Fecha Emisión</label>
+                 <input type="date" value={fechaEmision} min={todayStr} onChange={(e) => setFechaEmision(e.target.value)} /> Fecha Emisión</label>
 
                  <label className='Fecha'>
-                 <input type="date" value={fechaVencimiento} onChange={(e) => setFechaVencimiento(e.target.value)} /> Fecha Vencimiento</label>
+                 <input type="date" value={fechaVencimiento} min={todayStr} onChange={(e) => setFechaVencimiento(e.target.value)} /> Fecha Vencimiento</label>
                  
                 </div>
             </div>    

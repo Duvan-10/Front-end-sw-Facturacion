@@ -1,3 +1,11 @@
+.panel-label {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  display: block;
+  color: var(--rep-text-main);
+}
+
 .report-main-wrapper {
   padding: 40px;
   background-color: var(--rep-bg);
@@ -38,29 +46,7 @@
   box-shadow: 0 2px 4px var(--rep-shadow);
 }
 
-.report-grid-top {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 25px;
-  margin-bottom: 25px;
-}
 
-.report-panel {
-  background: var(--rep-card-bg);
-  padding: 24px;
-  border-radius: 16px;
-  border: 1px solid var(--rep-border);
-  box-shadow: 0 2px 8px var(--rep-shadow);
-}
-
-.panel-label {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--rep-text-muted);
-  text-transform: uppercase;
-  margin-bottom: 20px;
-}
 
 .filter-hint {
   font-size: 0.8rem;
@@ -69,12 +55,6 @@
   margin-bottom: 4px;
 }
 
-.simple-bar-chart {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  height: 140px;
-}
 
 .chart-bar {
   width: 35px;
@@ -107,17 +87,19 @@
   font-weight: 700; 
   margin-top: 10px;
   transition: background 0.2s;
+  margin-bottom: 20px;
 }
 
 .ui-btn-primary:hover { background: var(--rep-primary-hover); }
 
 /* Tabla y Acciones */
 .table-header-info {
-  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
   font-size: 0.9rem;
   color: var(--rep-text-muted);
-  border-bottom: 1px solid var(--rep-border);
-  padding-bottom: 10px;
 }
 
 .ui-table { width: 100%; border-collapse: collapse; }
