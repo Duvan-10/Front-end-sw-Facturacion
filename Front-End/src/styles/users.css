@@ -356,3 +356,168 @@ button.eliminar, .btn-danger{
 .user-management .action-icon {
   vertical-align: middle;
 }
+/* ============================================================
+ * RESPONSIVE DESIGN - MEDIA QUERIES
+ * ============================================================ */
+
+/* Tablets y dispositivos medianos (768px - 1024px) */
+@media (max-width: 1024px) {
+  .user-management {
+    max-width: 90%;
+    padding: 15px;
+  }
+
+  .actions {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .user-table {
+    font-size: 13px;
+  }
+
+  .user-table th,
+  .user-table td {
+    padding: 10px 8px;
+  }
+
+  .modal-content {
+    width: 85%;
+    padding: 20px;
+  }
+}
+
+/* Smartphones y pantallas pequeñas (hasta 768px) */
+@media (max-width: 768px) {
+  .user-management {
+    margin: 10px;
+    padding: 12px;
+  }
+
+  .user-management h2 {
+    font-size: 18px;
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .actions input,
+  .actions .btn-primary {
+    width: 100%;
+  }
+
+  /* Tabla responsive: scroll horizontal */
+  .user-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .user-table {
+    min-width: 700px;
+    font-size: 12px;
+  }
+
+  .user-table th,
+  .user-table td {
+    padding: 8px 6px;
+  }
+
+  button.editar,
+  button.eliminar,
+  .btn-warning,
+  .btn-danger {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-height: 85vh;
+    padding: 15px;
+  }
+
+  .modal-header h3 {
+    font-size: 16px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-actions .btn-success,
+  .modal-actions .btn-secondary {
+    width: 100%;
+  }
+}
+
+/* Móviles pequeños (hasta 480px) */
+@media (max-width: 480px) {
+  .user-management {
+    margin: 5px;
+    padding: 10px;
+  }
+
+  .user-management h2 {
+    font-size: 16px;
+  }
+
+  .user-table {
+    min-width: 600px;
+    font-size: 11px;
+  }
+
+  .user-table th,
+  .user-table td {
+    padding: 6px 4px;
+  }
+
+  button.editar,
+  button.eliminar {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .modal-content {
+    width: 98%;
+    padding: 12px;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 12px;
+  }
+}
+
+/* Pantallas grandes (1440px+) */
+@media (min-width: 1440px) {
+  .user-management {
+    max-width: 1200px;
+    padding: 30px;
+  }
+
+  .user-management h2 {
+    font-size: 24px;
+  }
+
+  .user-table {
+    font-size: 15px;
+  }
+
+  .user-table th,
+  .user-table td {
+    padding: 14px 12px;
+  }
+}

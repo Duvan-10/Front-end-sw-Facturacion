@@ -489,20 +489,20 @@ html.light-mode {
     /* MÓDULO REPORTES (Modo Claro)                                     */
     /* Variables exclusivas con prefijo --rep-                          */
     /* ================================================================= */
-    --rep-primary: #2563eb;             /* Azul estándar */
-    --rep-primary-hover: #1d4ed8;       /* Azul hover */
-    --rep-success: #15803d;             /* Verde éxito/excel */
-    --rep-bg: #f4f7fa;                  /* Fondo claro */
-    --rep-card-bg: #ffffff;             /* Tarjeta blanca */
-    --rep-border: #e2e8f0;              /* Borde suave */
+    --rep-primary: #2563eb;             /* Azul oscuro para modo claro */
+    --rep-primary-hover: #1d4ed8;       /* Azul hover más oscuro */
+    --rep-success: #16a34a;             /* Verde éxito */
+    --rep-bg: #f8fafc;                  /* Fondo gris muy claro */
+    --rep-card-bg: #ffffff;             /* Fondo tarjetas blanco */
+    --rep-border: #e2e8f0;              /* Bordes claros */
     --rep-text-main: #1e293b;           /* Texto oscuro */
-    --rep-text-muted: #64748b;          /* Texto secundario */
-    --rep-selector-bg: #e2e8f0;         /* Fondo del selector de pestañas */
+    --rep-text-muted: #64748b;          /* Texto secundario gris */
+    --rep-selector-bg: #f1f5f9;         /* Fondo selector de pestañas */
     --rep-selector-active-bg: #ffffff;  /* Fondo pestaña activa */
-    --rep-th-bg: #f8fafc;               /* Fondo encabezado tabla claro */
+    --rep-th-bg: #f8fafc;               /* Fondo encabezado tabla */
     --rep-shadow: rgba(0, 0, 0, 0.05);  /* Sombra suave */
-
 }
+
 /*----------------------------------------------------------------------------------------------------------*/
 
 

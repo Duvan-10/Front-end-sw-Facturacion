@@ -1,11 +1,9 @@
-.panel-label {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 15px;
-  display: block;
-  color: var(--rep-text-main);
-}
+/* ============================================================
+ * MÓDULO REPORTES - ESTILOS
+ * Usa variables CSS de global.css con prefijo --rep-
+ * ============================================================ */
 
+/* Contenedor Principal */
 .report-main-wrapper {
   padding: 40px;
   background-color: var(--rep-bg);
@@ -18,6 +16,7 @@
   font-size: 1.75rem;
   font-weight: 800;
   margin-bottom: 25px;
+  color: var(--rep-text-main);
 }
 
 /* Selector de Pestañas */
@@ -27,6 +26,7 @@
   padding: 4px;
   border-radius: 10px;
   margin-bottom: 30px;
+  gap: 4px;
 }
 
 .selector-btn {
@@ -37,7 +37,11 @@
   font-weight: 600;
   color: var(--rep-text-muted);
   background: transparent;
-  transition: 0.2s;
+  transition: all 0.2s ease;
+}
+
+.selector-btn:hover {
+  color: var(--rep-primary);
 }
 
 .selector-btn.active {
@@ -46,53 +50,88 @@
   box-shadow: 0 2px 4px var(--rep-shadow);
 }
 
+/* Panel de Filtros */
+.report-grid-top {
+  margin-bottom: 30px;
+}
 
+.report-panel {
+  background: var(--rep-card-bg);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px var(--rep-shadow);
+  border: 1px solid var(--rep-border);
+}
+
+.panel-label {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  display: block;
+  color: var(--rep-text-main);
+}
+
+.filter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
 .filter-hint {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--rep-text-muted);
   margin-bottom: 4px;
 }
 
+.date-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
 
-.chart-bar {
-  width: 35px;
+.ui-input {
+  padding: 10px 12px;
+  border: 1px solid var(--rep-border);
+  border-radius: 8px;
+  outline: none;
+  background: var(--rep-card-bg);
+  color: var(--rep-text-main);
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.ui-input:focus {
+  border-color: var(--rep-primary);
+}
+
+.ui-btn-primary {
   background: var(--rep-primary);
-  border-radius: 4px;
-  position: relative;
-}
-
-.chart-bar::after {
-  content: attr(data-label);
-  position: absolute;
-  bottom: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.7rem;
-}
-
-.filter-form { display: flex; flex-direction: column; gap: 8px; }
-.date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.ui-input { padding: 10px; border: 1px solid var(--rep-border); border-radius: 8px; outline: none; background: var(--rep-card-bg); color: var(--rep-text-main); }
-.ui-input:focus { border-color: var(--rep-primary); }
-
-.ui-btn-primary { 
-  background: var(--rep-primary); 
-  color: white; 
-  border: none; 
-  padding: 12px; 
-  border-radius: 8px; 
-  cursor: pointer; 
-  font-weight: 700; 
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
   margin-top: 10px;
   transition: background 0.2s;
-  margin-bottom: 20px;
+  font-size: 0.95rem;
 }
 
-.ui-btn-primary:hover { background: var(--rep-primary-hover); }
+.ui-btn-primary:hover:not(:disabled) {
+  background: var(--rep-primary-hover);
+}
 
-/* Tabla y Acciones */
+.ui-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Tabla de Reportes */
+.table-full-width {
+  margin-top: 20px;
+}
+
 .table-header-info {
   display: flex;
   justify-content: space-between;
@@ -102,18 +141,281 @@
   color: var(--rep-text-muted);
 }
 
-.ui-table { width: 100%; border-collapse: collapse; }
-.ui-table th { text-align: left; padding: 16px; background: var(--rep-th-bg); color: var(--rep-text-muted); font-size: 0.8rem; border-bottom: 1px solid var(--rep-border); }
-.ui-table td { padding: 16px; border-bottom: 1px solid var(--rep-border); font-size: 0.95rem; }
+.ui-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--rep-card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+}
 
-.actions-cell { text-align: right; }
+.ui-table th {
+  text-align: left;
+  padding: 16px;
+  background: var(--rep-th-bg);
+  color: var(--rep-text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--rep-border);
+}
+
+.ui-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--rep-border);
+  font-size: 0.95rem;
+  color: var(--rep-text-main);
+}
+
+.ui-table tbody tr:hover {
+  background: var(--rep-selector-bg);
+}
+
+.ui-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.actions-cell {
+  text-align: right;
+}
+
 .btn-table-excel {
   background-color: var(--rep-success);
   color: white;
   border: none;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-table-excel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(22, 163, 74, 0.3);
+}
+
+/* ============================================================
+ * RESPONSIVE DESIGN - MEDIA QUERIES
+ * ============================================================ */
+
+/* Tablets y dispositivos medianos (768px - 1024px) */
+@media (max-width: 1024px) {
+  .report-main-wrapper {
+    padding: 30px 20px;
+  }
+
+  .report-top-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .selector-btn {
+    padding: 6px 16px;
+    font-size: 0.9rem;
+  }
+
+  .date-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .ui-table th,
+  .ui-table td {
+    padding: 12px 8px;
+    font-size: 0.85rem;
+  }
+
+  .btn-table-excel {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Smartphones y pantallas pequeñas (hasta 768px) */
+@media (max-width: 768px) {
+  .report-main-wrapper {
+    padding: 20px 15px;
+  }
+
+  .report-top-header h1 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+
+  .report-type-selector {
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .selector-btn {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .report-panel {
+    padding: 16px;
+  }
+
+  .panel-label {
+    font-size: 0.9rem;
+  }
+
+  .filter-form {
+    gap: 10px;
+  }
+
+  .ui-input {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .ui-btn-primary {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  /* Tabla responsive: scroll horizontal */
+  .table-full-width {
+    overflow-x: auto;
+  }
+
+  .ui-table {
+    min-width: 600px;
+  }
+
+  .ui-table th,
+  .ui-table td {
+    padding: 10px 8px;
+    font-size: 0.8rem;
+  }
+
+  .table-header-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Móviles pequeños (hasta 480px) */
+@media (max-width: 480px) {
+  .report-main-wrapper {
+    padding: 15px 10px;
+  }
+
+  .report-top-header h1 {
+    font-size: 1.15rem;
+    text-align: center;
+  }
+
+  .selector-btn {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+
+  .report-panel {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .ui-input,
+  .ui-btn-primary {
+    font-size: 0.85rem;
+  }
+
+  .ui-table {
+    min-width: 550px;
+    font-size: 0.75rem;
+  }
+
+  .ui-table th {
+    font-size: 0.7rem;
+    padding: 8px 6px;
+  }
+
+  .ui-table td {
+    padding: 8px 6px;
+  }
+
+  .btn-table-excel {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  .table-header-info span {
+    font-size: 0.8rem;
+  }
+}
+
+/* Pantallas grandes (1440px+) */
+@media (min-width: 1440px) {
+  .report-main-wrapper {
+    padding: 50px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  .report-top-header h1 {
+    font-size: 2rem;
+  }
+
+  .selector-btn {
+    padding: 10px 28px;
+  }
+
+  .report-panel {
+    padding: 28px;
+  }
+
+  .ui-table th,
+  .ui-table td {
+    padding: 18px;
+    font-size: 1rem;
+  }
+}
+
+/* TVs y pantallas ultra grandes (2560px+) */
+@media (min-width: 2560px) {
+  .report-main-wrapper {
+    max-width: 2200px;
+    padding: 60px 80px;
+  }
+
+  .report-top-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .selector-btn {
+    padding: 12px 32px;
+    font-size: 1.1rem;
+  }
+
+  .report-panel {
+    padding: 32px;
+  }
+
+  .panel-label {
+    font-size: 1.2rem;
+  }
+
+  .ui-input,
+  .ui-btn-primary {
+    padding: 14px;
+    font-size: 1.1rem;
+  }
+
+  .ui-table th,
+  .ui-table td {
+    padding: 20px;
+    font-size: 1.1rem;
+  }
+
+  .btn-table-excel {
+    padding: 10px 18px;
+    font-size: 1rem;
+  }
 }

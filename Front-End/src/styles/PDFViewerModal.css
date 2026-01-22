@@ -54,6 +54,31 @@
     overflow: auto;
 }
 
+/* ============================================================
+ * RESPONSIVE DESIGN - MEDIA QUERIES
+ * ============================================================ */
+
+/* Tablets y pantallas medianas (768px - 1024px) */
+@media (max-width: 1024px) {
+    .pdf-viewer-modal-container {
+        width: 98%;
+        height: 92vh;
+    }
+
+    .pdf-viewer-header {
+        padding: 12px 18px;
+    }
+
+    .pdf-viewer-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .close-pdf-btn {
+        font-size: 1.4rem;
+    }
+}
+
+/* Smartphones y tablets pequeñas (hasta 768px) */
 @media (max-width: 768px) {
     .pdf-viewer-modal-container {
         width: 100%;
@@ -61,7 +86,73 @@
         border-radius: 0;
     }
 
+    .pdf-viewer-header {
+        padding: 10px 15px;
+    }
+
     .pdf-viewer-header h2 {
         font-size: 1rem;
     }
+
+    .close-pdf-btn {
+        font-size: 1.3rem;
+        padding: 4px 8px;
+    }
+
+    .pdf-viewer-content {
+        padding: 5px;
+    }
+}
+
+/* Móviles pequeños (hasta 480px) */
+@media (max-width: 480px) {
+    .pdf-viewer-header {
+        padding: 8px 12px;
+    }
+
+    .pdf-viewer-header h2 {
+        font-size: 0.9rem;
+    }
+
+    .close-pdf-btn {
+        font-size: 1.2rem;
+        padding: 3px 6px;
+    }
+}
+
+/* Pantallas grandes (1440px+) */
+@media (min-width: 1440px) {
+    .pdf-viewer-modal-container {
+        width: 90%;
+        max-width: 1400px;
+        height: 90vh;
+    }
+
+    .pdf-viewer-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .close-pdf-btn {
+        font-size: 1.7rem;
+    }
+}
+
+/* Pantallas muy grandes (2560px+) - TVs */
+@media (min-width: 2560px) {
+    .pdf-viewer-modal-container {
+        width: 85%;
+        max-width: 2000px;
+        height: 88vh;
+    }
+
+    .pdf-viewer-header {
+        padding: 20px 30px;
+    }
+
+    .pdf-viewer-header h2 {
+        font-size: 1.8rem;
+    }
+
+    .close-pdf-btn {
+        font-size: 2rem;}
 }

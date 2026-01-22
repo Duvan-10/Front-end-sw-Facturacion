@@ -11,17 +11,16 @@ const Reportes = () => {
   const [reportes, setReportes] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Datos maestros
   const config = {
     facturas: {
       title: "Análisis de Facturación",
-      subs: ["Todas las Facturas", "Pendientes", "Pagadas", "Anuladas","Vencidas","Parcial","Emitidas","No Emitidas"],
+      subs: ["Todas las Facturas", "Pendientes", "Pagadas", "Anuladas", "Vencidas", "Parcial", "Emitidas", "No Emitidas"],
       headers: ["Reporte", "Fecha", "Archivo", "Creado por", "Acciones"],
       prefix: "RP_FAC"
     },
     clientes: {
       title: "Reporte de Clientes",
-      subs: ["Todos los Clientes", "Clientes Nuevos", "Clientes Antiguos","Compraron","No Compraron"],
+      subs: ["Todos los Clientes", "Clientes Nuevos", "Clientes Antiguos", "Compraron", "No Compraron"],
       headers: ["Reporte", "Fecha", "Archivo", "Creado por", "Acciones"],
       prefix: "RP_CL"
     },
@@ -34,43 +33,35 @@ const Reportes = () => {
   };
 
   const current = config[view];
-
   const today = new Date();
-  const todayStr = today.getFullYear() + '-' + 
-                   String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                   String(today.getDate()).padStart(2, '0');
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-  // Cargar historial de reportes al montar componente o cambiar vista
   useEffect(() => {
     setSubType(current.subs[0]);
     cargarReportes();
   }, [view]);
 
-  // Función para cargar historial de reportes desde el backend
   const cargarReportes = async () => {
     try {
       const token = sessionStorage.getItem('token');
+      if (!token) return;
+      
       const response = await fetch(`${API_URL}/reportes?tipo=${view}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
-      if (!response.ok) throw new Error('Error al cargar reportes');
-      
-      const data = await response.json();
-      setReportes(data);
+      if (response.ok) {
+        const data = await response.json();
+        setReportes(data);
+      }
     } catch (error) {
       console.error('Error cargando reportes:', error);
     }
   };
 
-  // Función para generar reporte y guardarlo en BD
   const handleGenerate = async () => {
     if (!dateFrom || !dateTo) {
       alert("Por favor seleccione un rango de fechas.");
-      return;
-    }
-    if (!subType) {
-      alert("Por favor seleccione un tipo de reporte.");
       return;
     }
 
@@ -79,7 +70,6 @@ const Reportes = () => {
       const token = sessionStorage.getItem('token');
       if (!token) {
         alert('Sesión expirada. Por favor inicia sesión nuevamente.');
-        setLoading(false);
         return;
       }
       
@@ -97,14 +87,12 @@ const Reportes = () => {
         })
       });
 
-      if (!response.ok) throw new Error('Error generando reporte');
-
-      const result = await response.json();
-      alert('✅ Reporte generado y guardado exitosamente');
-      
-      // Recargar tabla de reportes
-      await cargarReportes();
-      
+      if (response.ok) {
+        alert('✅ Reporte generado y guardado exitosamente');
+        await cargarReportes();
+      } else {
+        throw new Error('Error generando reporte');
+      }
     } catch (error) {
       console.error('Error:', error);
       alert('❌ Error al generar el reporte');
@@ -113,7 +101,6 @@ const Reportes = () => {
     }
   };
 
-  // Función para descargar reporte en Excel
   const descargarExcel = async (reporteId, archivo) => {
     try {
       const token = sessionStorage.getItem('token');
@@ -122,7 +109,6 @@ const Reportes = () => {
         return;
       }
       
-      // Obtener datos del reporte desde el backend
       const response = await fetch(`${API_URL}/reportes/${reporteId}/datos`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -136,12 +122,9 @@ const Reportes = () => {
         return;
       }
       
-      // Generar Excel con SheetJS
       const ws = XLSX.utils.json_to_sheet(datos);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Reporte");
-      
-      // Descargar archivo con nombre personalizado
       XLSX.writeFile(wb, `${archivo}.xlsx`);
       
     } catch (error) {
@@ -150,47 +133,32 @@ const Reportes = () => {
     }
   };
 
-  // Función para procesar el reporte basándose en los filtros
-  const handleGenerate_OLD = () => {
-    if (!dateFrom || !dateTo) {
-      alert("Por favor seleccione un rango de fechas para filtrar la tabla.");
-      return;
-    }
-    console.log(`Generando reporte de ${view} (${subType}) desde ${dateFrom} hasta ${dateTo}`);
-    // Aquí conectarías con tu API pasando estos parámetros
-    alert(`Reporte actualizado: Mostrando datos de ${view} del periodo seleccionado.`);
-  };
-
   return (
     <div className="report-main-wrapper">
       <header className="report-top-header">
         <h1>{current.title}</h1>
       </header>
 
-      {/* Selector de Módulo Principal */}
       <div className="report-type-selector">
         {Object.keys(config).map((key) => (
           <button 
             key={key} 
             className={`selector-btn ${view === key ? 'active' : ''}`}
             onClick={() => {
-                setView(key);
-                setSubType(config[key].subs[0]); // Resetear sub-filtro al cambiar módulo
+              setView(key);
+              setSubType(config[key].subs[0]);
             }}
           >
             {key.charAt(0).toUpperCase() + key.slice(1)}
           </button>
         ))}
-        
       </div>
 
       <div className="report-grid-top">
-        
-
-        {/* Panel de Filtros de Fecha y Tipo */}
         <div className="report-panel">
           <span className="panel-label">Filtros de Reporte</span>
-          <div className="filter-form">            <select 
+          <div className="filter-form">
+            <select 
               className="ui-input" 
               value={subType} 
               onChange={(e) => setSubType(e.target.value)}
@@ -227,7 +195,6 @@ const Reportes = () => {
         </div>
       </div>
 
-      {/* Tabla de Resultados Final */}
       <div className="report-panel table-full-width">
         <div className="table-header-info">
           <span>Historial de Reportes: <strong>{view.charAt(0).toUpperCase() + view.slice(1)}</strong></span>

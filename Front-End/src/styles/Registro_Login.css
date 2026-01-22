@@ -546,4 +546,52 @@
         margin: 0;
         padding: 15px; /* Padding reducido para móviles */
     }
+}}
+
+/* Tablets y laptops pequeñas (768px - 1024px) */
+@media (max-width: 1024px) {
+    .auth-login, .auth-register {
+        padding: 25px;
+    }
+
+    .auth-login .auth-card,
+    .auth-register .auth-card {
+        width: 85%;
+        max-width: 480px;
+        padding: 28px;
+    }
+}
+
+/* Tablets pequeñas y móviles grandes (600px - 768px) */
+@media (max-width: 768px) {
+    .auth-login, .auth-register {
+        padding: 20px;
+        padding-top: 40px;
+    }
+
+    .auth-login .auth-card,
+    .auth-register .auth-card {
+        width: 92%;
+        max-width: 420px;
+        padding: 24px;
+    }
+
+    .auth-login .auth-header h1,
+    .auth-register .auth-header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Pantallas grandes (1440px+) */
+@media (min-width: 1440px) {
+    .auth-login .auth-card,
+    .auth-register .auth-card {
+        max-width: 600px;
+        padding: 35px;
+    }
+
+    .auth-login .auth-header h1,
+    .auth-register .auth-header h1 {
+        font-size: 1.9rem;
+    }
 }
