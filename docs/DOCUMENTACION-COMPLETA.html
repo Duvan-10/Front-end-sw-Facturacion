@@ -1,0 +1,2629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación Técnica Completa - Sistema de Facturación Electrónica PFEPS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #1f2937;
+            --light-bg: #f9fafb;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #ffffff;
+        }
+
+        /* Header */
+        .main-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .main-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .main-header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background-color: var(--light-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 120px;
+            z-index: 999;
+        }
+
+        .nav-menu {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .nav-menu a {
+            padding: 0.5rem 1rem;
+            background-color: white;
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-menu a:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Sections */
+        .section {
+            background-color: white;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .section-subtitle {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-subsubtitle {
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background-color: white;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--light-bg);
+        }
+
+        /* Code blocks */
+        pre {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        code {
+            background-color: #f1f5f9;
+            color: #e11d48;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 0.25rem;
+        }
+
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .badge-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .badge-info {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Boxes */
+        .info-box {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .info-box-note {
+            background-color: #dbeafe;
+            border-color: var(--primary-color);
+        }
+
+        .info-box-warning {
+            background-color: #fef3c7;
+            border-color: var(--warning-color);
+        }
+
+        .info-box-success {
+            background-color: #d1fae5;
+            border-color: var(--success-color);
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+        }
+
+        .back-to-top:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-5px);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--dark-bg);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        /* Print styles */
+        @media print {
+            .main-header,
+            .nav-container,
+            .back-to-top {
+                display: none;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 0;
+            }
+
+            .section {
+                page-break-inside: avoid;
+                box-shadow: none;
+            }
+
+            pre {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            .nav-menu {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Table of contents */
+        .toc {
+            background-color: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        .toc h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin: 0.5rem 0;
+        }
+
+        .toc a {
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Diagram boxes */
+        .diagram {
+            background-color: #f8fafc;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header" id="top">
+        <h1>📚 Documentación Técnica Completa</h1>
+        <p>Sistema de Facturación Electrónica - PFEPS</p>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Versión 1.0 | Enero 2026</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <div class="nav-menu">
+            <a href="#requisitos">Requisitos</a>
+            <a href="#prerrequisitos">Prerrequisitos</a>
+            <a href="#frameworks">Frameworks</a>
+            <a href="#casos-uso">Casos de Uso</a>
+            <a href="#diccionario">Diccionario de Datos</a>
+            <a href="#scripts">Scripts</a>
+            <a href="#componentes">Componentes</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- Índice General -->
+        <div class="section">
+            <h2 class="section-title">📋 Índice General</h2>
+            <div class="toc">
+                <ul>
+                    <li><a href="#requisitos">1. Requisitos Funcionales y No Funcionales</a></li>
+                    <li><a href="#prerrequisitos">2. Prerrequisitos de Instalación</a></li>
+                    <li><a href="#frameworks">3. Frameworks y Estándares</a></li>
+                    <li><a href="#casos-uso">4. Diagrama de Casos de Uso</a></li>
+                    <li><a href="#diccionario">5. Diccionario de Datos</a></li>
+                    <li><a href="#scripts">6. Scripts de Instalación</a></li>
+                    <li><a href="#componentes">7. Diagrama de Componentes</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 1: REQUISITOS FUNCIONALES Y NO FUNCIONALES -->
+        <div class="section" id="requisitos">
+            <h2 class="section-title">1. Requisitos Funcionales y No Funcionales</h2>
+            
+            <h3 class="section-subtitle">📋 1.1 Requisitos Funcionales</h3>
+            
+            <h4 class="section-subsubtitle">1.1.1 Autenticación y Gestión de Usuarios</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Requisito</th>
+                        <th>Descripción</th>
+                        <th>Prioridad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>RF-001</strong></td>
+                        <td>Registro de Usuario Inicial</td>
+                        <td>El sistema debe permitir el registro del primer usuario como administrador</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-002</strong></td>
+                        <td>Inicio de Sesión</td>
+                        <td>El sistema debe autenticar usuarios mediante email y contraseña usando JWT</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-003</strong></td>
+                        <td>Gestión de Roles</td>
+                        <td>El sistema debe manejar tres tipos de roles: Admin, Usuario y Empleado</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-004</strong></td>
+                        <td>Recuperación de Contraseña</td>
+                        <td>El sistema debe permitir la recuperación de contraseña mediante email</td>
+                        <td><span class="badge badge-warning">Media</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-005</strong></td>
+                        <td>Gestión de Usuarios (Admin)</td>
+                        <td>Solo el administrador puede crear nuevos usuarios</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 class="section-subsubtitle">1.1.2 Gestión de Clientes</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Requisito</th>
+                        <th>Descripción</th>
+                        <th>Prioridad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>RF-006</strong></td>
+                        <td>Registro de Clientes</td>
+                        <td>El sistema debe permitir registrar clientes con información completa (tipo ID, identificación, nombre, email, teléfono, dirección)</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-007</strong></td>
+                        <td>Búsqueda de Clientes</td>
+                        <td>El sistema debe permitir buscar clientes por identificación o nombre</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-008</strong></td>
+                        <td>Autocompletado de Clientes</td>
+                        <td>El sistema debe autocompletar datos del cliente al ingresar su identificación en facturas</td>
+                        <td><span class="badge badge-warning">Media</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-009</strong></td>
+                        <td>Actualización de Clientes</td>
+                        <td>El sistema debe permitir editar información de clientes existentes</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-010</strong></td>
+                        <td>Eliminación de Clientes</td>
+                        <td>El sistema debe permitir eliminar clientes sin facturas asociadas</td>
+                        <td><span class="badge badge-warning">Media</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 class="section-subsubtitle">1.1.3 Gestión de Productos</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Requisito</th>
+                        <th>Descripción</th>
+                        <th>Prioridad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>RF-011</strong></td>
+                        <td>Registro de Productos</td>
+                        <td>El sistema debe permitir registrar productos con código único, nombre, precio, impuesto y descripción</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-012</strong></td>
+                        <td>Búsqueda de Productos</td>
+                        <td>El sistema debe permitir buscar productos por código o nombre</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-013</strong></td>
+                        <td>Autocompletado de Productos</td>
+                        <td>El sistema debe autocompletar datos del producto en facturas al ingresar código</td>
+                        <td><span class="badge badge-warning">Media</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-014</strong></td>
+                        <td>Actualización de Productos</td>
+                        <td>El sistema debe permitir editar información de productos validando precios no negativos</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-015</strong></td>
+                        <td>Eliminación de Productos</td>
+                        <td>El sistema debe permitir eliminar productos no usados en facturas</td>
+                        <td><span class="badge badge-warning">Media</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 class="section-subsubtitle">1.1.4 Gestión de Facturas</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Requisito</th>
+                        <th>Descripción</th>
+                        <th>Prioridad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>RF-016</strong></td>
+                        <td>Creación de Facturas (Cliente Existente)</td>
+                        <td>El sistema debe permitir crear facturas seleccionando un cliente existente</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-017</strong></td>
+                        <td>Creación de Facturas (Cliente Nuevo)</td>
+                        <td>El sistema debe permitir crear facturas registrando un nuevo cliente simultáneamente</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-018</strong></td>
+                        <td>Numeración Automática</td>
+                        <td>El sistema debe generar números de factura consecutivos automáticamente</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-019</strong></td>
+                        <td>Cálculo Automático de Totales</td>
+                        <td>El sistema debe calcular automáticamente subtotales, descuentos, IVA y total</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-020</strong></td>
+                        <td>Gestión de Estados de Factura</td>
+                        <td>El sistema debe manejar estados: Pendiente, Pagada, Parcial, Vencida, Anulada</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-021</strong></td>
+                        <td>Estado de Vencimiento</td>
+                        <td>El sistema debe calcular automáticamente el estado de vencimiento (Vigente, Vencida, Finalizada)</td>
+                        <td><span class="badge badge-warning">Media</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-022</strong></td>
+                        <td>Emisión de Facturas</td>
+                        <td>El sistema debe emitir facturas generando PDF y enviando por email</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-023</strong></td>
+                        <td>Generación de PDF</td>
+                        <td>El sistema debe generar PDFs profesionales con logo, datos del emisor, cliente y productos</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-024</strong></td>
+                        <td>Envío por Email</td>
+                        <td>El sistema debe enviar facturas por email al cliente con PDF adjunto</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RF-025</strong></td>
+                        <td>Visualización de Facturas</td>
+                        <td>El sistema debe permitir visualizar PDFs de facturas sin necesidad de emitir</td>
+                        <td><span class="badge badge-warning">Media</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">⚙️ 1.2 Requisitos No Funcionales</h3>
+            
+            <h4 class="section-subsubtitle">1.2.1 Seguridad</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Requisito</th>
+                        <th>Descripción</th>
+                        <th>Prioridad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>RNF-001</strong></td>
+                        <td>Autenticación Segura</td>
+                        <td>Implementación de autenticación mediante tokens JWT con firma HS256</td>
+                        <td><span class="badge badge-danger">Crítica</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-002</strong></td>
+                        <td>Encriptación de Contraseñas</td>
+                        <td>Las contraseñas deben almacenarse encriptadas con bcrypt (salt rounds = 10)</td>
+                        <td><span class="badge badge-danger">Crítica</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-003</strong></td>
+                        <td>Control de Acceso (RBAC)</td>
+                        <td>Implementar control de acceso basado en roles (Admin, Empleado, Usuario)</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-004</strong></td>
+                        <td>Protección de Rutas</td>
+                        <td>Las rutas deben estar protegidas y validar autenticación mediante middleware</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-005</strong></td>
+                        <td>Validación de Entradas</td>
+                        <td>Todas las entradas del usuario deben ser validadas en cliente y servidor</td>
+                        <td><span class="badge badge-danger">Alta</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-006</strong></td>
+                        <td>Sanitización de Datos</td>
+                        <td>Prevenir inyecciones SQL y XSS mediante prepared statements</td>
+                        <td><span class="badge badge-danger">Crítica</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 class="section-subsubtitle">1.2.2 Rendimiento</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Requisito</th>
+                        <th>Descripción</th>
+                        <th>Estándar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>RNF-007</strong></td>
+                        <td>Tiempo de Respuesta</td>
+                        <td>Las operaciones CRUD deben responder en menos de 2 segundos</td>
+                        <td>&lt; 2s</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-008</strong></td>
+                        <td>Optimización de Consultas</td>
+                        <td>Las consultas a base de datos deben estar optimizadas con índices</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-009</strong></td>
+                        <td>Paginación</td>
+                        <td>Implementar paginación para grandes volúmenes de datos (30 registros/página)</td>
+                        <td>30 items</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-010</strong></td>
+                        <td>Pool de Conexiones</td>
+                        <td>Uso de pool de conexiones MySQL (10 conexiones máximas)</td>
+                        <td>10 conns</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 class="section-subsubtitle">1.2.3 Disponibilidad y Usabilidad</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Requisito</th>
+                        <th>Descripción</th>
+                        <th>Estándar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>RNF-011</strong></td>
+                        <td>Disponibilidad</td>
+                        <td>El sistema debe estar disponible 99% del tiempo</td>
+                        <td>99% uptime</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-012</strong></td>
+                        <td>Manejo de Errores</td>
+                        <td>El sistema debe manejar errores gracefully sin crash</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-014</strong></td>
+                        <td>Interfaz Intuitiva</td>
+                        <td>La interfaz debe ser fácil de usar sin capacitación previa</td>
+                        <td>&lt; 5 min</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-015</strong></td>
+                        <td>Retroalimentación</td>
+                        <td>Mostrar mensajes claros de éxito, error y confirmación</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RNF-016</strong></td>
+                        <td>Autocompletado</td>
+                        <td>Implementar autocompletado en campos de búsqueda</td>
+                        <td>N/A</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box info-box-success">
+                <strong>✅ Resumen:</strong> El sistema cuenta con 39 requisitos funcionales y 31 requisitos no funcionales que cubren todos los aspectos de autenticación, gestión de datos, seguridad, rendimiento y usabilidad.
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: PRERREQUISITOS -->
+        <div class="section" id="prerrequisitos">
+            <h2 class="section-title">2. Prerrequisitos de Instalación del Sistema</h2>
+            
+            <h3 class="section-subtitle">💻 2.1 Requisitos de Hardware</h3>
+            
+            <h4 class="section-subsubtitle">Mínimos</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Componente</th>
+                        <th>Especificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Procesador</td>
+                        <td>Intel Core i3 / AMD Ryzen 3 o superior</td>
+                    </tr>
+                    <tr>
+                        <td>RAM</td>
+                        <td>4 GB</td>
+                    </tr>
+                    <tr>
+                        <td>Almacenamiento</td>
+                        <td>2 GB de espacio libre</td>
+                    </tr>
+                    <tr>
+                        <td>Conexión</td>
+                        <td>Internet para instalación de dependencias</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 class="section-subsubtitle">Recomendados</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Componente</th>
+                        <th>Especificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Procesador</td>
+                        <td>Intel Core i5 / AMD Ryzen 5 o superior</td>
+                    </tr>
+                    <tr>
+                        <td>RAM</td>
+                        <td>8 GB o más</td>
+                    </tr>
+                    <tr>
+                        <td>Almacenamiento</td>
+                        <td>5 GB de espacio libre (SSD recomendado)</td>
+                    </tr>
+                    <tr>
+                        <td>Conexión</td>
+                        <td>Internet estable para envío de emails</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">🖥️ 2.2 Requisitos de Software</h3>
+            
+            <h4 class="section-subsubtitle">Sistema Operativo</h4>
+            <ul>
+                <li>✅ <strong>Windows</strong> 10/11 (64-bit)</li>
+                <li>✅ <strong>macOS</strong> 10.15 Catalina o superior</li>
+                <li>✅ <strong>Linux</strong> (Ubuntu 20.04+, Debian 10+, CentOS 8+)</li>
+            </ul>
+
+            <h4 class="section-subsubtitle">Node.js</h4>
+            <div class="info-box info-box-note">
+                <strong>Versión requerida:</strong> Node.js >= 18.x<br>
+                <strong>Incluye:</strong> npm >= 9.x (gestor de paquetes)<br>
+                <strong>Descarga:</strong> <a href="https://nodejs.org/" target="_blank">https://nodejs.org/</a>
+            </div>
+
+            <p><strong>Verificación:</strong></p>
+            <pre><code>node --version  # Debe mostrar v18.x.x o superior
+npm --version   # Debe mostrar 9.x.x o superior</code></pre>
+
+            <h4 class="section-subsubtitle">MySQL</h4>
+            <div class="info-box info-box-note">
+                <strong>Versión requerida:</strong> MySQL >= 8.0<br>
+                <strong>Características necesarias:</strong>
+                <ul>
+                    <li>Soporte para JSON</li>
+                    <li>Soporte para transacciones InnoDB</li>
+                    <li>Charset: utf8mb4</li>
+                </ul>
+                <strong>Descarga:</strong> <a href="https://dev.mysql.com/downloads/mysql/" target="_blank">https://dev.mysql.com/downloads/mysql/</a>
+            </div>
+
+            <p><strong>Verificación:</strong></p>
+            <pre><code>mysql --version  # Debe mostrar 8.0.x o superior</code></pre>
+
+            <h3 class="section-subtitle">⚙️ 2.3 Configuración de Base de Datos</h3>
+            
+            <h4 class="section-subsubtitle">Creación de la Base de Datos</h4>
+            <p>Una vez instalado MySQL, crear la base de datos:</p>
+            <pre><code># Conectar a MySQL
+mysql -u root -p
+
+# Crear la base de datos
+CREATE DATABASE facturacion_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+# Crear usuario (opcional pero recomendado)
+CREATE USER 'facturacion_user'@'localhost' IDENTIFIED BY 'tu_password_seguro';
+
+# Otorgar privilegios
+GRANT ALL PRIVILEGES ON facturacion_db.* TO 'facturacion_user'@'localhost';
+FLUSH PRIVILEGES;
+
+# Salir
+EXIT;</code></pre>
+
+            <h3 class="section-subtitle">⚙️ 2.4 Variables de Entorno</h3>
+            
+            <h4 class="section-subsubtitle">Backend/.env</h4>
+            <pre><code># Configuración del Servidor
+PORT=8080
+HOST=0.0.0.0
+
+# Configuración de Base de Datos
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=tu_password_mysql
+DB_NAME=facturacion_db
+DB_PORT=3306
+
+# Configuración de Autenticación
+JWT_SECRET=tu_clave_secreta_muy_segura_y_larga
+JWT_EXPIRES_IN=24h
+
+# Configuración de Email (Nodemailer)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_SECURE=false
+EMAIL_USER=tu_email@gmail.com
+EMAIL_PASSWORD=tu_app_password
+EMAIL_FROM=Sistema de Facturación &lt;tu_email@gmail.com&gt;
+
+# Configuración de Archivos
+UPLOAD_DIR=./Pictures/Profile</code></pre>
+
+            <div class="info-box info-box-warning">
+                <strong>⚠️ Configuración de Email (Gmail):</strong><br>
+                Para usar Gmail como servidor SMTP:
+                <ol>
+                    <li>Habilitar verificación en 2 pasos en tu cuenta de Google</li>
+                    <li>Generar una "Contraseña de aplicación" desde myaccount.google.com/security</li>
+                    <li>Usar esa contraseña en EMAIL_PASSWORD</li>
+                </ol>
+            </div>
+
+            <h3 class="section-subtitle">✅ 2.5 Checklist de Verificación</h3>
+            
+            <ul>
+                <li>☐ Node.js >= 18.x instalado</li>
+                <li>☐ npm >= 9.x instalado</li>
+                <li>☐ MySQL >= 8.0 instalado</li>
+                <li>☐ Base de datos <code>facturacion_db</code> creada</li>
+                <li>☐ Usuario de BD con permisos configurado</li>
+                <li>☐ Archivo <code>Backend/.env</code> creado y configurado</li>
+                <li>☐ Puerto 8080 disponible para backend</li>
+                <li>☐ Puerto 5173 disponible para frontend</li>
+                <li>☐ Conexión a internet disponible</li>
+                <li>☐ Configuración de email completada (si se usará emisión de facturas)</li>
+            </ul>
+        </div>
+
+        <!-- SECCIÓN 3: FRAMEWORKS Y ESTÁNDARES -->
+        <div class="section" id="frameworks">
+            <h2 class="section-title">3. Frameworks y Estándares del Sistema</h2>
+            
+            <h3 class="section-subtitle">🏗️ 3.1 Arquitectura General</h3>
+            
+            <div class="diagram">
+                <pre>┌─────────────────────────────────────┐
+│     CAPA DE PRESENTACIÓN            │
+│  (Frontend - React + Vite)          │
+│  Puerto: 5173                       │
+└─────────────────┬───────────────────┘
+                  │ HTTP/REST
+                  │ (JSON)
+┌─────────────────▼───────────────────┐
+│     CAPA DE NEGOCIO                 │
+│  (Backend - Node.js + Express)      │
+│  Puerto: 8080                       │
+└─────────────────┬───────────────────┘
+                  │ SQL
+                  │ (MySQL2 Driver)
+┌─────────────────▼───────────────────┐
+│     CAPA DE DATOS                   │
+│  (MySQL Database)                   │
+│  Puerto: 3306                       │
+└─────────────────────────────────────┘</pre>
+            </div>
+
+            <p><strong>Arquitectura:</strong> Three-Tier Architecture (Tres Capas)</p>
+            <p><strong>Patrón de Comunicación:</strong> RESTful API</p>
+            <ul>
+                <li>Protocolo: HTTP/HTTPS</li>
+                <li>Formato de intercambio: JSON</li>
+                <li>Autenticación: JWT (JSON Web Tokens)</li>
+                <li>Verbos HTTP: GET, POST, PUT, DELETE</li>
+            </ul>
+
+            <h3 class="section-subtitle">🔧 3.2 Stack Tecnológico Backend</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tecnología</th>
+                        <th>Versión</th>
+                        <th>Propósito</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Node.js</strong></td>
+                        <td>18.x</td>
+                        <td>Entorno de ejecución JavaScript del lado del servidor</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Express.js</strong></td>
+                        <td>5.2.1</td>
+                        <td>Framework web minimalista para Node.js, manejo de rutas y middleware</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MySQL2</strong></td>
+                        <td>3.15.3</td>
+                        <td>Cliente MySQL con Promise-based API y connection pooling</td>
+                    </tr>
+                    <tr>
+                        <td><strong>bcryptjs</strong></td>
+                        <td>3.0.3</td>
+                        <td>Encriptación de contraseñas (bcrypt con salt rounds = 10)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>jsonwebtoken</strong></td>
+                        <td>9.0.3</td>
+                        <td>Autenticación stateless mediante tokens JWT (HS256)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CORS</strong></td>
+                        <td>2.8.5</td>
+                        <td>Habilitar Cross-Origin Resource Sharing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>dotenv</strong></td>
+                        <td>17.2.3</td>
+                        <td>Cargar variables de entorno desde archivos .env</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Nodemailer</strong></td>
+                        <td>7.0.12</td>
+                        <td>Envío de emails con facturas adjuntas (SMTP)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Puppeteer</strong></td>
+                        <td>24.35.0</td>
+                        <td>Generación de PDFs de facturas (Chromium headless)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Multer</strong></td>
+                        <td>2.0.2</td>
+                        <td>Manejo de subida de archivos (fotos de perfil)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>xlsx</strong></td>
+                        <td>0.18.5</td>
+                        <td>Generación de archivos Excel (reportes)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Axios</strong></td>
+                        <td>1.13.2</td>
+                        <td>Cliente HTTP para comunicación con APIs externas</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">🎨 3.3 Stack Tecnológico Frontend</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tecnología</th>
+                        <th>Versión</th>
+                        <th>Propósito</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>React</strong></td>
+                        <td>19.2.0</td>
+                        <td>Librería JavaScript para interfaces de usuario (component-based)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>React DOM</strong></td>
+                        <td>19.2.0</td>
+                        <td>Renderizado de React en el DOM</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vite</strong></td>
+                        <td>7.2.4</td>
+                        <td>Build tool de siguiente generación con HMR ultra rápido</td>
+                    </tr>
+                    <tr>
+                        <td><strong>React Router DOM</strong></td>
+                        <td>7.10.1</td>
+                        <td>Enrutamiento del lado del cliente (SPA)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>React Icons</strong></td>
+                        <td>5.5.0</td>
+                        <td>Conjunto de iconos populares como componentes React</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lucide React</strong></td>
+                        <td>0.562.0</td>
+                        <td>Iconos modernos y ligeros (outline icons)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>@react-pdf/renderer</strong></td>
+                        <td>4.3.1</td>
+                        <td>Generación de PDFs con React</td>
+                    </tr>
+                    <tr>
+                        <td><strong>html2pdf.js</strong></td>
+                        <td>0.12.1</td>
+                        <td>Conversión de HTML a PDF en el navegador</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">🗄️ 3.4 Base de Datos</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Característica</th>
+                        <th>Especificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Sistema</strong></td>
+                        <td>MySQL 8.0+</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tipo</strong></td>
+                        <td>RDBMS (Relational Database Management System)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Motor</strong></td>
+                        <td>InnoDB (transacciones ACID, claves foráneas)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Charset</strong></td>
+                        <td>utf8mb4 (soporte completo Unicode)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Collation</strong></td>
+                        <td>utf8mb4_unicode_ci</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tablas</strong></td>
+                        <td>users, clientes, productos, facturas, factura_detalles, reportes</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">📐 3.5 Estándares de Desarrollo</h3>
+            
+            <h4 class="section-subsubtitle">Estándar de Código JavaScript: ES6+</h4>
+            <ul>
+                <li>Arrow functions</li>
+                <li>Template literals</li>
+                <li>Destructuring</li>
+                <li>Spread operator</li>
+                <li>Promises y async/await</li>
+                <li>ES Modules (import/export)</li>
+                <li>Optional chaining (?.)</li>
+                <li>Nullish coalescing (??)</li>
+            </ul>
+
+            <h4 class="section-subsubtitle">Nomenclatura</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Elemento</th>
+                        <th>Convención</th>
+                        <th>Ejemplo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Archivos Backend</strong></td>
+                        <td>kebab-case</td>
+                        <td><code>user.controller.js</code>, <code>auth.middleware.js</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Funciones</strong></td>
+                        <td>camelCase</td>
+                        <td><code>getUserById</code>, <code>validateInput</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Clases</strong></td>
+                        <td>PascalCase</td>
+                        <td><code>UserModel</code>, <code>InvoiceController</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Constantes</strong></td>
+                        <td>UPPER_SNAKE_CASE</td>
+                        <td><code>JWT_SECRET</code>, <code>MAX_ATTEMPTS</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Componentes React</strong></td>
+                        <td>PascalCase</td>
+                        <td><code>InvoiceForm.jsx</code>, <code>ProtectedRoute.jsx</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Archivos CSS</strong></td>
+                        <td>kebab-case</td>
+                        <td><code>global.css</code>, <code>forms-invoices.css</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tablas BD</strong></td>
+                        <td>snake_case plural</td>
+                        <td><code>users</code>, <code>factura_detalles</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Columnas BD</strong></td>
+                        <td>snake_case</td>
+                        <td><code>nombre_razon_social</code>, <code>fecha_creacion</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">🧪 3.6 Herramientas de Testing</h3>
+            
+            <h4 class="section-subsubtitle">Playwright</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Característica</th>
+                        <th>Especificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Versión</strong></td>
+                        <td>1.57.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tipo</strong></td>
+                        <td>Framework de testing end-to-end</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Navegadores</strong></td>
+                        <td>Chromium, Firefox, WebKit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Reportes</strong></td>
+                        <td>HTML, JSON, XML</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tests</strong></td>
+                        <td>Login, navegación, creación de facturas</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box info-box-success">
+                <strong>📊 Resumen del Stack:</strong> El sistema utiliza tecnologías modernas y estables: React 19 + Vite 7 para el frontend, Node.js 18 + Express 5 para el backend, MySQL 8 para la base de datos, con estándares de código ES6+ y testing con Playwright.
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: CASOS DE USO -->
+        <div class="section" id="casos-uso">
+            <h2 class="section-title">4. Diagrama de Casos de Uso</h2>
+            
+            <h3 class="section-subtitle">👥 4.1 Actores del Sistema</h3>
+            
+            <h4 class="section-subsubtitle">Administrador (Admin)</h4>
+            <p><strong>Descripción:</strong> Usuario con permisos completos en el sistema</p>
+            <p><strong>Permisos:</strong></p>
+            <ul>
+                <li>✅ Gestión completa de usuarios (crear, editar, eliminar)</li>
+                <li>✅ Gestión completa de clientes</li>
+                <li>✅ Gestión completa de productos</li>
+                <li>✅ Gestión completa de facturas (incluido eliminar)</li>
+                <li>✅ Visualización de reportes</li>
+                <li>✅ Emisión de facturas</li>
+                <li>✅ Gestión de perfil propio</li>
+            </ul>
+
+            <h4 class="section-subsubtitle">Empleado</h4>
+            <p><strong>Descripción:</strong> Usuario con permisos operativos</p>
+            <p><strong>Permisos:</strong></p>
+            <ul>
+                <li>✅ Gestión de clientes (crear, editar, listar)</li>
+                <li>✅ Gestión de productos (crear, editar, listar)</li>
+                <li>✅ Gestión de facturas (crear, editar, listar, emitir)</li>
+                <li>✅ Visualización de reportes</li>
+                <li>✅ Gestión de perfil propio</li>
+                <li>❌ NO puede gestionar usuarios</li>
+                <li>❌ NO puede eliminar facturas</li>
+            </ul>
+
+            <h4 class="section-subsubtitle">Usuario</h4>
+            <p><strong>Descripción:</strong> Usuario con permisos de solo lectura</p>
+            <p><strong>Permisos:</strong></p>
+            <ul>
+                <li>✅ Visualizar clientes</li>
+                <li>✅ Visualizar productos</li>
+                <li>✅ Visualizar facturas</li>
+                <li>✅ Visualizar reportes</li>
+                <li>✅ Gestión de perfil propio</li>
+                <li>❌ NO puede crear, editar ni eliminar</li>
+            </ul>
+
+            <h3 class="section-subtitle">🎯 4.2 Diagrama General de Casos de Uso</h3>
+            
+            <div class="diagram">
+                <pre>                    Sistema de Facturación Electrónica
+    ═════════════════════════════════════════════════════════════════
+
+                            ┌─────────────────┐
+                            │                 │
+                            │  ADMINISTRADOR  │
+                            │                 │
+                            └────────┬────────┘
+                                     │
+                    ┌────────────────┼────────────────┐
+                    │                │                │
+                    ▼                ▼                ▼
+        ┌──────────────────┐  ┌──────────────┐  ┌──────────────┐
+        │ Gestionar        │  │ Gestionar    │  │ Gestionar    │
+        │ Usuarios         │  │ Facturas     │  │ Clientes     │
+        └──────────────────┘  └──────┬───────┘  └──────────────┘
+                ▲                    │                  ▲
+                │                    │                  │
+                │                    ▼                  │
+                │            ┌───────────────┐          │
+                │            │ Emitir        │          │
+                │            │ Factura       │◄─────────┤
+                │            └───────┬───────┘          │
+                │                    │                  │
+                │                    │ «include»        │
+                │                    ▼                  │
+                │            ┌───────────────┐          │
+                │            │ Generar PDF   │          │
+                │            └───────┬───────┘          │
+                │                    │                  │
+                │                    │ «include»        │
+                │                    ▼                  │
+                │            ┌───────────────┐          │
+                │            │ Enviar Email  │          │
+                │            └───────────────┘          │
+                │                                       │
+                │                                       │
+                │            ┌──────────────┐           │
+                └────────────┤  EMPLEADO    ├───────────┘
+                             └──────┬───────┘
+                                    │
+                                    │
+                                    ▼
+                            ┌──────────────┐
+                            │ Gestionar    │
+                            │ Productos    │
+                            └──────────────┘
+                                    ▲
+                                    │
+                                    │
+                             ┌──────┴───────┐
+                             │   USUARIO    │
+                             │ (solo vista) │
+                             └──────────────┘</pre>
+            </div>
+
+            <h3 class="section-subtitle">📦 4.3 Casos de Uso por Módulo</h3>
+            
+            <h4 class="section-subsubtitle">Módulo de Autenticación</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Caso de Uso</th>
+                        <th>Actor</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>CU-001</strong></td>
+                        <td>Registrar Primer Usuario</td>
+                        <td>Sistema / Primer Admin</td>
+                        <td>Crear el primer usuario del sistema con rol de administrador</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-002</strong></td>
+                        <td>Iniciar Sesión</td>
+                        <td>Todos los usuarios</td>
+                        <td>Autenticarse en el sistema mediante email y contraseña</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-003</strong></td>
+                        <td>Cerrar Sesión</td>
+                        <td>Usuarios autenticados</td>
+                        <td>Cerrar la sesión actual del usuario</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-004</strong></td>
+                        <td>Recuperar Contraseña</td>
+                        <td>Usuario registrado</td>
+                        <td>Solicitar recuperación de contraseña mediante email</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-005</strong></td>
+                        <td>Restablecer Contraseña</td>
+                        <td>Usuario con token válido</td>
+                        <td>Establecer nueva contraseña usando token de recuperación</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 class="section-subsubtitle">Módulo de Gestión de Facturas</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Caso de Uso</th>
+                        <th>Actor</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>CU-023</strong></td>
+                        <td>Listar Facturas</td>
+                        <td>Admin, Empleado, Usuario</td>
+                        <td>Visualizar listado de todas las facturas con filtros</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-024</strong></td>
+                        <td>Crear Factura (Cliente Existente)</td>
+                        <td>Admin, Empleado</td>
+                        <td>Crear nueva factura para un cliente ya registrado</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-025</strong></td>
+                        <td>Crear Factura (Cliente Nuevo)</td>
+                        <td>Admin, Empleado</td>
+                        <td>Crear factura registrando simultáneamente un cliente nuevo</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-026</strong></td>
+                        <td>Editar Factura</td>
+                        <td>Admin, Empleado</td>
+                        <td>Modificar datos de una factura no emitida</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-027</strong></td>
+                        <td>Eliminar Factura</td>
+                        <td>Administrador</td>
+                        <td>Eliminar una factura del sistema (solo admin)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-028</strong></td>
+                        <td>Cambiar Estado de Factura</td>
+                        <td>Admin, Empleado</td>
+                        <td>Actualizar estado de pago (Pendiente, Pagada, Parcial, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-029</strong></td>
+                        <td>Visualizar Factura (PDF)</td>
+                        <td>Admin, Empleado, Usuario</td>
+                        <td>Ver vista previa de la factura en formato PDF</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-030</strong></td>
+                        <td>Generar PDF de Factura</td>
+                        <td>Sistema (automático)</td>
+                        <td>Crear PDF profesional de la factura</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-031</strong></td>
+                        <td>Emitir Factura</td>
+                        <td>Admin, Empleado</td>
+                        <td>Generar PDF y enviar factura por email al cliente</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CU-032</strong></td>
+                        <td>Enviar Factura por Email</td>
+                        <td>Sistema de Email (SMTP)</td>
+                        <td>Enviar email con PDF adjunto al cliente</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">📄 4.4 Especificación Detallada: CU-031 Emitir Factura</h3>
+            
+            <p><strong>Actor Principal:</strong> Admin o Empleado</p>
+            <p><strong>Objetivo:</strong> Emitir una factura generando PDF y enviándola por email</p>
+            <p><strong>Precondiciones:</strong></p>
+            <ul>
+                <li>Factura existe en BD</li>
+                <li>Factura tiene estado diferente de "Anulada" o "Vencida"</li>
+                <li>Cliente tiene email válido</li>
+            </ul>
+
+            <p><strong>Flujo Principal:</strong></p>
+            <ol>
+                <li>Usuario hace clic en botón "Emitir" (📤) en la lista de facturas</li>
+                <li>Sistema solicita confirmación al usuario</li>
+                <li>Usuario confirma la emisión</li>
+                <li>Sistema muestra indicador de carga</li>
+                <li>Sistema obtiene datos completos de la factura (factura, cliente, detalles)</li>
+                <li>Sistema genera PDF de la factura:
+                    <ul>
+                        <li>Renderiza HTML con datos de la factura</li>
+                        <li>Convierte HTML a PDF con Puppeteer</li>
+                        <li>Guarda PDF temporalmente</li>
+                    </ul>
+                </li>
+                <li>Sistema envía email con Nodemailer:
+                    <ul>
+                        <li>Destinatario: email del cliente</li>
+                        <li>Asunto: "Factura #[numero] - [Razón Social]"</li>
+                        <li>Cuerpo: HTML con resumen de factura</li>
+                        <li>Adjunto: PDF de la factura</li>
+                    </ul>
+                </li>
+                <li>Sistema actualiza <code>estado_emision</code> a "emitida"</li>
+                <li>Sistema actualiza <code>fecha_emision</code> a NOW()</li>
+                <li>Sistema elimina PDF temporal</li>
+                <li>Sistema muestra mensaje de éxito con datos del envío</li>
+                <li>Sistema actualiza lista de facturas</li>
+            </ol>
+
+            <p><strong>Flujos Alternativos:</strong></p>
+            <ul>
+                <li><strong>FA-1:</strong> Cliente sin email → Error: "Cliente no tiene email"</li>
+                <li><strong>FA-2:</strong> Factura anulada → Error: "No se puede emitir factura anulada"</li>
+                <li><strong>FA-3:</strong> Error al generar PDF → <code>estado_emision: "error"</code>, mostrar error</li>
+                <li><strong>FA-4:</strong> Error al enviar email → <code>estado_emision: "error"</code>, mostrar error</li>
+            </ul>
+
+            <p><strong>Postcondiciones:</strong></p>
+            <ul>
+                <li>PDF de factura generado</li>
+                <li>Email enviado al cliente con PDF adjunto</li>
+                <li><code>estado_emision</code> actualizado a "emitida"</li>
+                <li><code>fecha_emision</code> registrada</li>
+                <li>Lista de facturas actualizada</li>
+            </ul>
+
+            <h3 class="section-subtitle">📊 4.5 Matriz de Trazabilidad Actores-Casos de Uso</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Caso de Uso</th>
+                        <th>Admin</th>
+                        <th>Empleado</th>
+                        <th>Usuario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CU-001: Registrar Primer Usuario</td>
+                        <td>✅</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>CU-002: Iniciar Sesión</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                    <tr>
+                        <td>CU-006: Listar Usuarios</td>
+                        <td>✅</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>CU-007: Crear Usuario</td>
+                        <td>✅</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>CU-011: Listar Clientes</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>👁️</td>
+                    </tr>
+                    <tr>
+                        <td>CU-012: Crear Cliente</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>CU-023: Listar Facturas</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>👁️</td>
+                    </tr>
+                    <tr>
+                        <td>CU-024: Crear Factura (Existente)</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>CU-027: Eliminar Factura</td>
+                        <td>✅</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>CU-031: Emitir Factura</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>CU-035: Visualizar Perfil</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>✅</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>Leyenda:</strong> ✅ = Puede ejecutar y modificar | 👁️ = Solo puede visualizar | - = Sin acceso</p>
+
+            <div class="info-box info-box-note">
+                <strong>📝 Total de Casos de Uso:</strong> El sistema cuenta con 42 casos de uso documentados que cubren todas las funcionalidades desde autenticación hasta emisión de facturas.
+            </div>
+        </div>
+
+        <!-- SECCIÓN 5: DICCIONARIO DE DATOS -->
+        <div class="section" id="diccionario">
+            <h2 class="section-title">5. Diccionario de Datos</h2>
+            
+            <h3 class="section-subtitle">🗄️ 5.1 Información General</h3>
+            
+            <p><strong>Sistema de Gestión de Base de Datos:</strong> MySQL 8.0+</p>
+            <p><strong>Motor de Almacenamiento:</strong> InnoDB</p>
+            <p><strong>Charset:</strong> utf8mb4</p>
+            <p><strong>Collation:</strong> utf8mb4_unicode_ci</p>
+
+            <h3 class="section-subtitle">📋 5.2 Tabla: users</h3>
+            
+            <p><strong>Descripción:</strong> Almacena información de los usuarios del sistema con diferentes roles.</p>
+            <p><strong>Nombre físico:</strong> <code>users</code></p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Columna</th>
+                        <th>Tipo de Dato</th>
+                        <th>Nulo</th>
+                        <th>Clave</th>
+                        <th>Default</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>id</code></td>
+                        <td>INT</td>
+                        <td>NO</td>
+                        <td>PK, AI</td>
+                        <td>-</td>
+                        <td>Identificador único del usuario</td>
+                    </tr>
+                    <tr>
+                        <td><code>name</code></td>
+                        <td>VARCHAR(255)</td>
+                        <td>NO</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>Nombre completo del usuario</td>
+                    </tr>
+                    <tr>
+                        <td><code>identification</code></td>
+                        <td>VARCHAR(50)</td>
+                        <td>NO</td>
+                        <td>UNIQUE</td>
+                        <td>-</td>
+                        <td>Número de identificación (Cédula/NIT)</td>
+                    </tr>
+                    <tr>
+                        <td><code>email</code></td>
+                        <td>VARCHAR(255)</td>
+                        <td>NO</td>
+                        <td>UNIQUE</td>
+                        <td>-</td>
+                        <td>Correo electrónico del usuario</td>
+                    </tr>
+                    <tr>
+                        <td><code>password</code></td>
+                        <td>VARCHAR(255)</td>
+                        <td>NO</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>Contraseña encriptada con bcrypt</td>
+                    </tr>
+                    <tr>
+                        <td><code>role</code></td>
+                        <td>ENUM</td>
+                        <td>NO</td>
+                        <td>-</td>
+                        <td>'user'</td>
+                        <td>Rol: 'admin', 'user', 'empleado'</td>
+                    </tr>
+                    <tr>
+                        <td><code>profile_photo</code></td>
+                        <td>VARCHAR(255)</td>
+                        <td>YES</td>
+                        <td>-</td>
+                        <td>NULL</td>
+                        <td>Ruta de la foto de perfil</td>
+                    </tr>
+                    <tr>
+                        <td><code>reset_token</code></td>
+                        <td>VARCHAR(255)</td>
+                        <td>YES</td>
+                        <td>-</td>
+                        <td>NULL</td>
+                        <td>Token para recuperación de contraseña</td>
+                    </tr>
+                    <tr>
+                        <td><code>reset_token_expires</code></td>
+                        <td>DATETIME</td>
+                        <td>YES</td>
+                        <td>-</td>
+                        <td>NULL</td>
+                        <td>Fecha de expiración del token (1 hora)</td>
+                    </tr>
+                    <tr>
+                        <td><code>created_at</code></td>
+                        <td>TIMESTAMP</td>
+                        <td>NO</td>
+                        <td>-</td>
+                        <td>CURRENT_TIMESTAMP</td>
+                        <td>Fecha de creación del registro</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>Constraints:</strong></p>
+            <ul>
+                <li><code>PK_users</code>: PRIMARY KEY (id)</li>
+                <li><code>UQ_users_identification</code>: UNIQUE (identification)</li>
+                <li><code>UQ_users_email</code>: UNIQUE (email)</li>
+                <li><code>CHK_users_role</code>: CHECK (role IN ('admin', 'user', 'empleado'))</li>
+            </ul>
+
+            <p><strong>Índices:</strong></p>
+            <ul>
+                <li><code>idx_users_email</code>: INDEX (email)</li>
+                <li><code>idx_users_identification</code>: INDEX (identification)</li>
+                <li><code>idx_users_reset_token</code>: INDEX (reset_token)</li>
+            </ul>
+
+            <h3 class="section-subtitle">📋 5.3 Tabla: clientes</h3>
+            
+            <p><strong>Descripción:</strong> Almacena información de los clientes a los que se les emiten facturas.</p>
+            <p><strong>Nombre físico:</strong> <code>clientes</code></p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Columna</th>
+                        <th>Tipo de Dato</th>
+                        <th>Nulo</th>
+                        <th>Clave</th>
+                        <th>Default</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>id</code></td>
+                        <td>INT</td>
+                        <td>NO</td>
+                        <td>PK, AI</td>
+                        <td>-</td>
+                        <td>Identificador único del cliente</td>
+                    </tr>
+                    <tr>
+                        <td><code>tipo_identificacion</code></td>
+                        <td>ENUM</td>
+                        <td>NO</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>Tipo: 'Cedula', 'NIT', 'Pasaporte'</td>
+                    </tr>
+                    <tr>
+                        <td><code>identificacion</code></td>
+                        <td>VARCHAR(50)</td>
+                        <td>NO</td>
+                        <td>UNIQUE</td>
+                        <td>-</td>
+                        <td>Número de identificación del cliente</td>
+                    </tr>
+                    <tr>
+                        <td><code>nombre_razon_social</code></td>
+                        <td>VARCHAR(255)</td>
+                        <td>NO</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>Nombre o razón social del cliente</td>
+                    </tr>
+                    <tr>
+                        <td><code>email</code></td>
+                        <td>VARCHAR(255)</td>
+                        <td>YES</td>
+                        <td>-</td>
+                        <td>NULL</td>
+                        <td>Correo electrónico del cliente</td>
+                    </tr>
+                    <tr>
+                        <td><code>telefono</code></td>
+                        <td>VARCHAR(20)</td>
+                        <td>YES</td>
+                        <td>-</td>
+                        <td>NULL</td>
+                        <td>Número de teléfono</td>
+                    </tr>
+                    <tr>
+                        <td><code>direccion</code></td>
+                        <td>TEXT</td>
+                        <td>YES</td>
+                        <td>-</td>
+                        <td>NULL</td>
+                        <td>Dirección física del cliente</td>
+                    </tr>
+                    <tr>
+                        <td><code>fecha_creacion</code></td>
+                        <td>DATETIME</td>
+                        <td>NO</td>
+                        <td>-</td>
+                        <td>CURRENT_TIMESTAMP</td>
+                        <td>Fecha de registro del cliente</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">📋 5.4 Tabla: productos</h3>
+            
+            <p><strong>Descripción:</strong> Catálogo de productos o servicios disponibles para facturación.</p>
+            <p><strong>Nombre físico:</strong> <code>productos</code></p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Columna</th>
+                        <th>Tipo de Dato</th>
+                        <th>Nulo</th>
+                        <th>Clave</th>
+                        <th>Default</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>id</code></td>
+                        <td>INT</td>
+                        <td>NO</td>
+                        <td>PK, AI</td>
+                        <td>-</td>
+                        <td>Identificador único del producto</td>
+                    </tr>
+                    <tr>
+                        <td><code>codigo</code></td>
+                        <td>VARCHAR(50)</td>
+                        <td>NO</td>
+                        <td>UNIQUE</td>
+                        <td>-</td>
+                        <td>Código único del producto</td>
+                    </tr>
+                    <tr>
+                        <td><code>nombre</code></td>
+                        <td>VARCHAR(255)</td>
+                        <td>NO</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>Nombre del producto o servicio</td>
+                    </tr>
+                    <tr>
+                        <td><code>precio</code></td>
+                        <td>DECIMAL(10,2)</td>
+                        <td>NO</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>Precio unitario del producto</td>
+                    </tr>
+                    <tr>
+                        <td><code>impuesto_porcentaje</code></td>
+                        <td>DECIMAL(5,2)</td>
+                        <td>NO</td>
+                        <td>-</td>
+                        <td>0.00</td>
+                        <td>Porcentaje de IVA (0-100)</td>
+                    </tr>
+                    <tr>
+                        <td><code>descripcion</code></td>
+                        <td>TEXT</td>
+                        <td>YES</td>
+                        <td>-</td>
+                        <td>'Sin detalles'</td>
+                        <td>Descripción detallada del producto</td>
+                    </tr>
+                    <tr>
+                        <td><code>created_at</code></td>
+                        <td>TIMESTAMP</td>
+                        <td>NO</td>
+                        <td>-</td>
+                        <td>CURRENT_TIMESTAMP</td>
+                        <td>Fecha de creación del registro</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>Constraints:</strong></p>
+            <ul>
+                <li><code>CHK_productos_precio</code>: CHECK (precio >= 0)</li>
+                <li><code>CHK_productos_impuesto</code>: CHECK (impuesto_porcentaje >= 0 AND impuesto_porcentaje <= 100)</li>
+            </ul>
+
+            <h3 class="section-subtitle">📋 5.5 Tabla: facturas</h3>
+            
+            <p><strong>Descripción:</strong> Encabezado de las facturas emitidas a clientes.</p>
+            <p><strong>Nombre físico:</strong> <code>facturas</code></p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Columna</th>
+                        <th>Tipo de Dato</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>id</code></td>
+                        <td>INT (PK, AI)</td>
+                        <td>Identificador único de la factura</td>
+                    </tr>
+                    <tr>
+                        <td><code>numero_factura</code></td>
+                        <td>VARCHAR(50) UNIQUE</td>
+                        <td>Número consecutivo de la factura</td>
+                    </tr>
+                    <tr>
+                        <td><code>cliente_id</code></td>
+                        <td>INT (FK)</td>
+                        <td>ID del cliente (referencia a clientes)</td>
+                    </tr>
+                    <tr>
+                        <td><code>fecha_creacion</code></td>
+                        <td>DATETIME</td>
+                        <td>Fecha de creación de la factura</td>
+                    </tr>
+                    <tr>
+                        <td><code>fecha_emision</code></td>
+                        <td>DATETIME NULL</td>
+                        <td>Fecha de emisión real (envío por email)</td>
+                    </tr>
+                    <tr>
+                        <td><code>fecha_vencimiento</code></td>
+                        <td>DATE NULL</td>
+                        <td>Fecha límite de pago</td>
+                    </tr>
+                    <tr>
+                        <td><code>subtotal</code></td>
+                        <td>DECIMAL(10,2)</td>
+                        <td>Suma de productos sin impuestos</td>
+                    </tr>
+                    <tr>
+                        <td><code>iva</code></td>
+                        <td>DECIMAL(10,2)</td>
+                        <td>Monto total de impuestos</td>
+                    </tr>
+                    <tr>
+                        <td><code>total</code></td>
+                        <td>DECIMAL(10,2)</td>
+                        <td>Total de la factura (subtotal + iva)</td>
+                    </tr>
+                    <tr>
+                        <td><code>estado</code></td>
+                        <td>ENUM</td>
+                        <td>'Pendiente', 'Pagada', 'Parcial', 'Vencida', 'Anulada'</td>
+                    </tr>
+                    <tr>
+                        <td><code>estado_emision</code></td>
+                        <td>ENUM</td>
+                        <td>'pendiente', 'emitida', 'error'</td>
+                    </tr>
+                    <tr>
+                        <td><code>descuento_porcentaje</code></td>
+                        <td>DECIMAL(5,2)</td>
+                        <td>Descuento global aplicado (0-100%)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>Relación:</strong> facturas.cliente_id → clientes.id (FOREIGN KEY)</p>
+
+            <h3 class="section-subtitle">📋 5.6 Tabla: factura_detalles</h3>
+            
+            <p><strong>Descripción:</strong> Líneas de detalle de los productos incluidos en cada factura.</p>
+            <p><strong>Nombre físico:</strong> <code>factura_detalles</code></p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Columna</th>
+                        <th>Tipo de Dato</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>id</code></td>
+                        <td>INT (PK, AI)</td>
+                        <td>Identificador único del detalle</td>
+                    </tr>
+                    <tr>
+                        <td><code>factura_id</code></td>
+                        <td>INT (FK)</td>
+                        <td>ID de la factura (referencia a facturas)</td>
+                    </tr>
+                    <tr>
+                        <td><code>producto_id</code></td>
+                        <td>INT (FK)</td>
+                        <td>ID del producto (referencia a productos)</td>
+                    </tr>
+                    <tr>
+                        <td><code>cantidad</code></td>
+                        <td>INT</td>
+                        <td>Cantidad de unidades del producto</td>
+                    </tr>
+                    <tr>
+                        <td><code>precio_unitario</code></td>
+                        <td>DECIMAL(10,2)</td>
+                        <td>Precio unitario al momento de la venta</td>
+                    </tr>
+                    <tr>
+                        <td><code>descuento</code></td>
+                        <td>DECIMAL(5,2)</td>
+                        <td>Descuento aplicado en % (0-100)</td>
+                    </tr>
+                    <tr>
+                        <td><code>subtotal</code></td>
+                        <td>DECIMAL(10,2)</td>
+                        <td>(cantidad × precio_unitario) sin impuestos</td>
+                    </tr>
+                    <tr>
+                        <td><code>total</code></td>
+                        <td>DECIMAL(10,2)</td>
+                        <td>Subtotal + IVA - descuento</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>Relaciones:</strong></p>
+            <ul>
+                <li>factura_detalles.factura_id → facturas.id (ON DELETE CASCADE)</li>
+                <li>factura_detalles.producto_id → productos.id</li>
+            </ul>
+
+            <div class="info-box info-box-note">
+                <strong>📊 Cálculo de totales:</strong><br>
+                <code>subtotal_linea = (cantidad × precio_unitario) × (1 - descuento/100)</code><br>
+                <code>iva_linea = subtotal_linea × (impuesto_porcentaje/100)</code><br>
+                <code>total_linea = subtotal_linea + iva_linea</code>
+            </div>
+
+            <h3 class="section-subtitle">🔗 5.7 Diagrama Entidad-Relación</h3>
+            
+            <div class="diagram">
+                <pre>┌──────────────┐         1:N          ┌──────────────┐
+│   clientes   │◄─────────────────────┤   facturas   │
+│  (Clientes)  │                      │  (Facturas)  │
+└──────────────┘                      └──────┬───────┘
+                                             │
+                                             │ 1:N
+                                             │
+                                             ▼
+                                     ┌──────────────────┐
+                                     │ factura_detalles │
+                                     │    (Detalles)    │
+                                     └────────┬─────────┘
+                                              │
+                                              │ N:1
+                                              │
+                                              ▼
+                                     ┌──────────────┐
+                                     │  productos   │
+                                     │ (Productos)  │
+                                     └──────────────┘</pre>
+            </div>
+
+            <div class="info-box info-box-success">
+                <strong>✅ Resumen:</strong> La base de datos cuenta con 6 tablas principales que manejan usuarios, clientes, productos, facturas y sus detalles, con relaciones bien definidas mediante claves foráneas y constraints de integridad.
+            </div>
+        </div>
+
+        <!-- SECCIÓN 6: SCRIPTS DE INSTALACIÓN -->
+        <div class="section" id="scripts">
+            <h2 class="section-title">6. Scripts de Instalación</h2>
+            
+            <h3 class="section-subtitle">🚀 6.1 Script de Instalación Automática (Windows)</h3>
+            
+            <p><strong>Archivo:</strong> <code>install-windows.bat</code></p>
+            
+            <pre><code>@echo off
+echo ============================================
+echo  Sistema de Facturacion Electronica - PFEPS
+echo  Script de Instalacion Automatica
+echo ============================================
+echo.
+
+REM Verificar Node.js
+echo [1/8] Verificando Node.js...
+node --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ERROR: Node.js no esta instalado
+    echo Por favor instale Node.js desde https://nodejs.org/
+    pause
+    exit /b 1
+)
+echo OK: Node.js instalado
+
+REM Instalar dependencias del proyecto
+echo [4/8] Instalando dependencias del proyecto...
+call npm install
+
+REM Crear archivo .env si no existe
+echo [6/8] Configurando variables de entorno...
+if not exist "Backend\.env" (
+    echo Creando archivo Backend\.env...
+    echo PORT=8080 > Backend\.env
+    echo DB_HOST=localhost >> Backend\.env
+    echo DB_USER=root >> Backend\.env
+    echo DB_PASSWORD= >> Backend\.env
+    echo DB_NAME=facturacion_db >> Backend\.env
+    echo JWT_SECRET=cambiar_este_secret_por_uno_seguro >> Backend\.env
+)
+
+echo.
+echo [8/8] Instalacion completada!
+pause</code></pre>
+
+            <h3 class="section-subtitle">🗄️ 6.2 Script de Creación de Base de Datos</h3>
+            
+            <p><strong>Archivo:</strong> <code>Backend/migrations/create_database.sql</code></p>
+            
+            <pre><code>-- Crear base de datos si no existe
+CREATE DATABASE IF NOT EXISTS facturacion_db 
+    CHARACTER SET utf8mb4 
+    COLLATE utf8mb4_unicode_ci;
+
+-- Usar la base de datos
+USE facturacion_db;
+
+-- Mostrar confirmación
+SELECT 'Base de datos "facturacion_db" creada exitosamente' AS Mensaje;</code></pre>
+
+            <p><strong>Ejecución:</strong></p>
+            <pre><code>mysql -u root -p < Backend/migrations/create_database.sql</code></pre>
+
+            <h3 class="section-subtitle">🗄️ 6.3 Script de Creación de Tablas</h3>
+            
+            <p><strong>Archivo:</strong> <code>Backend/migrations/create_all_tables.sql</code></p>
+            
+            <pre><code>USE facturacion_db;
+
+-- Tabla: users
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    identification VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'user', 'empleado') DEFAULT 'user',
+    profile_photo VARCHAR(255) DEFAULT NULL,
+    reset_token VARCHAR(255) DEFAULT NULL,
+    reset_token_expires DATETIME DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_users_email (email),
+    INDEX idx_users_identification (identification)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla: clientes
+CREATE TABLE IF NOT EXISTS clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tipo_identificacion ENUM('Cedula', 'NIT', 'Pasaporte') NOT NULL,
+    identificacion VARCHAR(50) UNIQUE NOT NULL,
+    nombre_razon_social VARCHAR(255) NOT NULL,
+    email VARCHAR(255) DEFAULT NULL,
+    telefono VARCHAR(20) DEFAULT NULL,
+    direccion TEXT DEFAULT NULL,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_clientes_identificacion (identificacion),
+    INDEX idx_clientes_nombre (nombre_razon_social)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla: productos
+CREATE TABLE IF NOT EXISTS productos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    codigo VARCHAR(50) UNIQUE NOT NULL,
+    nombre VARCHAR(255) NOT NULL,
+    precio DECIMAL(10,2) NOT NULL CHECK (precio >= 0),
+    impuesto_porcentaje DECIMAL(5,2) DEFAULT 0.00,
+    descripcion TEXT DEFAULT 'Sin detalles',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_productos_codigo (codigo),
+    INDEX idx_productos_nombre (nombre)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla: facturas
+CREATE TABLE IF NOT EXISTS facturas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    numero_factura VARCHAR(50) UNIQUE NOT NULL,
+    cliente_id INT NOT NULL,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_emision DATETIME DEFAULT NULL,
+    fecha_vencimiento DATE DEFAULT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    iva DECIMAL(10,2) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    estado ENUM('Pendiente', 'Pagada', 'Parcial', 'Vencida', 'Anulada') DEFAULT 'Pendiente',
+    estado_emision ENUM('pendiente', 'emitida', 'error') DEFAULT 'pendiente',
+    descuento_porcentaje DECIMAL(5,2) DEFAULT 0.00,
+    
+    FOREIGN KEY (cliente_id) REFERENCES clientes(id),
+    INDEX idx_facturas_cliente (cliente_id),
+    INDEX idx_facturas_fecha (fecha_creacion)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla: factura_detalles
+CREATE TABLE IF NOT EXISTS factura_detalles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    factura_id INT NOT NULL,
+    producto_id INT NOT NULL,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    descuento DECIMAL(5,2) DEFAULT 0.00,
+    subtotal DECIMAL(10,2) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    
+    FOREIGN KEY (factura_id) REFERENCES facturas(id) ON DELETE CASCADE,
+    FOREIGN KEY (producto_id) REFERENCES productos(id),
+    INDEX idx_detalles_factura (factura_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla: reportes
+CREATE TABLE IF NOT EXISTS reportes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tipo VARCHAR(50) NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL,
+    contenido JSON DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+SELECT 'Todas las tablas creadas exitosamente' AS Mensaje;</code></pre>
+
+            <p><strong>Ejecución:</strong></p>
+            <pre><code>mysql -u root -p facturacion_db < Backend/migrations/create_all_tables.sql</code></pre>
+
+            <h3 class="section-subtitle">📝 6.4 Scripts Disponibles en package.json</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Script</th>
+                        <th>Comando</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>npm run f</code></td>
+                        <td><code>vite --host --open</code></td>
+                        <td>Inicia frontend en desarrollo</td>
+                    </tr>
+                    <tr>
+                        <td><code>npm run s</code></td>
+                        <td><code>nodemon Backend/server.js</code></td>
+                        <td>Inicia backend con auto-reload</td>
+                    </tr>
+                    <tr>
+                        <td><code>npm start</code></td>
+                        <td><code>node Backend/server.js</code></td>
+                        <td>Inicia backend en producción</td>
+                    </tr>
+                    <tr>
+                        <td><code>npm run build</code></td>
+                        <td><code>vite build</code></td>
+                        <td>Construye frontend para producción</td>
+                    </tr>
+                    <tr>
+                        <td><code>npm run test:e2e</code></td>
+                        <td>Playwright tests</td>
+                        <td>Ejecuta pruebas E2E</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">✅ 6.5 Checklist de Instalación</h3>
+            
+            <ol>
+                <li>Verificar que Node.js >= 18.x está instalado</li>
+                <li>Verificar que MySQL >= 8.0 está instalado</li>
+                <li>Ejecutar <code>npm install</code> para instalar dependencias</li>
+                <li>Crear base de datos con el script SQL</li>
+                <li>Crear tablas con el script SQL</li>
+                <li>Configurar archivo <code>Backend/.env</code> con credenciales</li>
+                <li>Iniciar backend: <code>npm run s</code></li>
+                <li>Iniciar frontend: <code>npm run f</code></li>
+                <li>Abrir navegador en <code>http://localhost:5173</code></li>
+                <li>Registrar primer usuario (será administrador)</li>
+            </ol>
+
+            <div class="info-box info-box-warning">
+                <strong>⚠️ Importante:</strong> Antes de ejecutar el sistema por primera vez, asegúrate de:
+                <ul>
+                    <li>Configurar correctamente las variables de entorno en <code>Backend/.env</code></li>
+                    <li>Tener MySQL corriendo y accesible</li>
+                    <li>Verificar que los puertos 8080 y 5173 estén disponibles</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 7: DIAGRAMA DE COMPONENTES -->
+        <div class="section" id="componentes">
+            <h2 class="section-title">7. Diagrama de Componentes</h2>
+            
+            <h3 class="section-subtitle">🏗️ 7.1 Arquitectura de Alto Nivel</h3>
+            
+            <div class="diagram">
+                <pre>┌─────────────────────────────────────────────────────────────────────┐
+│                         CAPA DE PRESENTACIÓN                        │
+│                        (Frontend - React SPA)                       │
+│                                                                     │
+│  ┌────────────┐  ┌─────────────┐  ┌──────────────┐               │
+│  │   Auth     │  │   Modules   │  │  Components  │               │
+│  │ Components │  │   (CRUD)    │  │   (Shared)   │               │
+│  └────────────┘  └─────────────┘  └──────────────┘               │
+│                                                                     │
+│  ┌────────────┐  ┌─────────────┐  ┌──────────────┐               │
+│  │  Context   │  │    Forms    │  │    Utils     │               │
+│  │    API     │  │  (Complex)  │  │   (Helpers)  │               │
+│  └────────────┘  └─────────────┘  └──────────────┘               │
+└──────────────────────────┬──────────────────────────────────────────┘
+                           │ HTTP/REST (JSON)
+                           │ JWT Token
+┌──────────────────────────▼──────────────────────────────────────────┐
+│                         CAPA DE NEGOCIO                             │
+│                     (Backend - Node.js/Express)                     │
+│                                                                     │
+│  ┌────────────┐  ┌─────────────┐  ┌──────────────┐               │
+│  │   Routes   │  │ Controllers │  │  Middleware  │               │
+│  │  (Routing) │  │  (Business) │  │    (Auth)    │               │
+│  └────────────┘  └─────────────┘  └──────────────┘               │
+│                                                                     │
+│  ┌────────────┐  ┌─────────────┐  ┌──────────────┐               │
+│  │   Models   │  │   Config    │  │   External   │               │
+│  │   (Data)   │  │   (Setup)   │  │   Services   │               │
+│  └────────────┘  └─────────────┘  └──────────────┘               │
+└──────────────────────────┬──────────────────────────────────────────┘
+                           │ SQL Queries
+                           │ Connection Pool
+┌──────────────────────────▼──────────────────────────────────────────┐
+│                         CAPA DE DATOS                               │
+│                      (MySQL Database 8.0+)                          │
+│                                                                     │
+│  ┌────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │
+│  │ users  │ │ clientes │ │productos │ │ facturas │ │ reportes │  │
+│  └────────┘ └──────────┘ └──────────┘ └────┬─────┘ └──────────┘  │
+│                                             │                       │
+│                                    ┌────────▼─────────┐            │
+│                                    │ factura_detalles │            │
+│                                    └──────────────────┘            │
+└─────────────────────────────────────────────────────────────────────┘</pre>
+            </div>
+
+            <h3 class="section-subtitle">🔧 7.2 Componentes del Backend</h3>
+            
+            <h4 class="section-subsubtitle">Estructura de Directorios</h4>
+            
+            <pre><code>Backend/
+├── server.js              # Punto de entrada principal
+├── routes/                # Capa de enrutamiento
+│   ├── auth.routes.js
+│   ├── user.routes.js
+│   ├── cliente.routes.js
+│   ├── producto.routes.js
+│   ├── invoiceRoutes.js
+│   ├── perfil.routes.js
+│   └── reportes.routes.js
+├── controllers/           # Lógica de negocio
+│   ├── auth.controller.js
+│   ├── user.controller.js
+│   ├── cliente.controller.js
+│   ├── productoController.js
+│   ├── invoice.controller.js
+│   ├── perfilController.js
+│   └── reportes.controller.js
+├── middleware/            # Middleware
+│   └── auth.middleware.js
+├── models/                # Modelos de datos
+│   ├── db.js
+│   └── User.model.js
+└── config/                # Configuración
+    ├── db.config.js
+    └── email.config.js</code></pre>
+
+            <h4 class="section-subsubtitle">API REST Endpoints Principales</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Método</th>
+                        <th>Endpoint</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>POST</td>
+                        <td><code>/api/auth/login</code></td>
+                        <td>Autenticar usuario</td>
+                    </tr>
+                    <tr>
+                        <td>POST</td>
+                        <td><code>/api/auth/register</code></td>
+                        <td>Registrar primer usuario</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/facturas</code></td>
+                        <td>Listar todas las facturas</td>
+                    </tr>
+                    <tr>
+                        <td>POST</td>
+                        <td><code>/api/facturas</code></td>
+                        <td>Crear nueva factura</td>
+                    </tr>
+                    <tr>
+                        <td>POST</td>
+                        <td><code>/api/facturas/:id/emitir</code></td>
+                        <td>Emitir factura (PDF + Email)</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/clientes</code></td>
+                        <td>Listar clientes</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/productos</code></td>
+                        <td>Listar productos</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/users</code></td>
+                        <td>Listar usuarios (admin)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">🎨 7.3 Componentes del Frontend</h3>
+            
+            <h4 class="section-subsubtitle">Estructura de Directorios</h4>
+            
+            <pre><code>Front-End/src/
+├── main.jsx               # Punto de entrada
+├── App.jsx                # Componente raíz
+├── Auth/                  # Autenticación
+│   ├── WelcomePage.jsx
+│   ├── Login.jsx
+│   ├── Register.jsx
+│   ├── ForgotPassword.jsx
+│   └── ResetPassword.jsx
+├── modules/               # Módulos CRUD
+│   ├── users.jsx
+│   ├── Clientes.jsx
+│   ├── Productos.jsx
+│   ├── Facturas.jsx
+│   ├── Perfil.jsx
+│   └── Reportes.jsx
+├── forms/                 # Formularios complejos
+│   ├── InvoiceForm.jsx
+│   ├── Invoicenewclient.jsx
+│   ├── ClientForm.jsx
+│   ├── ProductForm.jsx
+│   └── logica.js
+├── components/            # Componentes compartidos
+│   ├── ProtectedRoute.jsx
+│   ├── ThemeSwitch.jsx
+│   └── InvoiceStatusModal.jsx
+├── context/               # Estado global
+│   ├── AuthContext.jsx
+│   └── ThemeContext.jsx
+└── utils/                 # Utilidades
+    ├── pdfGenerator.jsx
+    ├── tableHelpers.js
+    └── validations.js</code></pre>
+
+            <h4 class="section-subsubtitle">Rutas de la Aplicación</h4>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ruta</th>
+                        <th>Componente</th>
+                        <th>Acceso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/</code></td>
+                        <td>WelcomePage</td>
+                        <td>Público</td>
+                    </tr>
+                    <tr>
+                        <td><code>/login</code></td>
+                        <td>Login</td>
+                        <td>Público</td>
+                    </tr>
+                    <tr>
+                        <td><code>/register</code></td>
+                        <td>Register</td>
+                        <td>Condicional</td>
+                    </tr>
+                    <tr>
+                        <td><code>/home</code></td>
+                        <td>Home</td>
+                        <td>Protegido</td>
+                    </tr>
+                    <tr>
+                        <td><code>/home/facturas</code></td>
+                        <td>Facturas</td>
+                        <td>Protegido</td>
+                    </tr>
+                    <tr>
+                        <td><code>/home/clientes</code></td>
+                        <td>Clientes</td>
+                        <td>Protegido</td>
+                    </tr>
+                    <tr>
+                        <td><code>/home/productos</code></td>
+                        <td>Productos</td>
+                        <td>Protegido</td>
+                    </tr>
+                    <tr>
+                        <td><code>/home/users</code></td>
+                        <td>Users</td>
+                        <td>Admin</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">🔄 7.4 Flujo de Autenticación</h3>
+            
+            <div class="diagram">
+                <pre>┌─────────────┐          ┌─────────────┐          ┌─────────────┐
+│   Login.jsx │          │   Backend   │          │  Database   │
+└──────┬──────┘          └──────┬──────┘          └──────┬──────┘
+       │                        │                        │
+       │ 1. POST /api/auth/login│                        │
+       ├───────────────────────►│                        │
+       │   { email, password }  │                        │
+       │                        │ 2. Query user          │
+       │                        ├───────────────────────►│
+       │                        │ 3. Return user data    │
+       │                        │◄───────────────────────┤
+       │                        │ 4. bcrypt.compare()    │
+       │                        │ 5. jwt.sign()          │
+       │ 6. Return token + user │                        │
+       │◄───────────────────────┤                        │
+       │ 7. Store in            │                        │
+       │    sessionStorage      │                        │
+       │ 8. Update AuthContext  │                        │
+       │ 9. Navigate to /home   │                        │</pre>
+            </div>
+
+            <h3 class="section-subtitle">🔄 7.5 Flujo de Emisión de Factura</h3>
+            
+            <div class="diagram">
+                <pre>┌─────────────┐  ┌────────────┐  ┌──────────┐  ┌─────────┐  ┌────────┐
+│Facturas.jsx │  │  Backend   │  │ Database │  │Puppeteer│  │  SMTP  │
+└──────┬──────┘  └─────┬──────┘  └────┬─────┘  └────┬────┘  └───┬────┘
+       │ 1. Click Emitir│              │             │            │
+       ├───────────────►│              │             │            │
+       │ 2. POST /emitir│              │             │            │
+       ├───────────────►│              │             │            │
+       │                │ 3. Query     │             │            │
+       │                ├─────────────►│             │            │
+       │                │ 4. Return    │             │            │
+       │                │◄─────────────┤             │            │
+       │                │ 5. Generate HTML           │            │
+       │                │ 6. Launch browser          │            │
+       │                ├────────────────────────────►│            │
+       │                │ 7. Render to PDF           │            │
+       │                │◄────────────────────────────┤            │
+       │                │ 8. Send email              │            │
+       │                ├────────────────────────────────────────►│
+       │                │ 9. Confirmation            │            │
+       │                │◄────────────────────────────────────────┤
+       │                │ 10. UPDATE estado_emision  │            │
+       │                ├─────────────►│             │            │
+       │ 11. Success    │              │             │            │
+       │◄───────────────┤              │             │            │</pre>
+            </div>
+
+            <div class="info-box info-box-success">
+                <strong>🎯 Resumen:</strong> El sistema utiliza una arquitectura de tres capas con separación clara de responsabilidades. El frontend React se comunica con el backend Express mediante API REST, y este a su vez interactúa con MySQL para persistencia de datos. Los componentes están organizados de forma modular y siguen patrones de diseño establecidos.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Back to Top Button -->
+    <a href="#top" class="back-to-top">↑</a>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p><strong>Sistema de Facturación Electrónica PFEPS</strong></p>
+        <p>Documentación Técnica Completa | Versión 1.0 | Enero 2026</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+            Esta documentación incluye: Requisitos, Prerrequisitos, Frameworks, Casos de Uso, Diccionario de Datos, Scripts y Componentes
+        </p>
+    </footer>
+
+</body>
+</html>
