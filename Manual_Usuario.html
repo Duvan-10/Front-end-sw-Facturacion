@@ -1,0 +1,3507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario - Sistema de Facturación Electrónica PFEPS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 5px solid #764ba2;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .version-info {
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .content {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: #f8f9fa;
+            padding: 30px 20px;
+            border-right: 1px solid #dee2e6;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 0;
+            margin-top: 160px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            margin-left: 280px;
+            margin-top: 160px;
+        }
+
+        .sidebar h3 {
+            font-size: 0.9em;
+            color: #667eea;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            margin-top: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar a {
+            color: #555;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+        }
+
+        .sidebar a:hover {
+            background-color: #e9ecef;
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        section {
+            margin-bottom: 50px;
+            scroll-margin-top: 180px;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #555;
+            text-align: justify;
+        }
+
+        .section-image {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .section-image img {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .section-image img:hover {
+            transform: scale(1.02);
+        }
+
+        .image-caption {
+            font-style: italic;
+            color: #888;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .note-box, .warning-box, .info-box {
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+
+        .info-box {
+            border-left-color: #17a2b8;
+            background-color: #d1ecf1;
+        }
+
+        .note-box {
+            border-left-color: #ffc107;
+            background-color: #fff3cd;
+        }
+
+        .warning-box {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+
+        .step-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .step {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            background-color: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content strong {
+            color: #333;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-card h4 {
+            margin-top: 0;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        table th {
+            background-color: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .button-example {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 600;
+        }
+
+        .button-example:hover {
+            background-color: #764ba2;
+        }
+
+        .button-secondary {
+            background-color: #6c757d;
+        }
+
+        .button-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .button-success {
+            background-color: #28a745;
+        }
+
+        .button-success:hover {
+            background-color: #218838;
+        }
+
+        .button-danger {
+            background-color: #dc3545;
+        }
+
+        .button-danger:hover {
+            background-color: #c82333;
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            padding: 30px;
+            text-align: center;
+            color: #888;
+            margin-top: 50px;
+            margin-left: 280px;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-top:hover {
+            background-color: #764ba2;
+            transform: translateY(-5px);
+        }
+
+        .back-to-top.show {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                margin-top: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                margin-top: 0;
+                padding: 20px;
+            }
+
+            footer {
+                margin-left: 0;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .sidebar {
+                position: relative;
+            }
+        }
+
+        .keyboard-shortcut {
+            display: inline-block;
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 0 3px;
+        }
+
+        .toc {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc ol {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📋 Manual de Usuario</h1>
+        <p>Sistema de Facturación Electrónica PFEPS</p>
+        <div class="version-info">
+            Versión 1.0 | Última actualización: Enero 2026
+        </div>
+    </header>
+
+    <div class="content">
+        <aside class="sidebar">
+            <h3>📑 Índice</h3>
+            <ul>
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#requisitos">Requisitos</a></li>
+                <li><a href="#primeros-pasos">Primeros Pasos</a></li>
+                <li><a href="#autenticacion">Autenticación</a></li>
+                <li><a href="#dashboard">Panel Principal</a></li>
+                <li><a href="#componentes">Componentes y Menús</a></li>
+                <li><a href="#usuarios">Gestión de Usuarios</a></li>
+                <li><a href="#clientes">Gestión de Clientes</a></li>
+                <li><a href="#productos">Gestión de Productos</a></li>
+                <li><a href="#facturas">Gestión de Facturas</a></li>
+                <li><a href="#reportes">Reportes</a></li>
+                <li><a href="#perfil">Mi Perfil</a></li>
+                <li><a href="#faq">Preguntas Frecuentes</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- SECCIÓN DE INICIO -->
+            <section id="inicio">
+                <h2>🎯 Bienvenido al Sistema PFEPS</h2>
+                <p>El Sistema de Facturación Electrónica PFEPS es una solución integral diseñada para facilitar la gestión completa de facturas, clientes, productos y usuarios. Este manual le guiará a través de todas las funcionalidades disponibles en la plataforma.</p>
+                
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Bienvenida al Sistema PFEPS.png" alt="Pantalla de Bienvenida del Sistema PFEPS">
+                    <p class="image-caption">Figura 1: Pantalla de Bienvenida del Sistema PFEPS</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>ℹ️ Información Importante:</strong> Este sistema está diseñado para pequeñas y medianas empresas que necesitan una solución eficiente para la facturación electrónica y gestión de clientes.
+                </div>
+            </section>
+
+            <!-- REQUISITOS -->
+            <section id="requisitos">
+                <h2>💻 Requisitos del Sistema</h2>
+                
+                <h3>Requisitos Mínimos</h3>
+                <ul>
+                    <li><strong>Navegador Web:</strong> Chrome, Firefox, Safari o Edge (versión actual o anterior)</li>
+                    <li><strong>Conexión a Internet:</strong> Requerida para todas las funcionalidades</li>
+                    <li><strong>Memoria RAM:</strong> Mínimo 2 GB (recomendado 4 GB)</li>
+                    <li><strong>Resolución de Pantalla:</strong> 1024 x 768 píxeles (recomendado 1920 x 1080)</li>
+                </ul>
+
+                <h3>Navegadores Soportados</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Navegador</th>
+                                <th>Versión Mínima</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Google Chrome</td>
+                                <td>120+</td>
+                                <td>✓ Completamente Soportado</td>
+                            </tr>
+                            <tr>
+                                <td>Mozilla Firefox</td>
+                                <td>120+</td>
+                                <td>✓ Completamente Soportado</td>
+                            </tr>
+                            <tr>
+                                <td>Microsoft Edge</td>
+                                <td>120+</td>
+                                <td>✓ Completamente Soportado</td>
+                            </tr>
+                            <tr>
+                                <td>Safari</td>
+                                <td>16+</td>
+                                <td>✓ Completamente Soportado</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Características Técnicas</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Frontend</h4>
+                        <p><strong>Tecnología:</strong> React 19.2 con Vite 7.2</p>
+                        <p><strong>Ventajas:</strong> Interfaz rápida y responsiva</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Backend</h4>
+                        <p><strong>Tecnología:</strong> Node.js + Express 5.2</p>
+                        <p><strong>Base de Datos:</strong> MySQL</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Seguridad</h4>
+                        <p><strong>Autenticación:</strong> JWT (JSON Web Tokens)</p>
+                        <p><strong>Cifrado:</strong> bcryptjs para contraseñas</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Usabilidad</h4>
+                        <p><strong>Diseño:</strong> Totalmente Responsive</p>
+                        <p><strong>Tema:</strong> Modo Claro/Oscuro</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PRIMEROS PASOS -->
+            <section id="primeros-pasos">
+                <h2>🚀 Primeros Pasos</h2>
+                
+                <h3>Acceso al Sistema</h3>
+                <p>Para acceder al sistema, siga estos pasos:</p>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Abra su navegador web</strong><br>
+                            Ingrese la URL del sistema en la barra de direcciones
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Pantalla de Login</strong><br>
+                            Verá la pantalla de autenticación. Si es la primera vez, proceda al registro
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Inicie sesión o Regístrese</strong><br>
+                            Use sus credenciales o cree una nueva cuenta
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AUTENTICACIÓN -->
+            <section id="autenticacion">
+                <h2>🔐 Autenticación y Seguridad</h2>
+
+                <h3>Registro del Primer Usuario</h3>
+                <p>El primer usuario registrado en el sistema automáticamente se asignará como administrador con acceso total a todas las funcionalidades.</p>
+
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Registro Primer Usuario.png" alt="Formulario de Registro del Primer Usuario">
+                    <p class="image-caption">Figura 2: Formulario de Registro del Primer Usuario</p>
+                </div>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Ingrese su Nombre Completo</strong><br>
+                            Ej: Juan Pérez García
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Ingrese su Número de Identificación</strong><br>
+                            Puede ser cédula, NIT o pasaporte
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Ingrese su Email</strong><br>
+                            Este será usado para la recuperación de contraseña
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Establezca una Contraseña Segura</strong><br>
+                            Debe contener letras, números y caracteres especiales
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Confirme su Contraseña</strong><br>
+                            Escriba nuevamente la contraseña para verificar
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Inicio de Sesión</h3>
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Login.png" alt="Pantalla de Inicio de Sesión">
+                    <p class="image-caption">Figura 3: Pantalla de Inicio de Sesión</p>
+                </div>
+
+                <p>Para iniciar sesión en el sistema:</p>
+                <ol>
+                    <li>Ingrese su email registrado</li>
+                    <li>Ingrese su contraseña</li>
+                    <li>Haga clic en el botón <span class="button-example" style="pointer-events: none;">Iniciar Sesión</span></li>
+                </ol>
+
+                <div class="note-box">
+                    <strong>⚠️ Nota de Seguridad:</strong> Por su seguridad, no comparta sus credenciales con otras personas. El sistema implementa autenticación segura mediante JWT.
+                </div>
+
+                <h3>Recuperación de Contraseña</h3>
+                <p>Si olvidó su contraseña, puede recuperarla siguiendo estos pasos:</p>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>En la pantalla de login</strong><br>
+                            Haga clic en "¿Olvidó su contraseña?"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Ingrese su email</strong><br>
+                            El email que registró en el sistema
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Revise su correo electrónico</strong><br>
+                            Recibirá un enlace de recuperación (válido por 1 hora)
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Haga clic en el enlace</strong><br>
+                            Será dirigido a la página de restablecimiento
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Establezca una nueva contraseña</strong><br>
+                            Confirme y guarde los cambios
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Gestión de Roles</h3>
+                <p>El sistema implementa tres tipos de roles con diferentes niveles de acceso:</p>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rol</th>
+                                <th>Descripción</th>
+                                <th>Permisos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Administrador</strong></td>
+                                <td>Control total del sistema</td>
+                                <td>✓ Gestion de usuarios<br>✓ Gestion de clientes<br>✓ CRUD productos<br>✓ Gestion de facturas<br>✓ Ver reportes<br>✓ Configuración del sistema</td>
+                            </tr>
+                          
+                                <td><strong>Usuario</strong></td>
+                                <td>Acceso limitado</td>
+                                <td>✓ Ver clientes<br>✓ Ver productos<br>✓ Ver facturas<br>✓ Ver reportes<br>✗ Crear o editar datos</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PANEL PRINCIPAL -->
+            <section id="dashboard">
+                <h2>📊 Panel Principal (Dashboard)</h2>
+
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Inicio.png" alt="Panel Principal del Sistema">
+                    <p class="image-caption">Figura 4: Panel Principal del Sistema</p>
+                </div>
+
+                <p>Después de iniciar sesión, accederá al panel principal que muestra un resumen de la información más importante del sistema. Este es el centro de operaciones desde donde puede acceder a todas las funcionalidades.</p>
+
+                <h3>Estructura del Dashboard</h3>
+
+                <h4>1. Barra de Navegación Superior (Header)</h4>
+                <p>Ubicada en la parte superior de la pantalla, es la barra principal de navegación que contiene:</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Descripción</th>
+                                <th>Función</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Logo del Sistema</strong></td>
+                                <td>Icono PFEPS en la esquina izquierda</td>
+                                <td>Hacer clic regresa al dashboard principal</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Menú de Navegación</strong></td>
+                                <td>Opciones de módulos principales</td>
+                                <td>Acceso directo a Facturas, Clientes, Productos, Reportes, etc.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Buscador Global</strong></td>
+                                <td>Campo de búsqueda en la barra</td>
+                                <td>Busca rápidamente clientes, facturas o productos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Icono de Tema</strong></td>
+                                <td>Luna/Sol en la esquina derecha</td>
+                                <td>Alterna entre modo claro y oscuro</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Perfil de Usuario</strong></td>
+                                <td>Avatar con nombre de usuario</td>
+                                <td>Acceso a perfil, configuración y cerrar sesión</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>2. Menú Lateral Izquierdo</h4>
+                <p>Panel vertical en el lado izquierdo que proporciona acceso a todos los módulos principales del sistema:</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>📋 Facturas</h4>
+                        <p>Acceso a la gestión completa de facturas. Incluye crear, editar, visualizar y descargar en PDF.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>👥 Clientes</h4>
+                        <p>Administración de clientes. Permite registrar, actualizar y consultar información de clientes.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📦 Productos</h4>
+                        <p>Catálogo de productos y servicios. Gestione precios, descripciones e inventario.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📊 Reportes</h4>
+                        <p>Análisis y estadísticas del negocio. Genera reportes de ventas, clientes y productos.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>👤 Perfil</h4>
+                        <p>Gestión de información personal. Ver y editar datos del usuario actual.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔐 Usuarios</h4>
+                        <p><strong>Solo Admin:</strong> Crear, editar y eliminar usuarios del sistema.</p>
+                    </div>
+                </div>
+
+                <h4>3. Área de Contenido Principal</h4>
+                <p>Ocupa la mayor parte de la pantalla y muestra:</p>
+                <ul>
+                    <li><strong>Bienvenida Personalizada:</strong> Saludo con el nombre del usuario</li>
+                    <li><strong>Estadísticas Rápidas:</strong> Resumen de facturas, clientes y productos</li>
+                    <li><strong>Accesos Rápidos:</strong> Botones para crear nuevas facturas, clientes, etc.</li>
+                    <li><strong>Información Destacada:</strong> Últimas facturas, facturas pendientes</li>
+                    <li><strong>Alertas:</strong> Notificaciones importantes del sistema</li>
+                </ul>
+
+                <h3>Navegación Principal - Submenús</h3>
+                <p>Cada módulo principal tiene submenús adicionales que se despliegan al hacer clic:</p>
+
+                <h4>Submenú de Facturas</h4>
+                <ul>
+                    <li><strong>Crear Factura:</strong> Abre formulario para nueva factura</li>
+                    <li><strong>Lista de Facturas:</strong> Visualiza todas las facturas con filtros</li>
+                    <li><strong>Facturas Pendientes:</strong> Muestra facturas sin pagar</li>
+                    <li><strong>Facturas Vencidas:</strong> Facturación que ha pasado fecha de vencimiento</li>
+                </ul>
+
+                <h4>Submenú de Clientes</h4>
+                <ul>
+                    <li><strong>Nuevo Cliente:</strong> Registra un cliente nuevo</li>
+                    <li><strong>Lista de Clientes:</strong> Visualiza y busca clientes</li>
+                    <li><strong>Clientes Activos:</strong> Filtra solo clientes vigentes</li>
+                </ul>
+
+                <h4>Submenú de Productos</h4>
+                <ul>
+                    <li><strong>Nuevo Producto:</strong> Agrega un producto al catálogo</li>
+                    <li><strong>Inventario:</strong> Visualiza niveles de stock</li>
+                    <li><strong>Productos Activos:</strong> Muestra productos disponibles</li>
+                </ul>
+
+                <h3>Funcionalidades de Cambio de Tema</h3>
+                <p>El sistema incluye un modo claro (Light) y otro oscuro (Dark) para mayor comodidad visual:</p>
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Ubique el icono de tema</strong><br>
+                            En la esquina superior derecha de la barra de navegación
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Haga clic en el icono</strong><br>
+                            Luna para modo oscuro, Sol para modo claro
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Observe el cambio</strong><br>
+                            La interfaz cambiará inmediatamente
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Preferencia guardada</strong><br>
+                            Su tema preferido se recordará en futuras sesiones
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Configuración Perfil.png" alt="Configuración del Perfil de Usuario">
+                    <p class="image-caption">Figura 5: Página de Configuración del Perfil de Usuario</p>
+                </div>
+
+                <h3>Flujo de Trabajo Principal</h3>
+                <p>El flujo típico de trabajo en el sistema sigue este patrón:</p>
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Iniciar Sesión</strong><br>
+                            Ingrese sus credenciales en la pantalla de login
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Acceder al Dashboard</strong><br>
+                            Se abre la página principal con menús disponibles
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Seleccionar Módulo</strong><br>
+                            Haga clic en la sección que necesita (Facturas, Clientes, etc.)
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Ejecutar Operación</strong><br>
+                            Crear, editar, consultar o eliminar información
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Guardar o Confirmar</strong><br>
+                            Haga clic en guardar para registrar cambios
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Validar Información</strong><br>
+                            Verifique que los cambios se hayan registrado correctamente
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COMPONENTES Y MENÚS DEL SISTEMA -->
+            <section id="componentes">
+                <h2>🎨 Componentes, Menús y Submenús</h2>
+
+                <p>Esta sección describe en detalle todos los componentes, menús y submenús disponibles en el sistema, facilitando la navegación y el entendimiento de la estructura de la aplicación.</p>
+
+                <h3>Descripción Detallada de Componentes</h3>
+
+                <h4>A. Componentes de la Barra de Navegación Superior</h4>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Ubicación</th>
+                                <th>Descripción Particular</th>
+                                <th>Interacción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Logo PFEPS</strong></td>
+                                <td>Esquina superior izquierda</td>
+                                <td>Identifica el sistema. Contiene el icono y nombre de la aplicación</td>
+                                <td>Clic para regresar al dashboard desde cualquier página</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Enlaces Principales</strong></td>
+                                <td>Centro de barra superior</td>
+                                <td>Acceso directo a módulos: Facturas, Clientes, Productos, Reportes</td>
+                                <td>Clic para acceder al módulo. Al pasar el ratón muestra submenús</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Buscador Global</strong></td>
+                                <td>Centro-derecha de barra</td>
+                                <td>Campo de búsqueda para encontrar rápidamente elementos del sistema</td>
+                                <td>Escriba y presione Enter. Resultados se muestran en tiempo real</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Icono de Tema</strong></td>
+                                <td>Esquina superior derecha</td>
+                                <td>Control para cambiar entre tema claro y oscuro. Mejora la usabilidad visual</td>
+                                <td>Clic alterna el tema. Preferencia se guarda automáticamente</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Avatar de Usuario</strong></td>
+                                <td>Extremo superior derecho</td>
+                                <td>Muestra foto de perfil del usuario logueado. Icono identificador</td>
+                                <td>Clic abre menú desplegable con opciones de perfil</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>B. Menú Lateral Principal</h4>
+                <p>El menú lateral izquierdo organiza toda la funcionalidad del sistema en secciones principales y submenús:</p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>📋 MÓDULO FACTURAS</h4>
+                        <p><strong>Ubicación:</strong> Primer elemento del menú lateral</p>
+                        <p><strong>Descripción:</strong> Centro de operaciones para gestión de facturas, documentos principales de cobro.</p>
+                        <p><strong>Submenús:</strong></p>
+                        <ul style="margin-left: 15px;">
+                            <li>Crear Nueva Factura</li>
+                            <li>Listar Todas las Facturas</li>
+                            <li>Facturas Pendientes</li>
+                            <li>Facturas Pagadas</li>
+                            <li>Facturas Vencidas</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>👥 MÓDULO CLIENTES</h4>
+                        <p><strong>Ubicación:</strong> Segundo elemento del menú lateral</p>
+                        <p><strong>Descripción:</strong> Administración completa de base de datos de clientes de la empresa.</p>
+                        <p><strong>Submenús:</strong></p>
+                        <ul style="margin-left: 15px;">
+                            <li>Registrar Nuevo Cliente</li>
+                            <li>Ver Todos los Clientes</li>
+                            <li>Buscar Cliente</li>
+                            <li>Editar Información de Cliente</li>
+                            <li>Eliminar Cliente</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📦 MÓDULO PRODUCTOS</h4>
+                        <p><strong>Ubicación:</strong> Tercer elemento del menú lateral</p>
+                        <p><strong>Descripción:</strong> Catálogo y gestión de productos y servicios que ofrece la empresa.</p>
+                        <p><strong>Submenús:</strong></p>
+                        <ul style="margin-left: 15px;">
+                            <li>Crear Nuevo Producto</li>
+                            <li>Ver Catálogo Completo</li>
+                            <li>Consultar Inventario</li>
+                            <li>Editar Producto</li>
+                            <li>Productos Disponibles</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📊 MÓDULO REPORTES</h4>
+                        <p><strong>Ubicación:</strong> Cuarto elemento del menú lateral</p>
+                        <p><strong>Descripción:</strong> Análisis, estadísticas y reportes de operaciones del negocio.</p>
+                        <p><strong>Submenús:</strong></p>
+                        <ul style="margin-left: 15px;">
+                            <li>Reporte de Ventas</li>
+                            <li>Reporte de Clientes</li>
+                            <li>Reporte de Productos</li>
+                            <li>Reporte de Pagos Pendientes</li>
+                            <li>Generar Reporte Personalizado</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>👤 MÓDULO PERFIL</h4>
+                        <p><strong>Ubicación:</strong> Quinto elemento del menú lateral</p>
+                        <p><strong>Descripción:</strong> Gestión de información personal del usuario actual en el sistema.</p>
+                        <p><strong>Submenús:</strong></p>
+                        <ul style="margin-left: 15px;">
+                            <li>Ver Mi Información</li>
+                            <li>Editar Datos Personales</li>
+                            <li>Cambiar Contraseña</li>
+                            <li>Foto de Perfil</li>
+                            <li>Preferencias del Sistema</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔐 MÓDULO USUARIOS</h4>
+                        <p><strong>Ubicación:</strong> Sexto elemento del menú lateral</p>
+                        <p><strong>Descripción:</strong> Administración de usuarios del sistema (solo para administrador).</p>
+                        <p><strong>Submenús:</strong></p>
+                        <ul style="margin-left: 15px;">
+                            <li>Crear Nuevo Usuario</li>
+                            <li>Listar Todos los Usuarios</li>
+                            <li>Editar Usuario</li>
+                            <li>Cambiar Rol de Usuario</li>
+                            <li>Desactivar/Eliminar Usuario</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4>C. Menús Contextuales y Desplegables</h4>
+                <p>Los siguientes menús aparecen al interactuar con elementos específicos:</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Menú Contextual</th>
+                                <th>Cuándo Aparece</th>
+                                <th>Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Menú Avatar de Usuario</strong></td>
+                                <td>Al hacer clic en foto de usuario en esquina superior derecha</td>
+                                <td>Mi Perfil | Configuración | Cambiar Contraseña | Cerrar Sesión</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Menú Acciones de Factura</strong></td>
+                                <td>Al pasar ratón o clic en fila de factura en lista</td>
+                                <td>Ver Detalle | Editar | Descargar PDF | Cambiar Estado | Eliminar</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Menú Acciones de Cliente</strong></td>
+                                <td>Al pasar ratón o clic en fila de cliente en lista</td>
+                                <td>Ver Detalle | Editar | Ver Historial | Eliminar | Crear Factura</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Menú Acciones de Producto</strong></td>
+                                <td>Al pasar ratón o clic en fila de producto en lista</td>
+                                <td>Ver Detalle | Editar | Ajustar Stock | Eliminar</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Menú Acciones de Usuario</strong></td>
+                                <td>Al pasar ratón o clic en fila de usuario en lista (solo admin)</td>
+                                <td>Editar | Cambiar Rol | Reactivar | Eliminar</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Instrucciones de Ingreso (Login)</h3>
+                <p>El primer paso para usar el sistema es el ingreso o autenticación. A continuación, se describe el proceso detallado:</p>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Abra su navegador web</strong><br>
+                            Use Chrome, Firefox, Safari o Edge. Ingrese la URL del sistema en la barra de direcciones.
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Se abre la pantalla de login</strong><br>
+                            Verá un formulario con campos para Email y Contraseña. Hay dos opciones: "Iniciar Sesión" o "Registrarse" (solo si es nuevo usuario).
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Ingrese su Email</strong><br>
+                            En el primer campo, escriba el email registrado. Este es el identificador único en el sistema.
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Ingrese su Contraseña</strong><br>
+                            En el segundo campo, escriba su contraseña. Los caracteres se mostrarán como puntos por seguridad.
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Revise sus credenciales</strong><br>
+                            Verifique que email y contraseña sean correctos antes de continuar.
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Iniciar Sesión"</strong><br>
+                            El sistema validará sus credenciales contra la base de datos.
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <strong>Espere la carga del sistema</strong><br>
+                            Generalmente toma 2-3 segundos. Verá una barra de progreso.
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <strong>Acceda al Dashboard</strong><br>
+                            Si las credenciales son correctas, verá la página principal del sistema.
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Instrucciones de Ingreso y Consulta de Información</h3>
+                <p>Una vez dentro del sistema, puede ingresar y consultar información siguiendo estos flujos:</p>
+
+                <h4>Consultar Información Existente</h4>
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Seleccione el módulo</strong><br>
+                            Haga clic en el módulo de datos que desea consultar (Facturas, Clientes, Productos, etc.)
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Se abre la lista</strong><br>
+                            Verá una tabla con los registros existentes del módulo seleccionado
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Use filtros (opcional)</strong><br>
+                            Aplique filtros por estado, fecha, nombre, etc. para refinar la búsqueda
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Busque si es necesario</strong><br>
+                            Use el campo de búsqueda para encontrar un registro específico
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Haga clic en el registro</strong><br>
+                            Seleccione el registro que desea ver en detalle
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Visualice los detalles</strong><br>
+                            Se abre la página de detalle con toda la información del registro
+                        </div>
+                    </div>
+                </div>
+
+                <h4>Ingresar Nueva Información</h4>
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Acceda al módulo</strong><br>
+                            Seleccione el módulo donde desea crear un nuevo registro
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Crear" o "Nuevo"</strong><br>
+                            Botón destacado generalmente en color azul en la parte superior
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Se abre el formulario</strong><br>
+                            Verá un formulario con los campos necesarios para crear el registro
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Identifique campos obligatorios</strong><br>
+                            Los campos requeridos están marcados con asterisco (*) en color rojo
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Complete todos los campos</strong><br>
+                            Ingrese información válida en cada campo. Evite dejar campos obligatorios vacíos
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Revise antes de guardar</strong><br>
+                            Verifique que todos los datos sean correctos antes de proceder
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Guardar" o "Crear"</strong><br>
+                            El botón generalmente está en color verde en la parte inferior del formulario
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <strong>Espere confirmación</strong><br>
+                            Verá un mensaje de éxito o alerta si hay errores que corregir
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Flujos de Trabajo Principales</h3>
+                <p>Los siguientes son los flujos de trabajo más comunes en el sistema:</p>
+
+                <h4>FLUJO 1: Crear una Factura de un Cliente Nuevo</h4>
+                <p>Tiempo estimado: 10-15 minutos</p>
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Ir a Clientes</strong><br>
+                            En el menú lateral, haga clic en "Clientes" → "Registrar Nuevo Cliente"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Completar datos del cliente</strong><br>
+                            Ingrese: Tipo ID, Número ID, Nombre, Email, Teléfono, Dirección
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Guardar cliente</strong><br>
+                            Haga clic en "Guardar Cliente". Verá confirmación de registro exitoso
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Ir a Facturas</strong><br>
+                            Desde el menú lateral, seleccione "Facturas" → "Crear Nueva Factura"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Seleccionar cliente</strong><br>
+                            En el campo cliente, busque y seleccione el cliente que acaba de crear
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Agregar productos</strong><br>
+                            Haga clic en "Agregar Producto", seleccione del catálogo e ingrese cantidad
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <strong>Aplicar descuento (opcional)</strong><br>
+                            Si aplica, ingrese el porcentaje de descuento en el campo correspondiente
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <strong>Seleccionar tipo de pago</strong><br>
+                            Elija entre: Efectivo, Tarjeta, Transferencia, Cheque, u Otro
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">9</div>
+                        <div class="step-content">
+                            <strong>Revisar total</strong><br>
+                            Verifique que el total calculado sea correcto (Subtotal - Descuento + IVA)
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">10</div>
+                        <div class="step-content">
+                            <strong>Crear factura</strong><br>
+                            Haga clic en "Crear Factura". Se guardará en el sistema
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">11</div>
+                        <div class="step-content">
+                            <strong>Descargar PDF (opcional)</strong><br>
+                            Haga clic en "Descargar PDF" para obtener el documento en PDF
+                        </div>
+                    </div>
+                </div>
+
+                <h4>FLUJO 2: Generar Reporte de Ventas Mensuales</h4>
+                <p>Tiempo estimado: 5 minutos</p>
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Acceder a Reportes</strong><br>
+                            En el menú lateral, haga clic en "Reportes" → "Reporte de Ventas"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Seleccionar período</strong><br>
+                            Elija el mes y año que desea reportar en los campos de fecha
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Aplicar filtros (opcional)</strong><br>
+                            Puede filtrar por cliente específico o tipo de producto
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Generar reporte</strong><br>
+                            Haga clic en "Generar Reporte". El sistema procesará los datos
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Ver resultados</strong><br>
+                            Se muestran gráficos, tablas y estadísticas de las ventas del período
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Descargar reporte</strong><br>
+                            Puede descargar en PDF o Excel usando los botones de descarga
+                        </div>
+                    </div>
+                </div>
+
+                <h4>FLUJO 3: Cobrar una Factura Pendiente</h4>
+                <p>Tiempo estimado: 3 minutos</p>
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Ir a Facturas Pendientes</strong><br>
+                            En menú lateral, seleccione "Facturas" → "Facturas Pendientes"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Buscar la factura</strong><br>
+                            Use el buscador o lista para encontrar la factura que va a cobrar
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Hacer clic en "Editar"</strong><br>
+                            Abra la factura para modificar su estado
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Cambiar estado a "Pagada"</strong><br>
+                            En el campo Estado, seleccione "Pagada" del desplegable
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Guardar cambios</strong><br>
+                            Haga clic en "Guardar Cambios". La factura se marca como pagada
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Confirmar cambio</strong><br>
+                            Verá mensaje de confirmación. La factura ya no aparecerá en pendientes
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GESTIÓN DE USUARIOS -->
+            <section id="usuarios">
+                <h2>👥 Gestión de Usuarios</h2>
+
+                <div class="warning-box">
+                    <strong>⚠️ Importante:</strong> Solo los usuarios con rol de Administrador pueden acceder a esta sección.
+                </div>
+
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Gestion de Usuarios.png" alt="Pantalla de Gestión de Usuarios">
+                    <p class="image-caption">Figura 6: Pantalla de Gestión de Usuarios</p>
+                </div>
+
+                <h3>Crear un Nuevo Usuario</h3>
+                <p>Solo el administrador puede crear nuevos usuarios en el sistema. Para crear un nuevo usuario:</p>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Acceda a la sección Usuarios</strong><br>
+                            Desde el menú principal seleccione "Usuarios"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Crear Usuario"</strong><br>
+                            Botón destacado en la parte superior de la lista
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Complete el formulario</strong><br>
+                            Ingrese: Nombre, Identificación, Email, Rol y Contraseña temporal
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Asigne un Rol</strong><br>
+                            Seleccione entre: Administrador, Empleado o Usuario
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Guardar"</strong><br>
+                            El usuario recibirá un email con sus credenciales
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Editar un Usuario Existente</h3>
+                <ol>
+                    <li>Busque el usuario en la lista</li>
+                    <li>Haga clic en el botón <span class="button-example" style="pointer-events: none;">Editar</span></li>
+                    <li>Modifique los datos que desea cambiar</li>
+                    <li>Haga clic en <span class="button-success" style="pointer-events: none;">Guardar</span></li>
+                </ol>
+
+                <h3>Eliminar un Usuario</h3>
+                <ol>
+                    <li>Localice el usuario a eliminar</li>
+                    <li>Haga clic en el botón <span class="button-danger" style="pointer-events: none;">Eliminar</span></li>
+                    <li>Confirme la acción en el cuadro de diálogo</li>
+                </ol>
+
+                <div class="note-box">
+                    <strong>⚠️ Nota:</strong> Cuando se elimina un usuario, todos sus registros asociados se mantienen en el sistema pero se marca el usuario como inactivo.
+                </div>
+            </section>
+
+            <!-- GESTIÓN DE CLIENTES -->
+            <section id="clientes">
+                <h2>👥 Gestión de Clientes</h2>
+
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Gestion Clientes.png" alt="Pantalla de Gestión de Clientes">
+                    <p class="image-caption">Figura 7: Pantalla de Gestión de Clientes</p>
+                </div>
+
+                <p>La sección de Clientes permite gestionar toda la información de los clientes de su empresa. Solo usuarios con rol de Empleado o superior pueden crear clientes. Esta sección es fundamental para la operación del sistema, ya que toda factura debe estar asociada a un cliente.</p>
+
+                <h3>Descripción de Componentes - Módulo Clientes</h3>
+
+                <h4>Pantalla de Listado de Clientes</h4>
+                <p>Cuando accede a Clientes, verá una tabla con todos los clientes registrados:</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Descripción</th>
+                                <th>Función</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Botón "Nuevo Cliente"</strong></td>
+                                <td>Botón azul destacado en la parte superior</td>
+                                <td>Abre formulario para registrar un cliente nuevo</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Buscador</strong></td>
+                                <td>Campo de texto en la parte superior de la tabla</td>
+                                <td>Busca clientes por nombre, email o número de identificación</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna ID</strong></td>
+                                <td>Número único del cliente en el sistema</td>
+                                <td>Identificador único para referencias internas</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Nombre</strong></td>
+                                <td>Nombre o razón social del cliente</td>
+                                <td>Información principal del cliente</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Email</strong></td>
+                                <td>Correo electrónico del cliente</td>
+                                <td>Para contacto y comunicaciones</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Teléfono</strong></td>
+                                <td>Número de contacto</td>
+                                <td>Para comunicación directa</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Acciones</strong></td>
+                                <td>Botones de operaciones en cada fila</td>
+                                <td>Editar, Ver Detalle, Ver Facturas, Eliminar</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Consultar Información de Clientes</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Acceda a Clientes</strong><br>
+                            En el menú lateral izquierdo, haga clic en "Clientes"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Verá la lista completa</strong><br>
+                            Se muestran todos los clientes registrados en una tabla ordenada
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Busque un cliente específico</strong><br>
+                            Use el campo de búsqueda ingresando nombre, email o número de ID
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Resultados se filtran automáticamente</strong><br>
+                            La tabla muestra solo los clientes que coinciden con la búsqueda
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Haga clic en el cliente</strong><br>
+                            Seleccione un cliente para ver su información completa en detalle
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Visualice los detalles</strong><br>
+                            Se abre una página con toda la información del cliente y su historial
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Registrar un Nuevo Cliente</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Acceda a Clientes</strong><br>
+                            Desde el menú principal, seleccione "Clientes"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Nuevo Cliente"</strong><br>
+                            Botón azul destacado en la parte superior de la pantalla
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Se abre el formulario</strong><br>
+                            Verá los campos necesarios para registrar un nuevo cliente
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Seleccione el tipo de identificación</strong><br>
+                            Puede ser: Cédula, NIT o Pasaporte. Haga clic en el desplegable
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Ingrese el número de identificación</strong><br>
+                            Número único del cliente (sin puntos ni caracteres especiales)
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Complete nombre completo</strong><br>
+                            Ingrese el nombre o razón social del cliente tal como aparece en documentos
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <strong>Ingrese email</strong><br>
+                            Correo electrónico válido para contacto (formato: usuario@dominio.com)
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <strong>Ingrese teléfono (opcional)</strong><br>
+                            Número de contacto principal del cliente
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">9</div>
+                        <div class="step-content">
+                            <strong>Ingrese dirección (opcional)</strong><br>
+                            Dirección de residencia o ubicación del negocio del cliente
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">10</div>
+                        <div class="step-content">
+                            <strong>Revise la información</strong><br>
+                            Verifique que todos los datos sean correctos antes de guardar
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">11</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Guardar"</strong><br>
+                            Botón verde en la parte inferior del formulario
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">12</div>
+                        <div class="step-content">
+                            <strong>Confirmación de registro</strong><br>
+                            Verá un mensaje de éxito. El cliente aparece ahora en la lista
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Datos Requeridos para un Cliente</h3>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campo</th>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Obligatorio</th>
+                                <th>Ejemplo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Tipo de Identificación</td>
+                                <td>Select</td>
+                                <td>Cédula, NIT o Pasaporte</td>
+                                <td>Sí</td>
+                                <td>Cédula</td>
+                            </tr>
+                            <tr>
+                                <td>Número de Identificación</td>
+                                <td>Texto</td>
+                                <td>Número único del cliente</td>
+                                <td>Sí</td>
+                                <td>1234567890</td>
+                            </tr>
+                            <tr>
+                                <td>Nombre Completo</td>
+                                <td>Texto</td>
+                                <td>Nombre o razón social</td>
+                                <td>Sí</td>
+                                <td>Juan Pérez García</td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td>Email</td>
+                                <td>Correo electrónico de contacto</td>
+                                <td>Sí</td>
+                                <td>juan@email.com</td>
+                            </tr>
+                            <tr>
+                                <td>Teléfono</td>
+                                <td>Teléfono</td>
+                                <td>Número de teléfono principal</td>
+                                <td>No</td>
+                                <td>3001234567</td>
+                            </tr>
+                            <tr>
+                                <td>Dirección</td>
+                                <td>Texto largo</td>
+                                <td>Dirección de residencia o negocio</td>
+                                <td>No</td>
+                                <td>Calle 10 #20-30 Apt 401</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Editar Información de un Cliente</h3>
+                <ol>
+                    <li>Busque el cliente en la lista o use la función de búsqueda</li>
+                    <li>Haga clic en el botón <span class="button-example" style="pointer-events: none;">Editar</span></li>
+                    <li>Modifique los datos necesarios en el formulario</li>
+                    <li>Revise los cambios antes de guardar</li>
+                    <li>Haga clic en <span class="button-success" style="pointer-events: none;">Guardar Cambios</span></li>
+                    <li>Verá confirmación de que los cambios se han guardado</li>
+                </ol>
+
+                <h3>Eliminar un Cliente</h3>
+                <ol>
+                    <li>Localice el cliente a eliminar en la lista</li>
+                    <li>Haga clic en el botón <span class="button-danger" style="pointer-events: none;">Eliminar</span> en la fila</li>
+                    <li>Se abre un cuadro de diálogo pidiendo confirmación</li>
+                    <li>Haga clic en "Confirmar" para eliminar permanentemente</li>
+                    <li>El cliente se elimina del sistema inmediatamente</li>
+                </ol>
+
+                <h3>Ver Historial de Facturas de un Cliente</h3>
+                <p>Para ver todas las facturas de un cliente específico:</p>
+                <ol>
+                    <li>Abra el detalle del cliente</li>
+                    <li>Busque la sección "Historial de Facturas" en la página</li>
+                    <li>Se mostrará una tabla con todas sus facturas asociadas</li>
+                    <li>Puede hacer clic en cualquier factura para ver sus detalles</li>
+                </ol>
+
+                <div class="info-box">
+                    <strong>💡 Consejo:</strong> Mantenga la información de sus clientes actualizada para asegurar facturas precisas y contacto directo efectivo. Revise regularmente los datos de contacto.
+                </div>
+
+                <div class="note-box">
+                    <strong>⚠️ Nota:</strong> Cuando se elimina un cliente, todos sus registros de facturas se mantienen en el sistema pero se marca el cliente como inactivo para auditoría.
+                </div>
+            </section>
+
+            <!-- GESTIÓN DE PRODUCTOS -->
+            <section id="productos">
+                <h2>📦 Gestión de Productos</h2>
+
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Gestion Productos.png" alt="Pantalla de Gestión de Productos">
+                    <p class="image-caption">Figura 8: Pantalla de Gestión de Productos</p>
+                </div>
+
+                <p>En esta sección puede crear y administrar el catálogo de productos y servicios que ofrece su empresa. Solo usuarios con rol de Empleado o superior pueden crear productos. El catálogo de productos es fundamental para emitir facturas rápidamente y mantener la consistencia en precios.</p>
+
+                <h3>Descripción de Componentes - Módulo Productos</h3>
+
+                <h4>Pantalla de Listado de Productos</h4>
+                <p>Cuando accede a Productos, verá una tabla con todos los productos registrados:</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Descripción</th>
+                                <th>Función</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Botón "Nuevo Producto"</strong></td>
+                                <td>Botón azul destacado en la parte superior</td>
+                                <td>Abre formulario para crear un nuevo producto</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Buscador de Productos</strong></td>
+                                <td>Campo de texto en la parte superior</td>
+                                <td>Busca productos por nombre, código o descripción</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Filtro de Estado</strong></td>
+                                <td>Desplegable para filtrar por estado</td>
+                                <td>Muestra productos activos, inactivos o todos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Código</strong></td>
+                                <td>Código único del producto en el catálogo</td>
+                                <td>Identificador rápido para referencias internas</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Nombre</strong></td>
+                                <td>Nombre del producto o servicio</td>
+                                <td>Descripción principal del producto</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Precio</strong></td>
+                                <td>Precio unitario de venta</td>
+                                <td>Valor que se usa en las facturas</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Stock</strong></td>
+                                <td>Cantidad disponible en inventario</td>
+                                <td>Control de niveles de inventario</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Acciones</strong></td>
+                                <td>Botones de operaciones en cada fila</td>
+                                <td>Editar, Ver Detalle, Ajustar Stock, Eliminar</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Consultar Productos del Catálogo</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Acceda a Productos</strong><br>
+                            En el menú lateral izquierdo, haga clic en "Productos"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Verá la lista completa del catálogo</strong><br>
+                            Se muestran todos los productos registrados en una tabla
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Busque un producto específico</strong><br>
+                            Use el campo de búsqueda ingresando nombre, código o parte de descripción
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Aplique filtros si es necesario</strong><br>
+                            Use el filtro de estado para ver solo productos activos
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Haga clic en un producto</strong><br>
+                            Seleccione una fila para ver toda la información del producto
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Visualice los detalles</strong><br>
+                            Se muestra nombre, descripción, precio, stock e IVA del producto
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Crear un Nuevo Producto</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Acceda a Productos</strong><br>
+                            Desde el menú principal, seleccione "Productos"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Nuevo Producto"</strong><br>
+                            Botón azul destacado en la parte superior
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Se abre el formulario</strong><br>
+                            Verá todos los campos necesarios para crear el producto
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Ingrese nombre del producto</strong><br>
+                            Nombre descriptivo y claro del producto (Ej: "Laptop HP Pavilion")
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Ingrese código del producto</strong><br>
+                            Código único interno (Ej: "PROD-001", "LP-HP-P15")
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Complete la descripción</strong><br>
+                            Descripción detallada de características del producto
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <strong>Establezca el precio unitario</strong><br>
+                            Ingrese el precio de venta sin IVA (Ej: 1500000)
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <strong>Ingrese cantidad en stock</strong><br>
+                            Cantidad disponible actualmente en inventario
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">9</div>
+                        <div class="step-content">
+                            <strong>Ingrese porcentaje de IVA</strong><br>
+                            Generalmente 19% (dejar en blanco para 0%)
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">10</div>
+                        <div class="step-content">
+                            <strong>Revise la información</strong><br>
+                            Verifique que todos los datos sean correctos
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">11</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Guardar"</strong><br>
+                            Botón verde en la parte inferior del formulario
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">12</div>
+                        <div class="step-content">
+                            <strong>Confirmación de creación</strong><br>
+                            Verá mensaje de éxito. El producto aparece en el catálogo
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Información Requerida para Productos</h3>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campo</th>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Obligatorio</th>
+                                <th>Ejemplo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Nombre del Producto</td>
+                                <td>Texto</td>
+                                <td>Nombre o descripción breve</td>
+                                <td>Sí</td>
+                                <td>Mouse Inalámbrico USB</td>
+                            </tr>
+                            <tr>
+                                <td>Código del Producto</td>
+                                <td>Texto</td>
+                                <td>Código único interno para referencia</td>
+                                <td>Sí</td>
+                                <td>MOU-001-USB</td>
+                            </tr>
+                            <tr>
+                                <td>Descripción</td>
+                                <td>Texto largo</td>
+                                <td>Descripción detallada del producto</td>
+                                <td>No</td>
+                                <td>Mouse inalámbrico de alta precisión con batería AA</td>
+                            </tr>
+                            <tr>
+                                <td>Precio Unitario</td>
+                                <td>Moneda</td>
+                                <td>Precio de venta al público (sin IVA)</td>
+                                <td>Sí</td>
+                                <td>45000</td>
+                            </tr>
+                            <tr>
+                                <td>Cantidad en Stock</td>
+                                <td>Número</td>
+                                <td>Unidades disponibles en inventario</td>
+                                <td>Sí</td>
+                                <td>50</td>
+                            </tr>
+                            <tr>
+                                <td>Impuesto (IVA %)</td>
+                                <td>Porcentaje</td>
+                                <td>Porcentaje de IVA aplicable al producto</td>
+                                <td>No</td>
+                                <td>19</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Editar un Producto</h3>
+                <ol>
+                    <li>Busque el producto en la lista</li>
+                    <li>Haga clic en el botón <span class="button-example" style="pointer-events: none;">Editar</span></li>
+                    <li>Se abre el formulario con la información actual</li>
+                    <li>Modifique los campos que desea cambiar</li>
+                    <li>Revise los cambios antes de guardar</li>
+                    <li>Haga clic en <span class="button-success" style="pointer-events: none;">Guardar Cambios</span></li>
+                    <li>Verá confirmación de que los cambios se han guardado</li>
+                </ol>
+
+                <h3>Ajustar Stock de un Producto</h3>
+                <ol>
+                    <li>Localice el producto en la lista</li>
+                    <li>Haga clic en el botón <span class="button-example" style="pointer-events: none;">Ajustar Stock</span></li>
+                    <li>Se abre una ventana con la cantidad actual</li>
+                    <li>Ingrese la nueva cantidad disponible</li>
+                    <li>Haga clic en "Confirmar" para actualizar</li>
+                </ol>
+
+                <h3>Eliminar un Producto</h3>
+                <ol>
+                    <li>Localice el producto a eliminar en la lista</li>
+                    <li>Haga clic en el botón <span class="button-danger" style="pointer-events: none;">Eliminar</span></li>
+                    <li>Se abre cuadro de diálogo pidiendo confirmación</li>
+                    <li>Haga clic en "Confirmar" para eliminar permanentemente</li>
+                </ol>
+
+                <div class="warning-box">
+                    <strong>⚠️ Advertencia:</strong> Si un producto está siendo usado en facturas, no puede ser eliminado completamente. En su lugar, puede marcarlo como inactivo editando el producto.
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 Consejo:</strong> Mantenga actualizado el stock de productos. Los productos con bajo inventario deben ser solicitados nuevamente a proveedores a tiempo.
+                </div>
+            </section>
+
+            <!-- GESTIÓN DE FACTURAS -->
+            <section id="facturas">
+                <h2>📋 Gestión de Facturas</h2>
+
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Gestion de Facturas.png" alt="Pantalla de Gestión de Facturas">
+                    <p class="image-caption">Figura 9: Pantalla de Gestión de Facturas</p>
+                </div>
+
+                <p>La gestión de facturas es una de las funcionalidades principales del sistema. Permite crear, editar, visualizar, filtrar y generar facturas en PDF para sus clientes. Las facturas son documentos legales que registran transacciones comerciales y deben mantenerse en el sistema como respaldo.</p>
+
+                <h3>Descripción de Componentes - Módulo Facturas</h3>
+
+                <h4>Pantalla de Listado de Facturas</h4>
+                <p>Cuando accede a Facturas, verá una tabla completa con todas las facturas del sistema:</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Descripción</th>
+                                <th>Función</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Botón "Nueva Factura"</strong></td>
+                                <td>Botón azul destacado en la parte superior</td>
+                                <td>Abre formulario para crear una factura nueva</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Filtro por Estado</strong></td>
+                                <td>Desplegable en la parte superior izquierda</td>
+                                <td>Muestra: Pendiente, Pagada, Vencida, Cancelada o Todas</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Buscador de Facturas</strong></td>
+                                <td>Campo de texto para búsqueda</td>
+                                <td>Busca por número de factura, cliente o descripción</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Número</strong></td>
+                                <td>Número único de factura</td>
+                                <td>Identificador que aparece en el PDF de la factura</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Cliente</strong></td>
+                                <td>Nombre del cliente asociado</td>
+                                <td>Información del receptor de la factura</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Fecha</strong></td>
+                                <td>Fecha de emisión de la factura</td>
+                                <td>Cuándo se creó la factura</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Total</strong></td>
+                                <td>Monto total de la factura</td>
+                                <td>Valor completo incluyendo impuestos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Estado</strong></td>
+                                <td>Estado actual de la factura</td>
+                                <td>Indica si está pendiente, pagada, vencida o cancelada</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Columna Acciones</strong></td>
+                                <td>Botones de operaciones</td>
+                                <td>Ver Detalle, Editar, Descargar PDF, Cambiar Estado, Eliminar</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Consultar Facturas Existentes</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Acceda a Facturas</strong><br>
+                            En el menú lateral, haga clic en "Facturas"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Verá todas las facturas</strong><br>
+                            Se muestra tabla con todas las facturas registradas
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Aplique filtros por estado</strong><br>
+                            Use el desplegable para ver facturas pendientes, pagadas, vencidas, etc.
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Busque una factura específica</strong><br>
+                            Ingrese número de factura, nombre de cliente, etc. en el buscador
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Haga clic en una factura</strong><br>
+                            Seleccione la fila para ver detalles completos
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Visualice detalles completos</strong><br>
+                            Se abre página con todos los datos de la factura
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Crear una Nueva Factura</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Acceda a Facturas</strong><br>
+                            Desde el menú principal, seleccione "Facturas"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Nueva Factura"</strong><br>
+                            Botón azul destacado en la parte superior
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Se abre formulario de factura</strong><br>
+                            Verá varios campos organizados en secciones
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Seleccione o cree un cliente</strong><br>
+                            Haga clic en campo cliente, busque o ingrese uno nuevo
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Establezca fecha de emisión</strong><br>
+                            Por defecto es hoy, pero puede cambiarla si es necesario
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Ingrese fecha de vencimiento (opcional)</strong><br>
+                            Fecha límite de pago si aplica crédito
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <strong>Agregue productos</strong><br>
+                            Haga clic en "Agregar Producto", seleccione del catálogo
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <strong>Ingrese cantidad de cada producto</strong><br>
+                            Número de unidades que se venden
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">9</div>
+                        <div class="step-content">
+                            <strong>Revise subtotal calculado</strong><br>
+                            Sistema calcula automáticamente: cantidad × precio unitario
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">10</div>
+                        <div class="step-content">
+                            <strong>Aplique descuento (opcional)</strong><br>
+                            Ingrese porcentaje de descuento si aplica
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">11</div>
+                        <div class="step-content">
+                            <strong>Revise IVA calculado</strong><br>
+                            Sistema aplica IVA según configuración de cada producto
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">12</div>
+                        <div class="step-content">
+                            <strong>Seleccione tipo de pago</strong><br>
+                            Efectivo, Tarjeta, Transferencia, Cheque, u Otro
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">13</div>
+                        <div class="step-content">
+                            <strong>Revise el total final</strong><br>
+                            Subtotal - Descuento + IVA = Total
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">14</div>
+                        <div class="step-content">
+                            <strong>Agregue observaciones (opcional)</strong><br>
+                            Notas adicionales sobre la transacción
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">15</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Crear Factura"</strong><br>
+                            Botón verde en la parte inferior
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">16</div>
+                        <div class="step-content">
+                            <strong>Confirmación de creación</strong><br>
+                            Verá mensaje de éxito y la factura aparece en la lista
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Campos de una Factura - Descripción Detallada</h3>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Campo</th>
+                                <th>Descripción Particular</th>
+                                <th>Obligatorio</th>
+                                <th>Ejemplo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Cliente</strong></td>
+                                <td>Seleccionar cliente de la lista. Es el receptor de la factura</td>
+                                <td>Sí</td>
+                                <td>Juan Pérez García</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Número de Factura</strong></td>
+                                <td>Se genera automáticamente. Identificador único del documento</td>
+                                <td>Automático</td>
+                                <td>FAC-001-2026</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fecha de Emisión</strong></td>
+                                <td>Fecha en que se emite la factura. Por defecto es hoy</td>
+                                <td>Sí</td>
+                                <td>29/01/2026</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fecha de Vencimiento</strong></td>
+                                <td>Fecha límite de pago. Para operaciones al contado, puede dejarse vacío</td>
+                                <td>No</td>
+                                <td>29/02/2026</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Productos/Servicios</strong></td>
+                                <td>Detalle de lo que se cobra. Puede agregar varios renglones</td>
+                                <td>Sí</td>
+                                <td>Mouse USB, Teclado Mecánico, etc.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cantidad</strong></td>
+                                <td>Cantidad de cada producto. Se multiplica por el precio unitario</td>
+                                <td>Sí</td>
+                                <td>5 unidades</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Precio Unitario</strong></td>
+                                <td>Precio de cada unidad del producto. Viene del catálogo</td>
+                                <td>Sí</td>
+                                <td>45000 COP</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Subtotal por Renglon</strong></td>
+                                <td>Se calcula automáticamente: Cantidad × Precio Unitario</td>
+                                <td>Automático</td>
+                                <td>225000 COP</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Subtotal General</strong></td>
+                                <td>Suma de todos los renglones sin descuento ni impuestos</td>
+                                <td>Automático</td>
+                                <td>500000 COP</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Descuento (%)</strong></td>
+                                <td>Porcentaje de descuento a aplicar sobre subtotal</td>
+                                <td>No</td>
+                                <td>10%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Valor Descuento</strong></td>
+                                <td>Se calcula automáticamente en dinero</td>
+                                <td>Automático</td>
+                                <td>50000 COP</td>
+                            </tr>
+                            <tr>
+                                <td><strong>IVA (Impuesto)</strong></td>
+                                <td>Impuesto al valor agregado calculado sobre subtotal - descuento</td>
+                                <td>No</td>
+                                <td>85500 COP</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total</strong></td>
+                                <td>Monto final: Subtotal - Descuento + IVA</td>
+                                <td>Automático</td>
+                                <td>535500 COP</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tipo de Pago</strong></td>
+                                <td>Método de pago: Efectivo, Tarjeta, Transferencia, Cheque, Otro</td>
+                                <td>Sí</td>
+                                <td>Transferencia Bancaria</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Estado</strong></td>
+                                <td>Estado actual: Pendiente, Pagada, Vencida o Cancelada</td>
+                                <td>Automático</td>
+                                <td>Pendiente</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Observaciones</strong></td>
+                                <td>Notas adicionales sobre la factura</td>
+                                <td>No</td>
+                                <td>Envío a domicilio incluido</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Estados de la Factura - Descripción Completa</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🔵 Pendiente</h4>
+                        <p><strong>Descripción:</strong> Factura registrada pero aún no pagada por el cliente.</p>
+                        <p><strong>Cuándo ocurre:</strong> Inmediatamente después de crear la factura.</p>
+                        <p><strong>Acción:</strong> Enviar al cliente y hacer seguimiento.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>✅ Pagada</h4>
+                        <p><strong>Descripción:</strong> Factura con pago completado recibido del cliente.</p>
+                        <p><strong>Cuándo ocurre:</strong> Cuando el cliente paga y se confirma el dinero.</p>
+                        <p><strong>Acción:</strong> Archivar o usar para reportes de ingresos.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>⚠️ Vencida</h4>
+                        <p><strong>Descripción:</strong> Factura que pasó la fecha de vencimiento sin pago.</p>
+                        <p><strong>Cuándo ocurre:</strong> Cuando hoy supera la fecha de vencimiento.</p>
+                        <p><strong>Acción:</strong> Hacer seguimiento de cobro al cliente.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>❌ Cancelada</h4>
+                        <p><strong>Descripción:</strong> Factura anulada por algún motivo (devolución, error, etc.).</p>
+                        <p><strong>Cuándo ocurre:</strong> Cuando hay que anular un documento.</p>
+                        <p><strong>Acción:</strong> Mantener para auditoría pero no cobrar.</p>
+                    </div>
+                </div>
+
+                <h3>Editar una Factura</h3>
+                <ol>
+                    <li>Busque la factura en la lista</li>
+                    <li>Haga clic en el botón <span class="button-example" style="pointer-events: none;">Editar</span></li>
+                    <li>Se abre el formulario con datos actuales</li>
+                    <li>Realice los cambios necesarios (principalmente en cantidades o descuentos)</li>
+                    <li>Verifique que los cálculos sean correctos</li>
+                    <li>Haga clic en <span class="button-success" style="pointer-events: none;">Guardar Cambios</span></li>
+                </ol>
+
+                <h3>Descargar Factura en PDF</h3>
+                <ol>
+                    <li>Abra la factura que desea descargar</li>
+                    <li>Busque el botón <span class="button-example" style="pointer-events: none;">Descargar PDF</span></li>
+                    <li>Se abre el archivo PDF en formato profesional</li>
+                    <li>Puede imprimir directamente desde el navegador (Ctrl + P)</li>
+                    <li>O guardar en su computadora para enviar por email</li>
+                </ol>
+
+                <h3>Cambiar Estado de una Factura</h3>
+                <ol>
+                    <li>Abra la factura que desea modificar</li>
+                    <li>Busque el campo "Estado" en el formulario</li>
+                    <li>Haga clic en el desplegable para ver opciones</li>
+                    <li>Seleccione el nuevo estado: Pendiente, Pagada, Vencida o Cancelada</li>
+                    <li>Haga clic en <span class="button-success" style="pointer-events: none;">Guardar Cambios</span></li>
+                </ol>
+
+                <div class="info-box">
+                    <strong>💡 Consejo Importante:</strong> Use las fechas de vencimiento para hacer seguimiento a los pagos pendientes. Genere reportes mensuales para ver qué facturas están vencidas y requieren cobro urgente.
+                </div>
+
+                <div class="note-box">
+                    <strong>⚠️ Nota:</strong> Las facturas no pueden ser eliminadas del sistema, solo canceladas. Esto asegura un respaldo completo de todas las transacciones para auditoría y cumplimiento fiscal.
+                </div>
+            </section>
+
+            <!-- REPORTES -->
+            <section id="reportes">
+                <h2>📊 Reportes</h2>
+
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Gestion Reportes.png" alt="Pantalla de Reportes">
+                    <p class="image-caption">Figura 10: Pantalla de Reportes</p>
+                </div>
+
+                <p>La sección de Reportes proporciona análisis detallados y estadísticas sobre las facturas, clientes y productos de su empresa. Los reportes son herramientas esenciales para tomar decisiones gerenciales basadas en datos concretos.</p>
+
+                <h3>Descripción de Componentes - Módulo Reportes</h3>
+
+                <h4>Pantalla Principal de Reportes</h4>
+                <p>La página de reportes contiene varias opciones para generar diferentes tipos de análisis:</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Descripción</th>
+                                <th>Función</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Selector de Tipo de Reporte</strong></td>
+                                <td>Menú con opciones de reportes disponibles</td>
+                                <td>Seleccionar qué tipo de análisis generar</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Campo Fecha Inicial</strong></td>
+                                <td>Calendario para seleccionar inicio del período</td>
+                                <td>Define desde cuándo incluir datos en el reporte</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Campo Fecha Final</strong></td>
+                                <td>Calendario para seleccionar fin del período</td>
+                                <td>Define hasta cuándo incluir datos en el reporte</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Filtros Adicionales</strong></td>
+                                <td>Opciones para filtrar por cliente, producto, estado, etc.</td>
+                                <td>Refinar datos del reporte según criterios específicos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Botón "Generar Reporte"</strong></td>
+                                <td>Botón azul para procesar datos</td>
+                                <td>Inicia el cálculo y generación del reporte</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Botón "Descargar PDF"</strong></td>
+                                <td>Exporta el reporte a formato PDF</td>
+                                <td>Guardar reporte para archivado o distribución</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Botón "Descargar Excel"</strong></td>
+                                <td>Exporta el reporte a formato Excel/CSV</td>
+                                <td>Para análisis adicional en hojas de cálculo</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Tipos de Reportes Disponibles</h3>
+
+                <h4>1. 📈 Reporte de Ventas</h4>
+                <p><strong>Descripción:</strong> Muestra el desempeño general de ventas en un período específico.</p>
+                <p><strong>Información que contiene:</strong></p>
+                <ul>
+                    <li>Monto total de ventas del período</li>
+                    <li>Cantidad de facturas emitidas</li>
+                    <li>Promedio de venta por factura</li>
+                    <li>Desglose por mes o semana</li>
+                    <li>Gráficos de tendencia de ventas</li>
+                    <li>Variación porcentual respecto a período anterior</li>
+                </ul>
+                <p><strong>Uso común:</strong> Evaluar desempeño mensual del negocio y planificar estrategias comerciales.</p>
+
+                <h4>2. 👥 Reporte de Clientes</h4>
+                <p><strong>Descripción:</strong> Análisis sobre los clientes y su comportamiento de compra.</p>
+                <p><strong>Información que contiene:</strong></p>
+                <ul>
+                    <li>Cantidad total de clientes registrados</li>
+                    <li>Clientes más frecuentes (Top 10)</li>
+                    <li>Monto gastado por cliente</li>
+                    <li>Clientes nuevos en el período</li>
+                    <li>Clientes inactivos (sin compras en período)</li>
+                    <li>Ranking de clientes por volumen</li>
+                </ul>
+                <p><strong>Uso común:</strong> Identificar clientes importantes, estrategias de fidelización y oportunidades de crecimiento.</p>
+
+                <h4>3. 📦 Reporte de Productos</h4>
+                <p><strong>Descripción:</strong> Análisis del desempeño y rentabilidad de los productos.</p>
+                <p><strong>Información que contiene:</strong></p>
+                <ul>
+                    <li>Productos más vendidos (Top 10)</li>
+                    <li>Ingresos generados por cada producto</li>
+                    <li>Niveles de inventario actual</li>
+                    <li>Productos con bajo stock (por debajo de mínimo)</li>
+                    <li>Productos no vendidos en el período</li>
+                    <li>Rotación de inventario por producto</li>
+                </ul>
+                <p><strong>Uso común:</strong> Gestión de inventario, decisiones de compra a proveedores y control de stock.</p>
+
+                <h4>4. 💰 Reporte de Pagos Pendientes</h4>
+                <p><strong>Descripción:</strong> Seguimiento detallado de facturas sin pagar.</p>
+                <p><strong>Información que contiene:</strong></p>
+                <ul>
+                    <li>Facturas pendientes de pago</li>
+                    <li>Facturas vencidas (atrasos)</li>
+                    <li>Monto total adeudado</li>
+                    <li>Días de mora por factura</li>
+                    <li>Cliente deudor principal</li>
+                    <li>Antigüedad promedio de deuda</li>
+                </ul>
+                <p><strong>Uso común:</strong> Gestión de cobranzas, control de cartera y análisis de riesgo de crédito.</p>
+
+                <h4>5. 🎯 Reporte Personalizado</h4>
+                <p><strong>Descripción:</strong> Crear reportes con criterios específicos del usuario.</p>
+                <p><strong>Características:</strong></p>
+                <ul>
+                    <li>Seleccionar múltiples filtros</li>
+                    <li>Elegir columnas a mostrar</li>
+                    <li>Definir orden de presentación</li>
+                    <li>Incluir o excluir estados específicos</li>
+                </ul>
+
+                <h3>Generar un Reporte - Paso a Paso</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Acceda a Reportes</strong><br>
+                            En el menú lateral, seleccione "Reportes"
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Se abre página de reportes</strong><br>
+                            Verá opciones para diferentes tipos de reportes
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Seleccione el tipo de reporte</strong><br>
+                            Haga clic en el reporte que desea: Ventas, Clientes, Productos, Pagos Pendientes, etc.
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Defina el período de tiempo</strong><br>
+                            Seleccione fecha inicial y fecha final. Use los iconos de calendario
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Aplique filtros opcionales</strong><br>
+                            Si lo desea, filtre por cliente específico, producto, estado, etc.
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Generar Reporte"</strong><br>
+                            El sistema procesará los datos (puede tomar 5-10 segundos)
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <strong>Visualice los resultados</strong><br>
+                            Se muestran gráficos, tablas y estadísticas del período consultado
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <strong>Descargue si es necesario</strong><br>
+                            Botones para descargar en PDF o Excel están disponibles
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">9</div>
+                        <div class="step-content">
+                            <strong>Imprima o comparta</strong><br>
+                            Puede imprimir directamente o compartir por email
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Filtros Disponibles en Reportes</h3>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Filtro</th>
+                                <th>Descripción</th>
+                                <th>Reporte Aplicable</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Período de Tiempo</strong></td>
+                                <td>Define rango de fechas (desde - hasta)</td>
+                                <td>Todos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cliente Específico</strong></td>
+                                <td>Muestra solo datos de un cliente seleccionado</td>
+                                <td>Ventas, Productos, Pagos Pendientes</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Producto Específico</strong></td>
+                                <td>Muestra solo datos de un producto seleccionado</td>
+                                <td>Ventas, Productos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Estado de Factura</strong></td>
+                                <td>Filtra por: Pendiente, Pagada, Vencida, Cancelada</td>
+                                <td>Ventas, Pagos Pendientes</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tipo de Pago</strong></td>
+                                <td>Filtra por método: Efectivo, Tarjeta, Transferencia, etc.</td>
+                                <td>Ventas</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Rango de Precio</strong></td>
+                                <td>Muestra productos dentro de rango de precio</td>
+                                <td>Productos</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Descargar y Exportar Reportes</h3>
+
+                <h4>Descargar como PDF</h4>
+                <ol>
+                    <li>Después de generar el reporte, busque el botón <span class="button-example" style="pointer-events: none;">Descargar PDF</span></li>
+                    <li>Se descargará un archivo en formato PDF a su computadora</li>
+                    <li>Puede abrirlo con cualquier lector de PDF</li>
+                    <li>Está listo para imprimir o enviar por email</li>
+                </ol>
+
+                <h4>Descargar como Excel</h4>
+                <ol>
+                    <li>Busque el botón <span class="button-example" style="pointer-events: none;">Descargar Excel</span> o <span class="button-example" style="pointer-events: none;">Descargar CSV</span></li>
+                    <li>Se descargará archivo compatible con Excel o Google Sheets</li>
+                    <li>Puede realizar análisis adicional, gráficos y cálculos</li>
+                    <li>Útil para procesar datos con fórmulas personalizadas</li>
+                </ol>
+
+                <h3>Interpretación de Resultados</h3>
+                <p>Los reportes contienen varios componentes que debe interpretar:</p>
+
+                <h4>Gráficos</h4>
+                <ul>
+                    <li><strong>Gráficos de Barras:</strong> Comparación de cantidades o montos</li>
+                    <li><strong>Gráficos de Líneas:</strong> Tendencias a lo largo del tiempo</li>
+                    <li><strong>Gráficos de Torta:</strong> Porcentajes y proporciones del total</li>
+                    <li><strong>Tablas:</strong> Datos específicos listados numéricamente</li>
+                </ul>
+
+                <h4>Métricas Clave</h4>
+                <ul>
+                    <li><strong>Total:</strong> Suma de todos los valores</li>
+                    <li><strong>Promedio:</strong> Valor medio de los datos</li>
+                    <li><strong>Máximo:</strong> Valor más alto</li>
+                    <li><strong>Mínimo:</strong> Valor más bajo</li>
+                    <li><strong>Variación %:</strong> Cambio porcentual respecto a período anterior</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>💡 Consejo Importante:</strong> Genere reportes de forma regular (semanal o mensual) para monitorear el desempeño de su negocio. Use los datos para identificar tendencias, problemas y oportunidades de mejora.
+                </div>
+
+                <div class="note-box">
+                    <strong>⚠️ Nota:</strong> Los reportes se generan en tiempo real basándose en los datos actuales del sistema. Si modifica datos, los reportes anteriores conservan la información histórica.
+                </div>
+            </section>
+
+            <!-- PERFIL DE USUARIO -->
+            <section id="perfil">
+                <h2>👤 Mi Perfil</h2>
+
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Configuración Perfil.png" alt="Página de Configuración del Perfil">
+                    <p class="image-caption">Figura 11: Página de Configuración del Perfil de Usuario</p>
+                </div>
+
+                <p>En la sección de Perfil puede ver y editar su información personal, cambiar su contraseña, gestionar su foto de perfil y configurar preferencias del sistema. Esta área es personal y solo usted puede acceder a su propia información.</p>
+
+                <h3>Descripción de Componentes - Sección Mi Perfil</h3>
+
+                <h4>Pantalla de Perfil</h4>
+                <p>La página de perfil está organizada en varias secciones:</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Componente</th>
+                                <th>Descripción</th>
+                                <th>Función</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Foto de Perfil</strong></td>
+                                <td>Avatar o imagen circular del usuario</td>
+                                <td>Clic para cargar nueva foto o cambiar actual</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Nombre Completo</strong></td>
+                                <td>Nombre registrado en el sistema</td>
+                                <td>Mostrado en toda la aplicación</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email</strong></td>
+                                <td>Correo electrónico de cuenta</td>
+                                <td>Usado para login y notificaciones</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Rol</strong></td>
+                                <td>Admin, Empleado o Usuario</td>
+                                <td>Define permisos en el sistema (no se puede cambiar)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Número de Identificación</strong></td>
+                                <td>Cédula, NIT o Pasaporte</td>
+                                <td>Identificador personal único</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fecha de Registro</strong></td>
+                                <td>Cuándo se creó la cuenta</td>
+                                <td>Información de auditoría</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Botón "Editar Perfil"</strong></td>
+                                <td>Botón azul para modificar datos</td>
+                                <td>Permite editar información personal</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Botón "Cambiar Contraseña"</strong></td>
+                                <td>Botón para seguridad de cuenta</td>
+                                <td>Acceso a cambio de contraseña</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Información del Perfil</h3>
+                <p>Los siguientes datos son visibles y pueden ser modificados en su perfil:</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Datos Personales</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Nombre Completo</li>
+                            <li>Número de Identificación</li>
+                            <li>Email</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Datos del Sistema</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Rol (no editable)</li>
+                            <li>Fecha de Registro</li>
+                            <li>Estado de Cuenta (Activa)</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Datos Secundarios</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Foto de Perfil</li>
+                            <li>Preferencias Visuales</li>
+                            <li>Contraseña</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Información de Contacto</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Email Principal</li>
+                            <li>Número de Emergencia (si aplica)</li>
+                            <li>Ubicación/Departamento</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Editar Información Personal</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Acceda a "Mi Perfil"</strong><br>
+                            Haga clic en su avatar/foto en la esquina superior derecha
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Se abre menú desplegable</strong><br>
+                            Verá opciones: Mi Perfil, Configuración, Cambiar Contraseña, Cerrar Sesión
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Mi Perfil"</strong><br>
+                            Se abre página con su información completa
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Editar Perfil"</strong><br>
+                            El formulario se habilita para edición
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Modifique los datos</strong><br>
+                            Actualice nombre, email, número de identificación, etc.
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Revise los cambios</strong><br>
+                            Verifique que toda la información sea correcta
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Guardar Cambios"</strong><br>
+                            Los cambios se guardarán en el sistema
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <strong>Confirmación de actualización</strong><br>
+                            Verá mensaje de éxito. Los cambios son inmediatos
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Cambiar Contraseña - Procedimiento Seguro</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Haga clic en avatar en esquina superior derecha</strong><br>
+                            Se abre menú de opciones de usuario
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Seleccione "Cambiar Contraseña"</strong><br>
+                            Se abre diálogo de cambio de contraseña
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Ingrese su contraseña actual</strong><br>
+                            Campo de seguridad para verificar identidad
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Ingrese la nueva contraseña</strong><br>
+                            Debe ser diferente a la anterior y ser segura
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Confirme la nueva contraseña</strong><br>
+                            Escriba la contraseña nuevamente para verificar
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Revise los requisitos de seguridad</strong><br>
+                            Mayoría de mayúsculas, minúsculas, números y símbolos
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Actualizar Contraseña"</strong><br>
+                            Se procesa el cambio en el sistema
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <strong>Confirmación final</strong><br>
+                            Verá mensaje confirmando que se cambió exitosamente
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Requisitos para una Contraseña Segura</h3>
+
+                <div class="info-box">
+                    <strong>🔒 Criterios de Seguridad:</strong>
+                    <ul>
+                        <li>Mínimo 8 caracteres de longitud</li>
+                        <li>Contener al menos una letra mayúscula (A-Z)</li>
+                        <li>Contener al menos una letra minúscula (a-z)</li>
+                        <li>Contener al menos un número (0-9)</li>
+                        <li>Contener al menos un carácter especial (@, #, $, %, etc.)</li>
+                        <li>No debe contener su nombre de usuario o partes de él</li>
+                        <li>No debe ser una contraseña anterior</li>
+                    </ul>
+                </div>
+
+                <h4>Ejemplos de Contraseñas Seguras</h4>
+                <ul>
+                    <li style="color: green;">✓ MiCont123@Segura</li>
+                    <li style="color: green;">✓ Pfeps2026#Admin</li>
+                    <li style="color: green;">✓ SeguridadMaxima$789</li>
+                    <li style="color: red;">✗ 12345678 (solo números)</li>
+                    <li style="color: red;">✗ abcdefgh (solo minúsculas)</li>
+                    <li style="color: red;">✗ password (muy común)</li>
+                </ul>
+
+                <h3>Cargar Foto de Perfil</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>En la página de Perfil</strong><br>
+                            Busque su foto de perfil actual (círculo con inicial)
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Haga clic en la foto</strong><br>
+                            Se abre selector de archivo para elegir imagen
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Seleccione archivo de imagen</strong><br>
+                            Formatos aceptados: JPG, PNG, GIF (máx. 5 MB)
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Ajuste la foto (opcional)</strong><br>
+                            Puede recortar o redimensionar la imagen
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Guardar"</strong><br>
+                            La foto se carga y se usa inmediatamente
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <strong>Confirmación de cambio</strong><br>
+                            Su nueva foto aparece en el sistema y en todas las páginas
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Cerrar Sesión de Forma Segura</h3>
+
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Cerrar Sesión.png" alt="Opción de Cerrar Sesión">
+                    <p class="image-caption">Figura 12: Opción de Cerrar Sesión</p>
+                </div>
+
+                <p>Para cerrar sesión de forma segura y proteger su cuenta:</p>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>Haga clic en su avatar</strong><br>
+                            Ubicado en la esquina superior derecha de la pantalla
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>Se abre menú desplegable</strong><br>
+                            Verá sus opciones de usuario
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>Busque "Cerrar Sesión"</strong><br>
+                            Generalmente está al final del menú
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>Haga clic en "Cerrar Sesión"</strong><br>
+                            Se cierra su sesión inmediatamente
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <strong>Redirección a Login</strong><br>
+                            Será llevado a la pantalla de autenticación
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Importante - Buenas Prácticas de Seguridad:</strong>
+                    <ul>
+                        <li>Siempre cierre su sesión cuando termine de usar el sistema</li>
+                        <li>Especialmente importante en computadoras compartidas o públicas</li>
+                        <li>No comparta sus credenciales con otras personas</li>
+                        <li>Cambié su contraseña regularmente (cada 3-6 meses)</li>
+                        <li>Si sospecha que su contraseña fue comprometida, cámbiela inmediatamente</li>
+                    </ul>
+                </div>
+
+                <h3>Preferencias del Sistema</h3>
+                <p>En la sección de Perfil puede también configurar:</p>
+                <ul>
+                    <li><strong>Idioma:</strong> Seleccione idioma de interfaz (Español, Inglés, etc.)</li>
+                    <li><strong>Zona Horaria:</strong> Para correcta visualización de fechas y horas</li>
+                    <li><strong>Formato de Fecha:</strong> DD/MM/YYYY, MM/DD/YYYY, etc.</li>
+                    <li><strong>Notificaciones:</strong> Recibir alertas por email de eventos importantes</li>
+                    <li><strong>Tema Visual:</strong> Preferences de modo claro u oscuro</li>
+                </ul>
+            </section>
+
+            <!-- PREGUNTAS FRECUENTES -->
+            <section id="faq">
+                <h2>❓ Preguntas Frecuentes</h2>
+
+                <h3>¿Cuántos usuarios puedo crear en el sistema?</h3>
+                <p>No hay límite de usuarios. El administrador puede crear tantos usuarios como sea necesario. Cada usuario tendrá sus propias credenciales y permisos según su rol.</p>
+
+                <h3>¿Qué sucede si olvido mi contraseña?</h3>
+                <p>Puede recuperarla mediante la opción "¿Olvidó su contraseña?" en la pantalla de login. Se enviará un enlace de recuperación a su correo electrónico que será válido por 1 hora.</p>
+
+                <h3>¿Puedo editar una factura después de crearla?</h3>
+                <p>Sí, puede editar facturas pendientes. Sin embargo, si una factura está marcada como pagada, solo puede cambiar ciertos campos como observaciones. No puede modificar el monto una vez pagada.</p>
+
+                <h3>¿Cómo genero un PDF de la factura?</h3>
+                <p>En la página de detalle de la factura, encontrará un botón "Descargar PDF" que le permitirá descargar la factura en formato PDF listo para imprimir o enviar al cliente.</p>
+
+                <h3>¿Los datos se respaldan automáticamente?</h3>
+                <p>El sistema realiza respaldos automáticos de la base de datos. Sin embargo, es recomendable hacer respaldos manuales periódicamente de información crítica.</p>
+
+                <h3>¿Puedo eliminar una factura?</h3>
+                <p>No puede eliminar facturas directamente. Si necesita anular una factura, debe cambiar su estado a "Cancelada". Esto mantiene el registro para auditoría.</p>
+
+                <h3>¿Qué tipos de pago soporta el sistema?</h3>
+                <p>El sistema permite registrar los siguientes tipos de pago: Efectivo, Tarjeta de Crédito, Tarjeta de Débito, Transferencia Bancaria, Cheque y Otros.</p>
+
+                <h3>¿Cómo cambio el tema de oscuro a claro?</h3>
+                <p>Busque el icono de tema (luna/sol) en la esquina superior derecha del dashboard y haga clic para alternar entre tema claro y oscuro.</p>
+
+                <h3>¿Puedo exportar reportes a Excel?</h3>
+                <p>Sí, en la página de reportes tiene opciones para descargar en formato PDF o Excel, dependiendo del tipo de reporte generado.</p>
+
+                <h3>¿Qué hago si tengo problemas de acceso?</h3>
+                <p>Contacte al administrador del sistema. Verifique que su usuario esté activo y que tenga los permisos apropiados para la acción que intenta realizar.</p>
+
+                <h3>¿Es segura mi información en el sistema?</h3>
+                <p>Sí. El sistema implementa múltiples capas de seguridad incluyendo autenticación JWT, cifrado de contraseñas con bcryptjs, y control de acceso basado en roles (RBAC).</p>
+
+                <h3>¿Puedo acceder al sistema desde un dispositivo móvil?</h3>
+                <p>Sí. El sistema está completamente optimizado para dispositivos móviles y tablets. La interfaz se adapta automáticamente al tamaño de la pantalla.</p>
+
+                <h3>¿Cuál es el tamaño máximo de los archivos que puedo subir?</h3>
+                <p>El tamaño máximo para imágenes de perfil es de 5 MB. Para reportes en PDF, no hay límite de tamaño.</p>
+            </section>
+
+            <!-- RESUMEN Y CONCLUSIÓN -->
+            <section>
+                <h2>✅ Resumen del Manual</h2>
+
+                <p>Este manual de usuario ha cubierto todos los aspectos principales del Sistema de Facturación Electrónica PFEPS. A continuación, un resumen de lo aprendido:</p>
+
+                <h3>Módulos Principales del Sistema</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Módulo</th>
+                                <th>Función Principal</th>
+                                <th>Usuarios que pueden acceder</th>
+                                <th>Operaciones Principales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Facturas</strong></td>
+                                <td>Creación y gestión de documentos de cobro</td>
+                                <td>Todos (según permisos)</td>
+                                <td>Crear, Editar, Consultar, Descargar PDF</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Clientes</strong></td>
+                                <td>Administración de base de datos de clientes</td>
+                                <td>Empleados y Admin</td>
+                                <td>Registrar, Editar, Consultar, Eliminar</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Productos</strong></td>
+                                <td>Gestión de catálogo de productos/servicios</td>
+                                <td>Empleados y Admin</td>
+                                <td>Crear, Editar, Ajustar Stock, Consultar</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reportes</strong></td>
+                                <td>Análisis y estadísticas del negocio</td>
+                                <td>Todos (según permisos)</td>
+                                <td>Generar, Consultar, Descargar PDF/Excel</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Usuarios</strong></td>
+                                <td>Administración de cuentas del sistema</td>
+                                <td>Solo Admin</td>
+                                <td>Crear, Editar, Cambiar Rol, Eliminar</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Perfil</strong></td>
+                                <td>Gestión de información personal</td>
+                                <td>Todos los usuarios</td>
+                                <td>Editar, Cambiar Contraseña, Foto</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Flujos de Trabajo Clave</h3>
+                <p>Los flujos principales que debe dominar son:</p>
+                <ol>
+                    <li><strong>Crear Factura:</strong> Cliente → Productos → Descuentos → Pago → Guardar → Descargar PDF</li>
+                    <li><strong>Gestionar Cobros:</strong> Ver Pendientes → Seguimiento → Cambiar Estado → Generar Reporte</li>
+                    <li><strong>Análisis de Ventas:</strong> Seleccionar Período → Aplicar Filtros → Generar Reporte → Descargar</li>
+                    <li><strong>Actualizaciones de Inventario:</strong> Productos → Ajustar Stock → Guardar</li>
+                </ol>
+
+                <h3>Mejores Prácticas Recomendadas</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>📋 Facturación</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Siempre ingrese fechas de vencimiento</li>
+                            <li>Descargue y guarde PDFs</li>
+                            <li>Revise antes de crear</li>
+                            <li>Actualice estados de pago</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>👥 Clientes</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Mantenga datos actualizados</li>
+                            <li>Verifique emails válidos</li>
+                            <li>Organice por categorías</li>
+                            <li>Revise historial de compras</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📦 Productos</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Controle stock regularmente</li>
+                            <li>Actualice precios a tiempo</li>
+                            <li>Mantenga descripciones claras</li>
+                            <li>Establezca códigos únicos</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📊 Reportes</h4>
+                        <ul style="margin-left: 15px;">
+                            <li>Genere mensualmente</li>
+                            <li>Analice tendencias</li>
+                            <li>Tome decisiones basadas en datos</li>
+                            <li>Archive para auditoría</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Accesos Rápidos Útiles</h3>
+                <p>Use estos atajos para navegar más rápidamente:</p>
+                <ul>
+                    <li><strong>Nueva Factura Rápida:</strong> Dashboard → Botón "Nueva Factura"</li>
+                    <li><strong>Ver Pendientes:</strong> Facturas → Filtro "Pendiente"</li>
+                    <li><strong>Buscar Cliente:</strong> Clientes → Buscador (Ctrl + K)</li>
+                    <li><strong>Reporte Mensual:</strong> Reportes → Seleccionar mes → Generar</li>
+                    <li><strong>Mi Información:</strong> Avatar → "Mi Perfil"</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>💡 Recordatorio Final:</strong>
+                    <p>Este sistema está diseñado para facilitarle la gestión de su negocio. Domine los flujos principales y verá cómo mejora significativamente su productividad. No dude en explorar las diferentes opciones y funcionalidades que el sistema ofrece.</p>
+                </div>
+            </section>
+
+            <!-- INFORMACIÓN ADICIONAL -->
+            <section>
+                <h2>ℹ️ Información Adicional</h2>
+
+                <h3>Atajos de Teclado</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Atajo</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="keyboard-shortcut">Ctrl + K</span></td>
+                                <td>Abrir búsqueda rápida</td>
+                            </tr>
+                            <tr>
+                                <td><span class="keyboard-shortcut">Ctrl + S</span></td>
+                                <td>Guardar cambios en formularios</td>
+                            </tr>
+                            <tr>
+                                <td><span class="keyboard-shortcut">Esc</span></td>
+                                <td>Cerrar diálogos y modales</td>
+                            </tr>
+                            <tr>
+                                <td><span class="keyboard-shortcut">F5</span></td>
+                                <td>Recargar la página</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Tiempos de Respuesta</h3>
+                <p>El sistema está optimizado para proporcionar respuestas rápidas:</p>
+                <ul>
+                    <li>Carga de páginas: &lt; 2 segundos</li>
+                    <li>Búsquedas: &lt; 1 segundo</li>
+                    <li>Generación de reportes: &lt; 5 segundos</li>
+                    <li>Exportación a PDF: &lt; 3 segundos</li>
+                </ul>
+
+                <h3>Soporte Técnico</h3>
+                <p>Si experimenta problemas técnicos o tiene preguntas sobre el uso del sistema:</p>
+                <ul>
+                    <li>Contacte al administrador del sistema</li>
+                    <li>Envíe un email con descripción del problema</li>
+                    <li>Incluya capturas de pantalla si es posible</li>
+                    <li>Proporcione los pasos para reproducir el error</li>
+                </ul>
+
+                <h3>Mejoras Futuras Planeadas</h3>
+                <ul>
+                    <li>Integración con pasarelas de pago online</li>
+                    <li>Facturación automática recurrente</li>
+                    <li>Módulo de contabilidad completa</li>
+                    <li>Integración con sistemas de inventario avanzado</li>
+                    <li>Aplicación móvil nativa</li>
+                    <li>Generación de facturas electrónicas certificadas</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <p><strong>Sistema de Facturación Electrónica PFEPS</strong></p>
+        <p>Manual de Usuario v1.0 | Enero 2026</p>
+        <p>© 2026 Todos los derechos reservados</p>
+        <p style="margin-top: 20px; font-size: 0.85em;">
+            Este manual contiene información importante sobre el uso del sistema. 
+            Para actualizaciones o cambios, consulte con el administrador del sistema.
+        </p>
+    </footer>
+
+    <div class="back-to-top" id="backToTop">↑</div>
+
+    <script>
+        // Scroll to top button functionality
+        const backToTopBtn = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const element = document.querySelector(href);
+                    if (element) {
+                        element.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Add active state to sidebar links
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.sidebar a');
+
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.style.borderLeftColor = '#667eea';
+                    link.style.color = '#667eea';
+                    link.style.backgroundColor = '#e9ecef';
+                }
+            });
+        });
+
+        // Print functionality
+        window.print = function() {
+            window.originalPrint.call(window);
+        };
+        window.originalPrint = window.print;
+    </script>
+</body>
+</html>

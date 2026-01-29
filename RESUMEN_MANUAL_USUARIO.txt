@@ -1,0 +1,281 @@
+═══════════════════════════════════════════════════════════════════════════════
+    RESUMEN: MANUAL DE USUARIO - SISTEMA DE FACTURACIÓN ELECTRÓNICA PFEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+ARCHIVO GENERADO: Manual_Usuario.html
+FECHA: 29 de enero de 2026
+VERSIÓN: 1.0
+
+═══════════════════════════════════════════════════════════════════════════════
+CONTENIDO INCLUIDO EN EL MANUAL
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ SECCIONES PRINCIPALES:
+
+1. 🎯 BIENVENIDA E INTRODUCCIÓN
+   - Presentación del sistema
+   - Beneficios y características principales
+   - Información importante para usuarios nuevos
+
+2. 💻 REQUISITOS DEL SISTEMA
+   - Requisitos técnicos mínimos
+   - Navegadores soportados
+   - Características técnicas de la plataforma
+
+3. 🚀 PRIMEROS PASOS
+   - Acceso inicial al sistema
+   - Navegación básica
+   - Orientación general
+
+4. 🔐 AUTENTICACIÓN Y SEGURIDAD
+   - Registro del primer usuario
+   - Inicio de sesión
+   - Recuperación de contraseña
+   - Gestión de roles y permisos
+   - Autenticación con JWT
+
+5. 📊 PANEL PRINCIPAL (DASHBOARD)
+   - Descripción detallada de componentes
+   - Barra de navegación superior
+   - Menú lateral principal
+   - Submenús de cada módulo
+   - Cambio de tema (claro/oscuro)
+   - Flujo de trabajo principal
+
+6. 🎨 COMPONENTES, MENÚS Y SUBMENÚS
+   - Descripción particular de cada componente
+   - Menús contextuales y desplegables
+   - Instrucciones de ingreso (login) paso a paso
+   - Instrucciones de ingreso y consulta de información
+   - Flujos de trabajo principales (3 flujos detallados):
+     * Crear factura de cliente nuevo
+     * Generar reporte de ventas
+     * Cobrar factura pendiente
+
+7. 👥 GESTIÓN DE USUARIOS
+   - Crear, editar y eliminar usuarios
+   - Asignar roles
+   - Permisos por rol
+
+8. 👥 GESTIÓN DE CLIENTES
+   - Descripción de componentes del módulo
+   - Consultar información de clientes
+   - Registrar nuevo cliente
+   - Datos requeridos (con ejemplos)
+   - Editar y eliminar clientes
+   - Ver historial de facturas
+
+9. 📦 GESTIÓN DE PRODUCTOS
+   - Descripción de componentes del módulo
+   - Consultar productos del catálogo
+   - Crear nuevo producto
+   - Información requerida (con ejemplos)
+   - Editar productos
+   - Ajustar stock
+   - Eliminar productos
+
+10. 📋 GESTIÓN DE FACTURAS
+    - Descripción detallada de componentes
+    - Consultar facturas existentes
+    - Crear nueva factura (16 pasos)
+    - Campos de factura con descripción particular
+    - Estados de factura (4 tipos con detalles)
+    - Editar facturas
+    - Descargar en PDF
+    - Cambiar estado de factura
+
+11. 📊 REPORTES
+    - Descripción de componentes del módulo
+    - 5 tipos de reportes disponibles:
+      * Reporte de Ventas
+      * Reporte de Clientes
+      * Reporte de Productos
+      * Reporte de Pagos Pendientes
+      * Reporte Personalizado
+    - Paso a paso para generar reportes
+    - Filtros disponibles
+    - Descargar y exportar reportes
+
+12. 👤 MI PERFIL
+    - Descripción de componentes de perfil
+    - Información visible y editable
+    - Editar información personal
+    - Cambiar contraseña (con procedimiento seguro)
+    - Requisitos de contraseña segura
+    - Ejemplos de contraseñas (seguras e inseguras)
+    - Cargar foto de perfil
+    - Cerrar sesión de forma segura
+    - Preferencias del sistema
+
+13. ❓ PREGUNTAS FRECUENTES
+    - 11 preguntas y respuestas comunes
+    - Solución de problemas
+
+14. ✅ RESUMEN DEL MANUAL
+    - Tabla de módulos principales
+    - Flujos de trabajo clave
+    - Mejores prácticas recomendadas
+    - Accesos rápidos útiles
+
+15. ℹ️ INFORMACIÓN ADICIONAL
+    - Atajos de teclado
+    - Tiempos de respuesta
+    - Soporte técnico
+    - Mejoras futuras planeadas
+
+═══════════════════════════════════════════════════════════════════════════════
+CARACTERÍSTICAS DEL MANUAL
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ IMÁGENES REPRESENTATIVAS:
+   • 11 capturas de pantalla del sistema integradas
+   • Distribuidas estratégicamente en cada sección
+   • Ubicadas en: Imagenes Sistema/
+
+✅ DESCRIPCIÓN DE COMPONENTES:
+   • Tablas detalladas de componentes
+   • Ubicación precisa en interfaz
+   • Función específica de cada elemento
+   • Descripciones particulares
+
+✅ INSTRUCCIONES DE INGRESO:
+   • Login: 8 pasos detallados
+   • Consulta de información: 6 pasos
+   • Ingreso de datos nuevos: 8 pasos
+
+✅ FLUJOS DE TRABAJO:
+   • Flujo 1: Crear factura de cliente nuevo (11 pasos, 10-15 min)
+   • Flujo 2: Generar reporte de ventas (6 pasos, 5 min)
+   • Flujo 3: Cobrar factura pendiente (6 pasos, 3 min)
+
+✅ ELEMENTOS DE FORMATEO:
+   • Cajas de información (ℹ️)
+   • Cajas de notas (⚠️)
+   • Cajas de advertencia (❌)
+   • Pasos numerados con instrucciones
+   • Tablas comparativas y organizadas
+   • Grillas de características
+   • Códigos de colores para estados
+   • Ejemplos con formato visual
+
+✅ NAVEGACIÓN:
+   • Menú lateral con índice de todos los temas
+   • Enlaces internos rápidos
+   • Navegación suave (scroll)
+   • Botón "Volver al inicio" flotante
+   • Diseño responsive
+
+═══════════════════════════════════════════════════════════════════════════════
+CRITERIOS CUMPLIDOS
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ Guía sobre cómo usar las funciones del sistema
+   - Cada módulo tiene instrucciones paso a paso
+   - Flujos de trabajo completos
+   - Ejemplos prácticos
+
+✅ Descripciones de alto nivel y particulares de componentes
+   - Tablas con descripción de cada componente
+   - Ubicación en interfaz
+   - Función específica
+
+✅ Instrucciones de ingreso
+   - Login: 8 pasos
+   - Recuperación de contraseña
+   - Primer usuario
+
+✅ Instrucciones de ingreso y consulta de información
+   - Consultar clientes, productos, facturas
+   - Búsqueda y filtrado
+   - Visualización de detalles
+
+✅ Flujos de trabajo
+   - 3 flujos principales documentados
+   - Pasos claros y numerados
+   - Tiempos estimados
+
+✅ Imágenes representativas o capturas de pantalla
+   - 11 imágenes del directorio "Imagenes Sistema"
+   - Integradas en secciones correspondientes
+   - Con leyendas descriptivas
+
+═══════════════════════════════════════════════════════════════════════════════
+ESTADÍSTICAS DEL MANUAL
+═══════════════════════════════════════════════════════════════════════════════
+
+Líneas de código HTML:        3,513
+Secciones principales:        15+
+Subsecciones:                 40+
+Pasos instructivos:           100+
+Tablas incluidas:             18+
+Cajas de información:         20+
+Imágenes integradas:          11
+Ejemplos prácticos:           25+
+Preguntas frecuentes:         11
+Flujos de trabajo:            3
+
+═══════════════════════════════════════════════════════════════════════════════
+CÓMO USAR EL MANUAL
+═══════════════════════════════════════════════════════════════════════════════
+
+1. APERTURA:
+   - Abra el archivo "Manual_Usuario.html" en cualquier navegador web
+   - Se abrirá automáticamente con diseño responsive
+
+2. NAVEGACIÓN:
+   - Use el menú lateral para acceder a cualquier sección
+   - Haga clic en los enlaces para navegar suavemente
+   - Use el botón "Volver al inicio" para regresar
+
+3. IMPRESIÓN:
+   - Presione Ctrl + P para imprimir
+   - Se ajustará automáticamente al formato de impresión
+   - Se recomienda imprimir en escala de grises
+
+4. BÚSQUEDA:
+   - Use Ctrl + F para buscar texto en el manual
+   - Funciona en todas las secciones
+
+5. COMPARTICIÓN:
+   - El archivo es autocontenido (no requiere internet)
+   - Puede compartirlo por email directamente
+   - Compatible con todos los navegadores modernos
+
+═══════════════════════════════════════════════════════════════════════════════
+RECOMENDACIONES
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ Se recomienda a los nuevos usuarios comenzar por:
+  1. Bienvenida e Introducción
+  2. Requisitos del Sistema
+  3. Primeros Pasos
+  4. Autenticación
+  5. Panel Principal
+  6. Luego el módulo específico que necesiten
+
+✓ Para usuarios avanzados:
+  - Vaya directamente a la sección deseada
+  - Use los flujos de trabajo como referencia rápida
+  - Consulte la sección de preguntas frecuentes
+
+✓ Mantenga el manual a mano como referencia:
+  - Imprimida en oficina
+  - En formato digital en computadora
+  - Compartida con todo el equipo
+
+═══════════════════════════════════════════════════════════════════════════════
+SOPORTE Y ACTUALIZACIONES
+═══════════════════════════════════════════════════════════════════════════════
+
+Este manual es versión 1.0 (Enero 2026)
+
+Para actualizaciones futuras, contacte con:
+- Administrador del Sistema
+- Equipo de Soporte Técnico
+
+El manual puede ser actualizado cuando haya nuevas funcionalidades
+o cambios significativos en el sistema.
+
+═══════════════════════════════════════════════════════════════════════════════
+FIN DEL RESUMEN
+═══════════════════════════════════════════════════════════════════════════════
