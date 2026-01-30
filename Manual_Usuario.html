@@ -427,12 +427,14 @@
         }
     </style>
 </head>
+
+
 <body>
     <header>
         <h1>📋 Manual de Usuario</h1>
         <p>Sistema de Facturación Electrónica PFEPS</p>
         <div class="version-info">
-            Versión 1.0 | Última actualización: Enero 2026
+            Versión 1.1 | Última actualización: Enero 2026
         </div>
     </header>
 
@@ -440,9 +442,8 @@
         <aside class="sidebar">
             <h3>📑 Índice</h3>
             <ul>
+
                 <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#requisitos">Requisitos</a></li>
-                <li><a href="#primeros-pasos">Primeros Pasos</a></li>
                 <li><a href="#autenticacion">Autenticación</a></li>
                 <li><a href="#dashboard">Panel Principal</a></li>
                 <li><a href="#componentes">Componentes y Menús</a></li>
@@ -452,101 +453,18 @@
                 <li><a href="#facturas">Gestión de Facturas</a></li>
                 <li><a href="#reportes">Reportes</a></li>
                 <li><a href="#perfil">Mi Perfil</a></li>
-                <li><a href="#faq">Preguntas Frecuentes</a></li>
+                 <li><a href="#requisitos">Requisitos</a></li>
             </ul>
         </aside>
 
         <main class="main-content">
-            <!-- SECCIÓN DE INICIO -->
-            <section id="inicio">
-                <h2>🎯 Bienvenido al Sistema PFEPS</h2>
-                <p>El Sistema de Facturación Electrónica PFEPS es una solución integral diseñada para facilitar la gestión completa de facturas, clientes, productos y usuarios. Este manual le guiará a través de todas las funcionalidades disponibles en la plataforma.</p>
-                
-                <div class="section-image">
-                    <img src="Imagenes Sistema/Bienvenida al Sistema PFEPS.png" alt="Pantalla de Bienvenida del Sistema PFEPS">
-                    <p class="image-caption">Figura 1: Pantalla de Bienvenida del Sistema PFEPS</p>
-                </div>
+           
 
-                <div class="info-box">
-                    <strong>ℹ️ Información Importante:</strong> Este sistema está diseñado para pequeñas y medianas empresas que necesitan una solución eficiente para la facturación electrónica y gestión de clientes.
-                </div>
-            </section>
 
-            <!-- REQUISITOS -->
-            <section id="requisitos">
-                <h2>💻 Requisitos del Sistema</h2>
-                
-                <h3>Requisitos Mínimos</h3>
-                <ul>
-                    <li><strong>Navegador Web:</strong> Chrome, Firefox, Safari o Edge (versión actual o anterior)</li>
-                    <li><strong>Conexión a Internet:</strong> Requerida para todas las funcionalidades</li>
-                    <li><strong>Memoria RAM:</strong> Mínimo 2 GB (recomendado 4 GB)</li>
-                    <li><strong>Resolución de Pantalla:</strong> 1024 x 768 píxeles (recomendado 1920 x 1080)</li>
-                </ul>
+ <!-- SECCIÓN DE INICIO -->
 
-                <h3>Navegadores Soportados</h3>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Navegador</th>
-                                <th>Versión Mínima</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Google Chrome</td>
-                                <td>120+</td>
-                                <td>✓ Completamente Soportado</td>
-                            </tr>
-                            <tr>
-                                <td>Mozilla Firefox</td>
-                                <td>120+</td>
-                                <td>✓ Completamente Soportado</td>
-                            </tr>
-                            <tr>
-                                <td>Microsoft Edge</td>
-                                <td>120+</td>
-                                <td>✓ Completamente Soportado</td>
-                            </tr>
-                            <tr>
-                                <td>Safari</td>
-                                <td>16+</td>
-                                <td>✓ Completamente Soportado</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3>Características Técnicas</h3>
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <h4>Frontend</h4>
-                        <p><strong>Tecnología:</strong> React 19.2 con Vite 7.2</p>
-                        <p><strong>Ventajas:</strong> Interfaz rápida y responsiva</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>Backend</h4>
-                        <p><strong>Tecnología:</strong> Node.js + Express 5.2</p>
-                        <p><strong>Base de Datos:</strong> MySQL</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>Seguridad</h4>
-                        <p><strong>Autenticación:</strong> JWT (JSON Web Tokens)</p>
-                        <p><strong>Cifrado:</strong> bcryptjs para contraseñas</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>Usabilidad</h4>
-                        <p><strong>Diseño:</strong> Totalmente Responsive</p>
-                        <p><strong>Tema:</strong> Modo Claro/Oscuro</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- PRIMEROS PASOS -->
-            <section id="primeros-pasos">
-                <h2>🚀 Primeros Pasos</h2>
+<section id="inicio">
+                <h2>🚀 Inicio</h2>
                 
                 <h3>Acceso al Sistema</h3>
                 <p>Para acceder al sistema, siga estos pasos:</p>
@@ -556,25 +474,40 @@
                         <div class="step-number">1</div>
                         <div class="step-content">
                             <strong>Abra su navegador web</strong><br>
-                            Ingrese la URL del sistema en la barra de direcciones
+                            Ingrese la URL (http://localhost:5173) del sistema en la barra de direcciones
                         </div>
                     </div>
                     <div class="step">
                         <div class="step-number">2</div>
                         <div class="step-content">
-                            <strong>Pantalla de Login</strong><br>
-                            Verá la pantalla de autenticación. Si es la primera vez, proceda al registro
+                            <strong>Pantalla de Bienvenida</strong><br>
+                            Verá la pantalla de Bienvenida. Proceda al registro
                         </div>
                     </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <strong>Inicie sesión o Regístrese</strong><br>
-                            Use sus credenciales o cree una nueva cuenta
-                        </div>
-                    </div>
+                
                 </div>
+
+
+             <h2>🎯 Bienvenido al Sistema PFEPS</h2>
+                <p>El Sistema de Facturación Electrónica PFEPS es una solución integral diseñada para facilitar la gestión completa de facturas, clientes, productos y usuarios. Este manual le guiará a través de todas las funcionalidades disponibles en la plataforma.</p>
+                
+                <div class="section-image">
+                    <img src="Imagenes Sistema/Bienvenida al Sistema PFEPS.png" alt="Pantalla de Bienvenida del Sistema PFEPS">
+                    <p class="image-caption">Figura 1: Pantalla de Bienvenida del Sistema PFEPS</p>
+                </div>
+
+
+
             </section>
+
+
+          
+           
+                
+
+                
+           
+
 
             <!-- AUTENTICACIÓN -->
             <section id="autenticacion">
@@ -685,7 +618,7 @@
                 </div>
 
                 <h3>Gestión de Roles</h3>
-                <p>El sistema implementa tres tipos de roles con diferentes niveles de acceso:</p>
+                <p>El sistema implementa 2 tipos de roles con diferentes niveles de acceso:</p>
 
                 <div class="table-responsive">
                     <table>
@@ -699,13 +632,13 @@
                         <tbody>
                             <tr>
                                 <td><strong>Administrador</strong></td>
-                                <td>Control total del sistema</td>
-                                <td>✓ Gestion de usuarios<br>✓ Gestion de clientes<br>✓ CRUD productos<br>✓ Gestion de facturas<br>✓ Ver reportes<br>✓ Configuración del sistema</td>
+                                <td>Control total del sistema<br>(Crear, Eliminar, Editar)</br></td>
+                                <td>✓ Gestion de usuarios<br>✓ Gestion de clientes<br>✓ Gestion productos<br>✓ Gestion de facturas<br>✓ Gestion de reportes<br>✓ Configuración del Perfil </td>
                             </tr>
                           
                                 <td><strong>Usuario</strong></td>
-                                <td>Acceso limitado</td>
-                                <td>✓ Ver clientes<br>✓ Ver productos<br>✓ Ver facturas<br>✓ Ver reportes<br>✗ Crear o editar datos</td>
+                                <td>Acceso limitado<br>(Crear,Editar)</br> </td>
+                                <td> X Gestion de usuarios<br>✓ Gestion de clientes<br>✓ Gestion de productos<br>✓ Gestion de facturas<br>✓ Gestion de reportes<br>✓ Configuracion del Perfil</td>
                             </tr>
                         </tbody>
                     </table>
@@ -799,10 +732,8 @@
                 <p>Ocupa la mayor parte de la pantalla y muestra:</p>
                 <ul>
                     <li><strong>Bienvenida Personalizada:</strong> Saludo con el nombre del usuario</li>
-                    <li><strong>Estadísticas Rápidas:</strong> Resumen de facturas, clientes y productos</li>
                     <li><strong>Accesos Rápidos:</strong> Botones para crear nuevas facturas, clientes, etc.</li>
-                    <li><strong>Información Destacada:</strong> Últimas facturas, facturas pendientes</li>
-                    <li><strong>Alertas:</strong> Notificaciones importantes del sistema</li>
+                    <li><strong>Información Destacada:</strong> Lista de facturas, Clientes, Productos, etc.</li>
                 </ul>
 
                 <h3>Navegación Principal - Submenús</h3>
@@ -820,14 +751,12 @@
                 <ul>
                     <li><strong>Nuevo Cliente:</strong> Registra un cliente nuevo</li>
                     <li><strong>Lista de Clientes:</strong> Visualiza y busca clientes</li>
-                    <li><strong>Clientes Activos:</strong> Filtra solo clientes vigentes</li>
                 </ul>
 
                 <h4>Submenú de Productos</h4>
                 <ul>
                     <li><strong>Nuevo Producto:</strong> Agrega un producto al catálogo</li>
-                    <li><strong>Inventario:</strong> Visualiza niveles de stock</li>
-                    <li><strong>Productos Activos:</strong> Muestra productos disponibles</li>
+                    <li><strong>Lista:</strong> Visualiza Productos Creados</li>
                 </ul>
 
                 <h3>Funcionalidades de Cambio de Tema</h3>
@@ -1073,18 +1002,18 @@
                             </tr>
                             <tr>
                                 <td><strong>Menú Acciones de Factura</strong></td>
-                                <td>Al pasar ratón o clic en fila de factura en lista</td>
+                                <td>Al pasar ratón o clic en fila de factura en lista<br>(solo admin)</br></td>
                                 <td>Ver Detalle | Editar | Descargar PDF | Cambiar Estado | Eliminar</td>
                             </tr>
                             <tr>
                                 <td><strong>Menú Acciones de Cliente</strong></td>
                                 <td>Al pasar ratón o clic en fila de cliente en lista</td>
-                                <td>Ver Detalle | Editar | Ver Historial | Eliminar | Crear Factura</td>
+                                <td>| Editar || Eliminar|</td>
                             </tr>
                             <tr>
                                 <td><strong>Menú Acciones de Producto</strong></td>
                                 <td>Al pasar ratón o clic en fila de producto en lista</td>
-                                <td>Ver Detalle | Editar | Ajustar Stock | Eliminar</td>
+                                <td> | Editar || Eliminar|</td>
                             </tr>
                             <tr>
                                 <td><strong>Menú Acciones de Usuario</strong></td>
@@ -2093,7 +2022,7 @@
                     <li>Verá confirmación de que los cambios se han guardado</li>
                 </ol>
 
-                <h3>Ajustar Stock de un Producto</h3>
+                <h3>Ajustarun Producto </h3>
                 <ol>
                     <li>Localice el producto en la lista</li>
                     <li>Haga clic en el botón <span class="button-example" style="pointer-events: none;">Ajustar Stock</span></li>
@@ -3193,49 +3122,6 @@
                 </ul>
             </section>
 
-            <!-- PREGUNTAS FRECUENTES -->
-            <section id="faq">
-                <h2>❓ Preguntas Frecuentes</h2>
-
-                <h3>¿Cuántos usuarios puedo crear en el sistema?</h3>
-                <p>No hay límite de usuarios. El administrador puede crear tantos usuarios como sea necesario. Cada usuario tendrá sus propias credenciales y permisos según su rol.</p>
-
-                <h3>¿Qué sucede si olvido mi contraseña?</h3>
-                <p>Puede recuperarla mediante la opción "¿Olvidó su contraseña?" en la pantalla de login. Se enviará un enlace de recuperación a su correo electrónico que será válido por 1 hora.</p>
-
-                <h3>¿Puedo editar una factura después de crearla?</h3>
-                <p>Sí, puede editar facturas pendientes. Sin embargo, si una factura está marcada como pagada, solo puede cambiar ciertos campos como observaciones. No puede modificar el monto una vez pagada.</p>
-
-                <h3>¿Cómo genero un PDF de la factura?</h3>
-                <p>En la página de detalle de la factura, encontrará un botón "Descargar PDF" que le permitirá descargar la factura en formato PDF listo para imprimir o enviar al cliente.</p>
-
-                <h3>¿Los datos se respaldan automáticamente?</h3>
-                <p>El sistema realiza respaldos automáticos de la base de datos. Sin embargo, es recomendable hacer respaldos manuales periódicamente de información crítica.</p>
-
-                <h3>¿Puedo eliminar una factura?</h3>
-                <p>No puede eliminar facturas directamente. Si necesita anular una factura, debe cambiar su estado a "Cancelada". Esto mantiene el registro para auditoría.</p>
-
-                <h3>¿Qué tipos de pago soporta el sistema?</h3>
-                <p>El sistema permite registrar los siguientes tipos de pago: Efectivo, Tarjeta de Crédito, Tarjeta de Débito, Transferencia Bancaria, Cheque y Otros.</p>
-
-                <h3>¿Cómo cambio el tema de oscuro a claro?</h3>
-                <p>Busque el icono de tema (luna/sol) en la esquina superior derecha del dashboard y haga clic para alternar entre tema claro y oscuro.</p>
-
-                <h3>¿Puedo exportar reportes a Excel?</h3>
-                <p>Sí, en la página de reportes tiene opciones para descargar en formato PDF o Excel, dependiendo del tipo de reporte generado.</p>
-
-                <h3>¿Qué hago si tengo problemas de acceso?</h3>
-                <p>Contacte al administrador del sistema. Verifique que su usuario esté activo y que tenga los permisos apropiados para la acción que intenta realizar.</p>
-
-                <h3>¿Es segura mi información en el sistema?</h3>
-                <p>Sí. El sistema implementa múltiples capas de seguridad incluyendo autenticación JWT, cifrado de contraseñas con bcryptjs, y control de acceso basado en roles (RBAC).</p>
-
-                <h3>¿Puedo acceder al sistema desde un dispositivo móvil?</h3>
-                <p>Sí. El sistema está completamente optimizado para dispositivos móviles y tablets. La interfaz se adapta automáticamente al tamaño de la pantalla.</p>
-
-                <h3>¿Cuál es el tamaño máximo de los archivos que puedo subir?</h3>
-                <p>El tamaño máximo para imágenes de perfil es de 5 MB. Para reportes en PDF, no hay límite de tamaño.</p>
-            </section>
 
             <!-- RESUMEN Y CONCLUSIÓN -->
             <section>
@@ -3360,70 +3246,83 @@
                 </div>
             </section>
 
-            <!-- INFORMACIÓN ADICIONAL -->
-            <section>
-                <h2>ℹ️ Información Adicional</h2>
+           <div class="info-box">
+                    <strong>ℹ️ Información Importante:</strong> Este sistema está diseñado para pequeñas y medianas empresas que necesitan una solución eficiente para la facturación electrónica y gestión de clientes.
+                </div>
+            </section>
 
-                <h3>Atajos de Teclado</h3>
+            <!-- REQUISITOS -->
+            <section id="requisitos">
+                <h2>💻 Requisitos del Sistema</h2>
+                
+                <h3>Requisitos Mínimos</h3>
+                <ul>
+                    <li><strong>Navegador Web:</strong> Chrome, Firefox, Safari o Edge (versión actual o anterior)</li>
+                    <li><strong>Sistema Operativo:</strong> Windows 10/11, macOS 10.15+, Linux (distribuciones modernas)</li>
+                    <li><strong>Procesador:</strong> minimo 1.8ghz </li>
+                    <li><strong>Almacenamiento:</strong> 1GB</li>
+                    <li><strong>Memoria RAM:</strong> Mínimo 2 GB (recomendado 4 GB)</li>
+                    <li><strong>Resolución de Pantalla:</strong> 1024 x 768 píxeles (recomendado 1920 x 1080)</li>
+                </ul>
+
+                <h3>Navegadores Soportados</h3>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
-                                <th>Atajo</th>
-                                <th>Acción</th>
+                                <th>Navegador</th>
+                                <th>Versión Mínima</th>
+                                <th>Estado</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><span class="keyboard-shortcut">Ctrl + K</span></td>
-                                <td>Abrir búsqueda rápida</td>
+                                <td>Google Chrome</td>
+                                <td>120+</td>
+                                <td>✓ Completamente Soportado</td>
                             </tr>
                             <tr>
-                                <td><span class="keyboard-shortcut">Ctrl + S</span></td>
-                                <td>Guardar cambios en formularios</td>
+                                <td>Mozilla Firefox</td>
+                                <td>120+</td>
+                                <td>✓ Completamente Soportado</td>
                             </tr>
                             <tr>
-                                <td><span class="keyboard-shortcut">Esc</span></td>
-                                <td>Cerrar diálogos y modales</td>
+                                <td>Microsoft Edge</td>
+                                <td>120+</td>
+                                <td>✓ Completamente Soportado</td>
                             </tr>
                             <tr>
-                                <td><span class="keyboard-shortcut">F5</span></td>
-                                <td>Recargar la página</td>
+                                <td>Safari</td>
+                                <td>16+</td>
+                                <td>✓ Completamente Soportado</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <h3>Tiempos de Respuesta</h3>
-                <p>El sistema está optimizado para proporcionar respuestas rápidas:</p>
-                <ul>
-                    <li>Carga de páginas: &lt; 2 segundos</li>
-                    <li>Búsquedas: &lt; 1 segundo</li>
-                    <li>Generación de reportes: &lt; 5 segundos</li>
-                    <li>Exportación a PDF: &lt; 3 segundos</li>
-                </ul>
-
-                <h3>Soporte Técnico</h3>
-                <p>Si experimenta problemas técnicos o tiene preguntas sobre el uso del sistema:</p>
-                <ul>
-                    <li>Contacte al administrador del sistema</li>
-                    <li>Envíe un email con descripción del problema</li>
-                    <li>Incluya capturas de pantalla si es posible</li>
-                    <li>Proporcione los pasos para reproducir el error</li>
-                </ul>
-
-                <h3>Mejoras Futuras Planeadas</h3>
-                <ul>
-                    <li>Integración con pasarelas de pago online</li>
-                    <li>Facturación automática recurrente</li>
-                    <li>Módulo de contabilidad completa</li>
-                    <li>Integración con sistemas de inventario avanzado</li>
-                    <li>Aplicación móvil nativa</li>
-                    <li>Generación de facturas electrónicas certificadas</li>
-                </ul>
-            </section>
-        </main>
-    </div>
+                <h3>Características Técnicas</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Frontend</h4>
+                        <p><strong>Tecnología:</strong> React 19.2 con Vite 7.2</p>
+                        <p><strong>Ventajas:</strong> Interfaz rápida y responsiva</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Backend</h4>
+                        <p><strong>Tecnología:</strong> Node.js + Express 5.2</p>
+                        <p><strong>Base de Datos:</strong> MySQL</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Seguridad</h4>
+                        <p><strong>Autenticación:</strong> JWT (JSON Web Tokens)</p>
+                        <p><strong>Cifrado:</strong> bcryptjs para contraseñas</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Usabilidad</h4>
+                        <p><strong>Diseño:</strong> Totalmente Responsive</p>
+                        <p><strong>Tema:</strong> Modo Claro/Oscuro</p>
+                    </div>
+                </div>
 
     <footer>
         <p><strong>Sistema de Facturación Electrónica PFEPS</strong></p>
