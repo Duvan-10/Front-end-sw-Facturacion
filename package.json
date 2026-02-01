@@ -29,6 +29,7 @@
     "multer": "^2.0.2",
     "mysql2": "^3.15.3",
     "nodemailer": "^7.0.12",
+    "pdf-lib": "^1.17.1",
     "puppeteer": "^24.35.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
