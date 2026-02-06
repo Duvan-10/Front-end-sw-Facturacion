@@ -16,7 +16,7 @@ export const findUserByIdentification = async (identification) => {
 // Función para encontrar un usuario por email (necesario para el Login)
 export const findUserByEmail = async (email) => {
     const [rows] = await pool.query(
-        'SELECT id, identification, email, name, password, role, profile_photo FROM users WHERE email = ?',
+        'SELECT id, identification, email, name, password, role, profile_photo, failed_login_attempts, is_locked FROM users WHERE email = ?',
         [email]
     );
     return rows[0];
@@ -73,8 +73,39 @@ export const updatePassword = async (userId, newPassword) => {
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     
     await pool.query(
-        'UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
+        'UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL, failed_login_attempts = 0, is_locked = 0 WHERE id = ?',
         [hashedPassword, userId]
+    );
+};
+
+// Incrementar intentos fallidos de login
+export const incrementFailedLoginAttempts = async (userId) => {
+    await pool.query(
+        'UPDATE users SET failed_login_attempts = failed_login_attempts + 1 WHERE id = ?',
+        [userId]
+    );
+
+    const [rows] = await pool.query(
+        'SELECT failed_login_attempts FROM users WHERE id = ?',
+        [userId]
+    );
+
+    return rows[0]?.failed_login_attempts ?? 0;
+};
+
+// Resetear intentos fallidos
+export const resetFailedLoginAttempts = async (userId) => {
+    await pool.query(
+        'UPDATE users SET failed_login_attempts = 0 WHERE id = ?',
+        [userId]
+    );
+};
+
+// Bloquear usuario
+export const lockUser = async (userId) => {
+    await pool.query(
+        'UPDATE users SET is_locked = 1 WHERE id = ?',
+        [userId]
     );
 };
 
