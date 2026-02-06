@@ -11,7 +11,7 @@
 
 /* --- Layout Principal Login --- */
 .auth-login {
-    min-height: 85vh;
+    min-height: 90vh;
     display: flex;
     justify-content: center; 
     align-items: center; 
@@ -22,9 +22,9 @@
 
 /* --- Tarjeta del Formulario Login --- */
 .auth-login .auth-card {
-    width: 100%;
-    max-width: 400px; 
-    min-width: 300px; 
+    width: 90%;
+    max-width: 280px; 
+    min-width: 220px; 
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25); 
@@ -546,7 +546,7 @@
         margin: 0;
         padding: 15px; /* Padding reducido para móviles */
     }
-}}
+}
 
 /* Tablets y laptops pequeñas (768px - 1024px) */
 @media (max-width: 1024px) {
