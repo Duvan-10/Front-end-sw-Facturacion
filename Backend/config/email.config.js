@@ -13,11 +13,18 @@
 // Backend/config/email.config.js
 
 import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 // Configuración del transportador de email
 let transporter;
+let resendClient;
 
-if (process.env.EMAIL_SERVICE === 'custom') {
+const emailService = (process.env.EMAIL_SERVICE || '').toLowerCase();
+const useResendApi = emailService === 'resend' && process.env.RESEND_API_KEY;
+
+if (useResendApi) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+} else if (emailService === 'custom') {
     // Configuración para SMTP personalizado (Brevo, Mailtrap, etc.)
     const port = parseInt(process.env.EMAIL_PORT) || 2525;
     transporter = nodemailer.createTransport({
@@ -45,6 +52,40 @@ if (process.env.EMAIL_SERVICE === 'custom') {
         }
     });
 }
+
+const sendEmail = async (mailOptions) => {
+    if (useResendApi && resendClient) {
+        const toList = Array.isArray(mailOptions.to) ? mailOptions.to : [mailOptions.to];
+        const payload = {
+            from: mailOptions.from,
+            to: toList,
+            subject: mailOptions.subject,
+            html: mailOptions.html
+        };
+
+        if (Array.isArray(mailOptions.attachments) && mailOptions.attachments.length > 0) {
+            payload.attachments = mailOptions.attachments.map((attachment) => ({
+                filename: attachment.filename,
+                content: Buffer.isBuffer(attachment.content)
+                    ? attachment.content.toString('base64')
+                    : attachment.content,
+                contentType: attachment.contentType
+            }));
+        }
+
+        const { data, error } = await resendClient.emails.send(payload);
+        if (error) {
+            throw new Error(error.message || 'Resend error');
+        }
+        return { messageId: data?.id };
+    }
+
+    if (!transporter) {
+        throw new Error('Email transporter not configured');
+    }
+
+    return transporter.sendMail(mailOptions);
+};
 
 // Función para enviar email de recuperación de contraseña
 export const sendPasswordResetEmail = async (userEmail, userName, resetToken) => {
@@ -170,7 +211,7 @@ export const sendPasswordResetEmail = async (userEmail, userName, resetToken) =>
     };
 
     try {
-        const info = await transporter.sendMail(mailOptions);
+        const info = await sendEmail(mailOptions);
         return { success: true, messageId: info.messageId };
     } catch (error) {
         console.error('Error al enviar email de recuperación:', error.message);
@@ -383,7 +424,7 @@ export const sendInvoiceEmail = async (facturaData, emisorData, clientEmail) => 
             ]
         };
 
-        const info = await transporter.sendMail(mailOptions);
+        const info = await sendEmail(mailOptions);
         return { success: true, messageId: info.messageId };
     } catch (error) {
         console.error('Error al enviar factura por email:', error.message);
