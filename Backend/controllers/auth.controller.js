@@ -8,6 +8,9 @@ import {
     createPasswordResetToken, 
     verifyPasswordResetToken, 
     updatePassword, 
+    incrementFailedLoginAttempts,
+    resetFailedLoginAttempts,
+    lockUser,
     bcrypt 
 } from '../models/user.model.js';
 import { sendPasswordResetEmail } from '../config/email.config.js';
@@ -66,19 +69,39 @@ export const login = async (req, res) => {
         // 1. Buscar usuario por email
         const user = await findUserByEmail(email);
 
-        // 2. Verificar que el usuario exista y que la contraseña sea correcta
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(401).json({ message: 'Credenciales inválidas (correo o contraseña incorrectos).' });
+        // 2. Verificar que el usuario exista
+        if (!user) {
+            return res.status(404).json({ message: 'El usuario no existe.' });
         }
 
-        // 3. Generar un Token JWT (Token de sesión)
+        // 3. Verificar si el usuario está bloqueado
+        if (user.is_locked) {
+            return res.status(423).json({ message: 'Usuario bloqueado por intentos fallidos. Contacta al administrador.' });
+        }
+
+        // 4. Verificar contraseña
+        const passwordIsValid = await bcrypt.compare(password, user.password);
+        if (!passwordIsValid) {
+            const attempts = await incrementFailedLoginAttempts(user.id);
+            if (attempts >= 2) {
+                await lockUser(user.id);
+                return res.status(423).json({ message: 'Usuario bloqueado por intentos fallidos. Debe restablecer la contraseña.' });
+            }
+
+            return res.status(401).json({ message: 'Credenciales inválidas (usuario o contraseña incorrectos).' });
+        }
+
+        // 5. Resetear intentos fallidos si el login es correcto
+        await resetFailedLoginAttempts(user.id);
+
+        // 6. Generar un Token JWT (Token de sesión)
         const token = jwt.sign(
             { id: user.id, email: user.email }, // Payload (datos del usuario)
             JWT_SECRET, 
             { expiresIn: '7d' } // Expira en 7 días
         );
 
-        // 4. Respuesta de éxito, enviando el token y datos básicos del usuario al Frontend
+        // 7. Respuesta de éxito, enviando el token y datos básicos del usuario al Frontend
         res.status(200).json({ 
             message: 'Login exitoso',
             token: token,
