@@ -15,6 +15,7 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { visualizarFactura } from '../utils/pdfGenerator'; 
+import { API_URL } from '../api';
 import InvoiceStatusModal from '../components/InvoiceStatusModal';
 import InvoiceForm from '../forms/InvoiceForm.jsx';
 import '../styles/Modules_clients_products_factures.css';
@@ -162,14 +163,14 @@ function Facturas() {
             setIsGenerating(invoice.id_real);
             
             // Obtener datos de la factura
-            const resFactura = await fetch(`http://localhost:8080/api/facturas/${invoice.id_real}`, {
+            const resFactura = await fetch(`${API_URL}/facturas/${invoice.id_real}`, {
                 headers: getAuthHeaders()
             });
             if (!resFactura.ok) throw new Error('No se pudo obtener la factura');
             const facturaData = await resFactura.json();
 
             // Obtener datos del emisor
-            const resEmisor = await fetch('http://localhost:8080/api/perfil/emisor', {
+            const resEmisor = await fetch(`${API_URL}/perfil/emisor`, {
                 headers: getAuthHeaders()
             });
             const emisorData = resEmisor.ok ? await resEmisor.json() : null;

@@ -237,6 +237,31 @@ const generateInvoiceHTML = (facturaData, emisorData) => {
     const formatCurrency = (val) => `$${Math.round(val || 0).toLocaleString('es-CO')}`;
     const formatDate = (date) => date ? new Date(date).toLocaleDateString('es-CO') : '';
     const displayDate = facturaData.fecha_emision || facturaData.fecha_creacion;
+    const backendBaseUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 8080}`;
+    const frontendBaseUrl = process.env.FRONTEND_URL || backendBaseUrl;
+    const rawLogo = emisorData?.logo_url
+        || emisorData?.logo
+        || emisorData?.logo_path
+        || emisorData?.logoBase64
+        || emisorData?.logo_base64
+        || null;
+
+    const resolveLogoUrl = (value) => {
+        if (!value) return null;
+        if (value.startsWith('data:')) return value;
+        if (/^https?:\/\//i.test(value)) return value;
+        if (/^[A-Za-z0-9+/=]+$/.test(value) && value.length > 200) {
+            return `data:image/png;base64,${value}`;
+        }
+        const path = value.startsWith('/') ? value : `/${value}`;
+        if (path.startsWith('/pictures')) {
+            return `${backendBaseUrl}${path}`;
+        }
+        return `${frontendBaseUrl}${path}`;
+    };
+
+    const logoUrl = resolveLogoUrl(rawLogo);
+    const logoHtml = logoUrl ? `<img class="logo" src="${logoUrl}" alt="Logo" />` : '';
 
     return `
         <!DOCTYPE html>
@@ -248,6 +273,7 @@ const generateInvoiceHTML = (facturaData, emisorData) => {
                 body { font-family: Arial, sans-serif; font-size: 12px; padding: 40px; }
                 .header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; }
                 .emisor-info { width: 60%; }
+                .logo { width: 70px; height: 70px; object-fit: contain; margin-bottom: 8px; }
                 .emisor-info h1 { font-size: 16px; margin-bottom: 5px; }
                 .invoice-meta { width: 35%; text-align: right; }
                 .invoice-meta h2 { font-size: 18px; color: #333; }
@@ -270,6 +296,7 @@ const generateInvoiceHTML = (facturaData, emisorData) => {
             <!-- ENCABEZADO -->
             <div class="header">
                 <div class="emisor-info">
+                    ${logoHtml}
                     <h1>${emisorData?.nombre_razon_social || 'Empresa'}</h1>
                     <p><strong>NIT:</strong> ${emisorData?.nit || ''}</p>
                     <p>${emisorData?.direccion || ''}</p>
@@ -365,6 +392,8 @@ export const sendInvoiceEmail = async (facturaData, emisorData, clientEmail) => 
         });
         await browser.close();
 
+        const pdfContent = Buffer.isBuffer(pdfBuffer) ? pdfBuffer : Buffer.from(pdfBuffer);
+
         const displayDate = facturaData.fecha_emision || facturaData.fecha_creacion;
 
         // Configurar email
@@ -418,7 +447,7 @@ export const sendInvoiceEmail = async (facturaData, emisorData, clientEmail) => 
             attachments: [
                 {
                     filename: `Factura_${facturaData.numero_factura}.pdf`,
-                    content: pdfBuffer,
+                    content: pdfContent,
                     contentType: 'application/pdf'
                 }
             ]

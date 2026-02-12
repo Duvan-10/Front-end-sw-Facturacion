@@ -15,11 +15,35 @@
 import React, { useState } from 'react';
 import { Page, Text, View, Document, Image } from '@react-pdf/renderer';
 import { styles } from './InvoiceStyles';
+import { API_URL } from '../../api';
 
 const InvoicePDF = ({ data, emisor, onStatusChange, showControls = false }) => {
     const [selectedStatus, setSelectedStatus] = useState(data.estado || 'Pendiente');
     const formatCurrency = (val) => `$${Math.round(val || 0).toLocaleString('es-CO')}`;
-    const logoUrl = emisor?.logo_url ? window.location.origin + emisor.logo_url : null;
+    const apiBaseUrl = API_URL.replace(/\/api\/?$/, '');
+    const frontendBaseUrl = window.location.origin;
+    const rawLogo = emisor?.logo_url
+        || emisor?.logo
+        || emisor?.logo_path
+        || emisor?.logoBase64
+        || emisor?.logo_base64
+        || null;
+
+    const resolveLogoUrl = (value) => {
+        if (!value) return null;
+        if (value.startsWith('data:')) return value;
+        if (/^https?:\/\//i.test(value)) return value;
+        if (/^[A-Za-z0-9+/=]+$/.test(value) && value.length > 200) {
+            return `data:image/png;base64,${value}`;
+        }
+        let path = value.startsWith('/') ? value : `/${value}`;
+        if (path.startsWith('/pictures')) {
+            return `${apiBaseUrl}${path}`;
+        }
+        return `${frontendBaseUrl}${path}`;
+    };
+
+    const logoUrl = resolveLogoUrl(rawLogo);
 
     const handleStatusUpdate = async () => {
         try {
@@ -53,7 +77,7 @@ const InvoicePDF = ({ data, emisor, onStatusChange, showControls = false }) => {
                 {/* 1. ENCABEZADO: DATOS DEL EMISOR */}
                 <View style={styles.header}>
                     <View style={styles.emisorInfo}>
-                        {emisor?.logo_url && <Image src={logoUrl} style={styles.logo} />}
+                        {logoUrl && <Image src={logoUrl} style={styles.logo} />}
                         <Text style={styles.emisorName}>{emisor?.nombre_razon_social}</Text>
                         <Text>NIT: {emisor?.nit}</Text>
                         <Text>{emisor?.direccion}</Text>
